@@ -1,7 +1,5 @@
 /**
- * JSFX Name: Notes to 12 channel
- * REAPER: 6.0
- * Version: 1.0
+ * Splits incomming midi notes into 12 channels C -> Chn1, C# -> Chn2 and so on
  */
 
 desc:Notes to 12 channel
@@ -27,7 +25,7 @@ while
       midisend(offset, msg1, note, vel); // passthrough
     );
 
-    1; // Force loop to continue until all messages have been processed
+    1; // Force loop to continue
 
   );
 

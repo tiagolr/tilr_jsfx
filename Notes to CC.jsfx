@@ -1,7 +1,5 @@
 /**
- * JSFX Name: Notes to CC
- * REAPER: 6.0
- * Version: 1.0
+ * Maps midi notes to CC automation
  */
 
 desc:Notes to CC

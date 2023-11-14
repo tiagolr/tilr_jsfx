@@ -1,5 +1,9 @@
-desc:Quick Filter
+desc:QuickFilter
 author: TiagoLr
+
+/*
+  Multimode SVF filter with interpolation
+*/
 
 import qf.svf_filter.jsfx-inc
 

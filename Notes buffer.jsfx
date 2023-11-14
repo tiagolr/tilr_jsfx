@@ -1,7 +1,5 @@
 /**
- * JSFX Name: Notes buffer
- * REAPER: 6.0
- * Version: 1.0
+ * Store last played note, useful to retrieve last played RS5K
  */
 
 desc:Notes buffer
