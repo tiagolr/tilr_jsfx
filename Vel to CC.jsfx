@@ -1,0 +1,61 @@
+/**
+ * JSFX Name: Notes to CC
+ * REAPER: 6.0
+ * Version: 1.0
+ */
+
+desc:Vel to CC
+
+in_pin:none
+out_pin:none
+
+slider1:0<0, 127, 1>Note min
+slider2:127<0, 127, 1>Note max
+slider3:0<0, 127, 1>Param min
+slider4:127<0, 127, 1>Param max
+slider7:0<0, 127, 1>Value
+
+////////////////////////////////////////////////////////////////////////////////
+@init
+statNoteOn = $x90;
+statNoteOff = $x80;
+
+////////////////////////////////////////////////////////////////////////////////
+@slider
+slider1 > slider2 ? slider2 = slider1;
+slider3 > slider4 ? slider3 = slider4;
+noteMin = slider1;
+noteMax = slider2;
+paramMin = slider3;
+paramMax = slider4;
+
+////////////////////////////////////////////////////////////////////////////////
+@block
+
+while
+(
+
+  midirecv(offset,msg1,note,vel) ?
+  (
+
+    // Extract message type and channel
+    status = msg1 & $xF0;
+    channel = msg1 & $x0F;
+
+    // Is it a note event?
+    status == statNoteOn || status == statNoteOff ?
+    (
+
+        status == statNoteOn && note <= noteMax && note >= noteMin ? (
+          // linear mapping
+          scale = (paramMax-paramMin) / 127;
+          value = vel * scale + paramMin;
+          slider7 = value | 0
+        );
+    );
+
+    midisend(offset,msg1,note,vel); // passthrough
+    1; // Force loop to continue until all messages have been processed
+  );
+
+);

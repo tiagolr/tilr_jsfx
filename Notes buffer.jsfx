@@ -1,0 +1,32 @@
+/**
+ * JSFX Name: Notes buffer
+ * REAPER: 6.0
+ * Version: 1.0
+ */
+
+desc:Notes buffer
+
+slider1:-1<-1,127,1>Last played note
+
+@init
+statNoteOn = $x90;
+statNoteOff = $x80;
+
+@block
+
+while
+(
+  midirecv(offset,msg1,note,vel) ?
+  (
+    status = msg1 & $xF0;
+    channel = msg1 & $x0F;
+
+    status == statNoteOn ?
+    (
+      slider1 = note;
+    );
+    midisend(offset, msg1, note, vel); // passthrough
+
+    1; // Force loop to continue until all messages have been processed
+  );
+);
