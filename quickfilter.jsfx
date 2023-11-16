@@ -1,17 +1,16 @@
-desc:QuickFilter
-author: TiagoLr
-
 /*
   Multimode SVF filter with interpolation
 */
 
+desc:QuickFilter
+author: TiagoLr
+
 import qf.svf_filter.jsfx-inc
 
-slider1:0<0,9,1{Low-Pass, Low-Pass Butterworth,High-Pass,High-Pass Butterworth,Band-Pass,Band-Pass2,EQ Bell,Notch,All-Pass,Low-Shelf,High-Shelf}>Mode
+slider1:0<0,9,1{Low-Pass,High-Pass,Band-Pass,Band-Pass2,EQ Bell,Notch,All-Pass,Low-Shelf,High-Shelf}>Mode
 slider2:1000<10,22000,1:log>Freq (Hz)
 slider3:0.0<-36.0,36.0,0.1>Gain (dB)
 slider4:0.71<0.1,40.0,0.01:log>Q
-slider5:1<0, 1, 1{No, Yes}>-Gain compensation
 slider6:-120.0<-120.0,24.0,0.1>Dry (dB)
 slider7:0.0<-120.0,24.0,0.1>Wet (dB)
 
@@ -36,7 +35,7 @@ dry.smooth = db2gain(slider6);
 wet.rc_set(0.0033);
 wet.smooth = db2gain(slider7);
 
-zdf.zdf_set_sample_rate(srate);
+filter.svf_set_sample_rate(srate);
 
 @slider
 
@@ -47,32 +46,33 @@ q = slider4;
 dry = db2gain(slider6);
 wet = db2gain(slider7);
 
-mode == 0 ? zdf.zdf_lp(freq, q, 1) :
-mode == 1 ? zdf.zdf_lpb(freq, 1) :
-mode == 2 ? zdf.zdf_hp(freq, q, 1) :
-mode == 3 ? zdf.zdf_hpb(freq, 1) :
-mode == 4 ? zdf.zdf_bp(freq, q) :
-mode == 5 ? zdf.zdf_bp2(freq, q) :
-mode == 6 ? zdf.zdf_eq(freq, q, gain) :
-mode == 7 ? zdf.zdf_bs(freq, q) :
-mode == 8 ? zdf.zdf_ap(freq, q) :
-mode == 9 ? zdf.zdf_ls(freq, q, gain) :
-zdf.zdf_hs(freq, q, gain);
+mode == 0 ? filter.svf_lp(freq, q, 1) :
+mode == 1 ? filter.svf_hp(freq, q, 1) :
+mode == 2 ? filter.svf_bp(freq, q) :
+mode == 3 ? filter.svf_bp2(freq, q) :
+mode == 4 ? filter.svf_eq(freq, q, gain) :
+mode == 5 ? filter.svf_bs(freq, q) :
+mode == 6 ? filter.svf_ap(freq, q) :
+mode == 7 ? filter.svf_ls(freq, q, gain) :
+filter.svf_hs(freq, q, gain);
 
-slider_show(slider4, mode !== 1 && mode !== 3);
-slider_show(slider5, mode == 5);
-slider_show(slider3, mode == 6 || mode == 9 || mode == 10);
+slider_show(slider3, mode == 4 || mode == 7 || mode == 8);
 
 @sample
 
-zdf.zdf_tick();
+last_play_state == 0 && play_state ? (
+  filter.svf_single_set_to_target(); // FIX
+);
+last_play_state = play_state;
+
+filter.svf_tick();
 dry.smooth();
 wet.smooth();
 
-l = zdf.zdf_svf0(spl0);
-r = zdf.zdf_svf1(spl1);
+l = filter.svf_svf0(spl0);
+r = filter.svf_svf1(spl1);
 
-mode == 5 && slider5 ? ( // bandpass2 compensate q gain lost
+mode == 3 ? ( // bandpass2 gain compensation
   l *= q;
   r *= q;
 );
