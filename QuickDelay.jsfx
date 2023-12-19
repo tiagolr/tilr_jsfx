@@ -2,20 +2,37 @@ desc:QuickDelay
 
 slider1:delayms=250<1,1000>Delay Time (ms)
 slider2:sync=0<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
-slider3:feedback=0<0,1>Feedback
-slider4:mode=1<0,1,1{Normal,Ping Pong}>Mode
-slider5:spread=0<-100,100,1>Spread
+slider3:_feedback=0<0,100>Feedback
+slider4:mode=0<0,1,1{Normal,Ping-Pong}>Mode
+slider5:spread=0<-100,100,1>Ping-Pong Spread
+
+slider7:lp_freq=20000<20,20000,1:log>Low Pass
+slider8:lp_q=0.707<0.01,4.0,0.01:log>Low Pass Q
+
+slider9:hp_freq=20<20,20000,1:log>High Pass
+slider10:hp_q=0.707<0.01,4.0,0.01:log>High Pass Q
+
+slider12:_dry=100<0,100>Dry signal
+slider13:_wet=100<0,100>Wet signal
 
 import qd.delay.jsfx-inc
+import qd.rbj_filter.jsfx-inc
 
 @init
-// 20 second stereo delay line
+// 10 second stereo delay line
 d0.delay(srate * 10);
 d1.delay(srate * 10);
 
 @slider
+feedback = _feedback / 100;
 lfactor = spread > 0 ? 1 - spread / 100 : 1;
 rfactor = spread < 0 ? 1 + spread / 100 : 1;
+
+lp.rbj_lp(lp_freq, lp_q);
+hp.rbj_hp(hp_freq, hp_q);
+
+dry = _dry / 100;
+wet = _wet / 100;
 
 @block
 while (midirecv(offset, msg1, note, vel)) (
@@ -48,14 +65,20 @@ sync > 0 ? (
 delayms > 10000 ? delayms = 10000;
 samps = delayms * 0.001 * srate; // delay time in samples
 
-// clear delay on all notes off
-
 @sample
 // read with cubic interpolation
 val0 = d0.delay_read3(samps);
 val1 = d1.delay_read3(samps);
 
-// apply filters on val0 and val1
+// apply filters on delay signal
+lp_freq < 20000 ? (
+  val0 = lp.rbj_df1(val0);
+  val1 = lp.rbj_df2(val1);
+);
+hp_freq > 20 ? (
+  val0 = hp.rbj_df1(val0);
+  val1 = hp.rbj_df2(val1);
+);
 
 // write values in delay lines
 mode == 0 ? (
@@ -67,5 +90,5 @@ mode == 0 ? (
 );
 
 // sum and output
-spl0 = spl0 + val0;
-spl1 = spl1 + val1;
+spl0 = spl0*dry + val0*wet;
+spl1 = spl1*dry + val1*wet;
