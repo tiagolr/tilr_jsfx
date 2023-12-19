@@ -1,17 +1,7 @@
 desc:SKFilter
-about:
-      #SKFilter 
-      SKFilter (or Saikes filters) is a set of filters extracted from Yutani Bass (https://github.com/JoepVanlier/JSFX/tree/master/Yutani)
-      
-      ### Features 
-      * 29 filter types
-      * Non-linear analog modelled filters
-      * Filter drive
-      * Filter modes and morphing
-      * Oversampling up to 8x
 
 slider1:filter_type=1<0,28,1{Linear,MS-20,Linear x2,Moog,Ladder,303,MS-20 asym,DblRes,DualPeak,TriplePeak,svf nl 2p,svf nl 4p,svf nl 2p inc,svf nl 4p inc,rectified resonance,Steiner,SteinerA,Muck,Pill2p,Pill4p,Pill2p Aggro,Pill4p Aggro,Pill2p Stacc,Pill4p Stacc,Ladder3,Ladder6,HLadder,SVF2,SVF4}>Filter type
-slider2:drive=0<-32,48,1>Filter Drive (dB)
+slider2:drive=0<0,48,1>Filter Drive (dB)
 slider3:boost=0<-6,48,1>Post Boost (dB)
 slider4:cutoff=.6<0,1,.0001>Cutoff
 slider5:resonance=0.7<0,1,.0001>Resonance
