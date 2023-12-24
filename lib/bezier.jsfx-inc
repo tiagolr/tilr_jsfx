@@ -1,0 +1,319 @@
+desc:curvelib.jsfx-inc
+
+/*
+MIT License
+
+Copyright (c) 2023 TiagoLr
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+/*
+  Set of helpers to work with cubic bezier curves
+
+  Example:
+    import bezier.jsfx-inc
+    @init
+
+    curve.curve_init(0, 1000); // init a curve with up to 1000 points
+
+    curve.insert_point(0,0,1); // x = 0, y = 0, tension = 1
+    curve.insert_point(0.25,0.25,-1);
+    curve.insert_point(0.75,0.75, 1);
+    curve.insert_point(1,1,0);
+
+    curve.build_segments(); // build curve segments from points
+
+    @gfx 300 300
+
+    // draw all curve segments into x = 20, y = 20, w = 200, h = 100
+    // each segment has 120 points
+    gfx_set(1, 0, 0);
+    curve.draw_segments(20, 20, 200, 100, 120);
+
+    // draw curve point at t = 0.5
+    x = curve.get_x_at(0.5);
+    y = curve.get_y_at(0.5);
+    gfx_circle(x * 200 + 20, y * 100 + 20, 5);
+
+    // draw curve point at x = 0.5
+    t = curve.get_t(0.5);
+    x = curve.get_x_at(t);
+    y = curve.get_y_at(t);
+    gfx_circle(x * 200 + 20, y * 100 + 20, 5);
+*/
+
+import array.jsfx-inc
+
+@init
+
+/*
+  Allocates memory for points and segments
+*/
+function curve_init(buf, npoints)
+instance(points, segments)
+(
+  buf = points.array_init(buf, npoints, 3); // x,y,tension
+  buf = segments.array_init(buf, npoints-1, 9); // x0,x1,x2,x3,y0,y1.y2,y3,tension
+  buf;
+);
+
+/*
+  Inserts point ordered by x
+*/
+function insert_point(x, y, tension)
+instance(points)
+local (ptr)
+(
+  points.size == 0 ? (
+    ptr = points.array_add();
+    ptr[0] = x;
+    ptr[1] = y;
+    ptr[2] = tension;
+  ) : (
+    ptr = points.array_last();
+    while (ptr >= 0) (
+      ptr[0] <= x ? (
+        p = points.array_insert(ptr + points.num);
+        p[0] = x;
+        p[1] = y;
+        p[2] = tension;
+        ptr = -1;
+      ) : (
+        ptr -= points.num;
+      );
+    );
+  );
+);
+
+function remove_point(x, y)
+instance(points)
+local (ptr)
+(
+  ptr = points.array_first();
+  while (ptr >= 0) (
+    ptr[0] == x && ptr[1] == y ? (
+      points.array_remove(ptr);
+      ptr = -1;
+    ) : (
+      ptr = points.array_next(ptr);
+    );
+  );
+);
+
+function bezier_quad(t, x0, x1, x2, x3)
+local (u, tt, uu, uuu, ttt, p)
+(
+  u = 1 - t;
+  tt = t*t;
+  uu = u*u;
+  uuu = uu * u;
+  ttt = tt * t;
+  p = uuu * x0; // (1-t)³ * x0
+  p += 3 * uu * t * x1; // 3*(1-t)² * t * x1
+  p += 3 * u * tt * x2; // 3*(1-t) * t² * x2
+  p += ttt * x3; // t³ * p3
+  p;
+);
+
+function get_y_at(dt)
+instance(segments)
+local (seg, val, t)
+(
+  val = 0;
+  seg = segments.array_first();
+  while(seg >= 0) (
+    seg[0] <= dt && seg[3] >= dt ? (
+      t = (dt - seg[0]) / (seg[3] - seg[0]); // map dt to 0...1 range
+      val = bezier_quad(t, seg[4], seg[5], seg[6], seg[7]); // get y pos
+      seg = -1;
+    ) : (
+      seg = segments.array_next(seg);
+    );
+  );
+  val;
+);
+
+function get_x_at(dt)
+instance(segments)
+local (seg, val, t)
+(
+  val = 0;
+  seg = segments.array_first();
+  while(seg >= 0) (
+    seg[0] <= dt && seg[3] >= dt ? (
+      t = (dt - seg[0]) / (seg[3] - seg[0]); // map dt to 0...1 range
+      val = bezier_quad(t, seg[0], seg[1], seg[2], seg[3]); // get x pos
+      seg = -1;
+    ) : (
+      seg = segments.array_next(seg);
+    );
+  );
+  val;
+);
+
+/*
+  Binary search for t given x
+*/
+function binary_search_t(seg, x)
+local (lower, upper, t, xx, tolerance, f) (
+  tolerance = 0.000001;
+  lower = 0;
+  upper = 1;
+
+  while (upper - lower > tolerance) (
+    t = (upper + lower) / 2;
+    xx = bezier_quad(t, seg[0], seg[1], seg[2], seg[3]);
+    xx > x ? (
+      upper = t;
+    ) : (
+      lower = t;
+    );
+  );
+  f = (upper + lower) / 2;
+  seg[0] + f * (seg[3] - seg[0]);
+);
+
+/*
+  Returns
+*/
+function get_t(x)
+instance(segments)
+local(seg, t, i)
+(
+  t = 0;
+  seg = segments.array_first();
+  while (seg >= 0) (
+    seg[0] <= x && seg[3] >= x ? (
+      t = binary_search_t(seg, x);
+      seg = -1;
+    ) : (
+      seg = segments.array_next(seg);
+    )
+  );
+  t;
+);
+
+/*
+  sets control points position according to tension
+  xbuf = [x0, x1, x2, x3]
+  ybuf = [y0, y1, y2, y3]
+  tension = 0 linear, 1 - exponential, 2 - reverse exponential
+*/
+function apply_tension (xbuf, ybuf, tension)
+local (tx1, tx2, ty1, ty2)
+(
+  tension == 0 ? (
+    tx1 = 0.25;
+    tx2 = 0.75;
+    ty1 = 0.25;
+    ty2 = 0.75;
+  ) :
+  tension > 0 ? (
+    tx1 = (1-0.25) * tension + 0.25;
+    tx2 = (1-0.75) * tension + 0.75;
+    ty1 = -0.25 * tension + 0.25;
+    ty2 = -0.75 * tension + 0.75;
+  ) :
+  tension < 0 ? (
+    tx1 = -0.25 * -tension + 0.25;
+    tx2 = -0.75 * -tension + 0.75;
+    ty1 = (1-0.25) * -tension + 0.25;
+    ty2 = (1-.75) * -tension + 0.75;
+  );
+
+  xbuf[1] = xbuf[0] * (1-tx1) + xbuf[3] * tx1;
+  ybuf[1] = ybuf[0] * (1-ty1) + ybuf[3] * ty1;
+  xbuf[2] = xbuf[0] * (1-tx2) + xbuf[3] * tx2;
+  ybuf[2] = ybuf[0] * (1-ty2) + ybuf[3] * ty2;
+);
+
+function build_segments()
+instance(points, segments)
+local (seg, p1, p2)
+(
+  segments.array_clear();
+  p1 = points.array_first();
+  p2 = points.array_next(p1);
+  while (p2 >= 0) (
+    seg = segments.array_add();
+    seg[0] = p1[0]; // x0
+    seg[1] = p1[0]; // x1
+    seg[2] = p2[0]; // x2
+    seg[3] = p2[0]; // x3
+    seg[4] = p1[1]; // y0
+    seg[5] = p1[1]; // y1
+    seg[6] = p2[1]; // y2
+    seg[7] = p2[1]; // y3
+    seg[8] = p2[2]; // tension
+    apply_tension(seg, seg+4, seg[8]);
+    p1 = p2;
+    p2 = points.array_next(p2);
+  );
+);
+
+///////////////////////////////////////////////////
+// GFX FUNCTIONS
+///////////////////////////////////////////////////
+
+/*
+  xbuf    array of 4 x positions
+  ybuf    array of 4 y positions
+  xscale  x scale of display
+  yscale  y scale of display
+*/
+function draw_curve(xbuf, ybuf, xoffset, yoffset, xscale, yscale, npoints)
+local(i, px, py, dx)
+(
+  gfx_x = xbuf[0] * xscale + xoffset;
+  gfx_y = ybuf[0] * yscale + yoffset;
+
+  dx = 1 / npoints;
+  loop(i=0; npoints,
+    px = bezier_quad(i, xbuf[0], xbuf[1], xbuf[2], xbuf[3]);
+    py = bezier_quad(i, ybuf[0], ybuf[1], ybuf[2], ybuf[3]);
+    gfx_lineto(px * xscale + xoffset, py * yscale + yoffset);
+    i += dx;
+  );
+  gfx_lineto(xbuf[3] * xscale + xoffset, ybuf[3] * yscale + yoffset);
+);
+
+function draw_segment(seg, xoffset, yoffset, xscale, yscale, npoints) (
+  draw_curve(seg, seg+4, xoffset, yoffset, xscale, yscale, npoints)
+);
+
+function draw_segments(xoffset, yoffset, xscale, yscale, npoints)
+instance(segments)
+local (seg)
+(
+  seg = segments.array_first();
+  while (seg >= 0) (
+    draw_segment(seg, xoffset, yoffset, xscale, yscale, npoints);
+    seg = segments.array_next(seg);
+  );
+);
+
+function draw_ctrl_points(seg, xoffset, yoffset, xscale, yscale, radius, fill)
+(
+  gfx_circle(seg[1] * xscale + xoffset, seg[5] * yscale + yoffset, radius, fill);
+  gfx_circle(seg[2] * xscale + xoffset, seg[6] * yscale + yoffset, radius, fill);
+);
+
+
+
