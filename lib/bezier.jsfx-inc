@@ -3,7 +3,7 @@ desc:curvelib.jsfx-inc
 /*
 MIT License
 
-Copyright (c) 2023 TiagoLr
+Copyright (c) 2024 TiagoLr
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -308,12 +308,5 @@ local (seg)
     seg = segments.array_next(seg);
   );
 );
-
-function draw_ctrl_points(seg, xoffset, yoffset, xscale, yscale, radius, fill)
-(
-  gfx_circle(seg[1] * xscale + xoffset, seg[5] * yscale + yoffset, radius, fill);
-  gfx_circle(seg[2] * xscale + xoffset, seg[6] * yscale + yoffset, radius, fill);
-);
-
 
 
