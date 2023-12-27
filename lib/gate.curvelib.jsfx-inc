@@ -57,7 +57,7 @@ SOFTWARE.
     gfx_circle(xx * width + x, yy * height + y, 5);
 */
 
-import mseg.array.jsfx-inc
+import gate.array.jsfx-inc
 
 @init
 
@@ -199,7 +199,7 @@ local (seg, p1, p2)
 );
 
 function load_sine()
-instance(points) 
+instance(points)
 (
   points.array_clear();
   this.insert_point(0, 1, 0.33);
@@ -279,8 +279,8 @@ local (i, px, py)
 (
   gfx_x = winx;
   gfx_y = points.array_first()[1] * winh + winy;
-  
-  loop(i = 0; winw + 1, 
+
+  loop(i = 0; winw + 1,
     py = this.get_y_at(i / winw);
     gfx_a = 0.0625;
     gfx_triangle(gfx_x, gfx_y, gfx_x, winh + winy, i + winx, winh + winy, i + winx, py * winh + winy);

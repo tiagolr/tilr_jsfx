@@ -102,12 +102,12 @@ local (ptr, p)
   );
 );
 
-function copy_from(curve*) 
+function copy_from(curve*)
 instance(points, segments)
 (
   points.size = curve.points.size;
   memcpy(points.buf, curve.points.buf, curve.points.size * curve.points.num);
-  
+
   segments.size = curve.segments.size;
   memcpy(segments.buf, curve.segments.buf, curve.segments.size * curve.segments.num);
 );
@@ -201,9 +201,9 @@ instance(points)
 local (i, px, py)
 (
   gfx_x = winx;
-  gfx_y = points.array_first[1] * winh + winy;
-  
-  loop(i = 0; winw + 1, 
+  gfx_y = points.array_first()[1] * winh + winy;
+
+  loop(i = 0; winw + 1,
     py = this.get_y_at(i / winw);
     gfx_a = 0.0625;
     gfx_triangle(gfx_x, gfx_y, gfx_x, winh + winy, i + winx, winh + winy, i + winx, py * winh + winy);
