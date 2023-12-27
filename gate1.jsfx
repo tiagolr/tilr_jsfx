@@ -9,21 +9,25 @@ slider7:_lfomax=100<0,100,1>Max
 slider8:lfosmooth=0<0,100>Smooth
 slider9:attsmooth=0<0,100>Attack Smooth
 slider10:relsmooth=0<0,100>Release Smooth
+slider11:tension_mult=0<-100,100>Tension
 slider20:value=0.5<0,1,0.01>Value
 
 import gate.curvelib.jsfx-inc
 import gate.mouselib.jsfx-inc
 
-options:gfx_hz=60
+options:gfx_hz=60 no_meter
 
 @serialize
+store_pattern(pattern - 1);
 file_var(0, dual_smooth);
 file_var(0, paint_mode);
 file_var(0, gridsegs);
 file_mem(0, patterns, npatterns * (1 + 3 * 1000));
 
-load_pattern(pattern - 1);
-on_slider(); // update sliders after loading vars
+file_avail(0) >= 0 ? (
+  lpattern = -1; // force load current pattern
+  on_slider(); // update sliders after loading vars
+);
 
 @init
 
@@ -35,8 +39,9 @@ midi_trigger = 0;
 dual_smooth = 1;
 paint_mode = 1; // 0 = Erase, 1 = Line
 npatterns = 12;
-lpattern = pattern;
-patterns = 100000; // buffer to store patters 12 * (1 + 3 * 1000)
+lpattern = -1;
+trigger_channel = 10;
+patterns = 100000; // buffer to store patterns 12 * (1 + 3 * 1000)
 
 function store_pattern(pattern) 
 local(buf)
@@ -56,7 +61,7 @@ local(buf)
 );
 
 curve.curve_init(0, 1000);
-curve.insert_point(0,1,.75);
+curve.insert_point(0,1,0);
 curve.insert_point(0.5,0,0);
 curve.insert_point(1,1,0);
 curve.build_segments();
@@ -103,7 +108,6 @@ function set_smooth() (
   );
 );
 
-
 function on_slider() (
   set_smooth();
   slider_show(ratehz, !sync);
@@ -114,7 +118,7 @@ function on_slider() (
   
   pattern = min(max(1, pattern),12)|0;
   lpattern != pattern ? (
-    store_pattern(lpattern - 1);
+    lpattern >= 0 ? store_pattern(lpattern - 1);
     load_pattern(pattern - 1);
   );
   lpattern = pattern;
@@ -144,14 +148,18 @@ function on_slider() (
 on_slider();
 
 @block
-
+ 
 beats_per_spl = tempo / (60 * srate);
 beat_pos = beat_position;
 
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
-  //event == 0x90 && vel ? (
-  //);
+  channel = msg1 & 0x0F;
+  event == 0x90 && vel && (channel == trigger_channel - 1 || trigger_channel == 17) ? (
+    pattern = note % 12 + 1;
+    on_slider();
+  );
+  midisend(offset, msg1, note, vel);
 );
 
 @sample
@@ -187,7 +195,7 @@ sync && play_state & 1 ? (
 
 @gfx 600 350
 
-!gridsegs ? gridsegs = 16;
+!gridsegs ? gridsegs = 8;
 color_active = 0x00FFFF;
 color_bg = 0x141618;
 hover_radius = 8;
@@ -469,7 +477,7 @@ drawx = winx;
 gfx_x = drawx; gfx_y = 10;
 gfx_set(1,1,1);
 gfx_drawstr("Paint:");
-drawx += 60;
+drawx += 55;
 label = paint_mode == 0 ? "Erase" : paint_mode == 1 ? "Line"
   : paint_mode == 2 ? "Saw up" : paint_mode == 3 ? "Saw dn"
   : paint_mode == 4 ? "Tri";
@@ -489,42 +497,54 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
   gfx_x = drawx;
   gfx_y = 20;
   menu = #;
-  strcpy(menu, ">Smooth|");
+  strcpy(menu, ">Trigger Chn");
+  loop(i=0; 18,
+    i == 0 ? strcat(menu, trigger_channel == 0 ? "|!Off" : "|Off")
+    : i == 17 ? strcat(menu, trigger_channel == 17 ? "|<!Omni" : "|<Omni")
+    : strcat(menu, trigger_channel == i 
+      ? sprintf(#, "|!%i", i) 
+      : sprintf(#, "|%i", i));
+    i += 1;
+  );
+  strcat(menu, "|>Smooth|");
   strcat(menu, dual_smooth ? "Single smooth|" : "!Single smooth|");
   strcat(menu, dual_smooth ? "<!Dual smooth" : "<Dual smooth");
   strcat(menu, "||Invert|Reverse|Clear");
   strcat(menu, "|>Load");
   strcat(menu, "|Sine|Triangle|<Random");
   choice = gfx_showmenu(menu);
-  choice == 1 ? (
+  choice > 0 && choice <= 18 ? (
+    trigger_channel = choice - 1;
+  );
+  choice == 1+18 ? (
     dual_smooth = 0;
     set_smooth();
   );
-  choice == 2 ? (
+  choice == 2+18 ? (
     dual_smooth = 1;
     set_smooth();
   );
-  choice == 3 ? (
+  choice == 3+18 ? (
     curve.invert();
     curve.build_segments();
   );
-  choice == 4 ? (
+  choice == 4+18 ? (
     curve.reverse();
     curve.build_segments();
   );
-  choice == 5 ? (
+  choice == 5+18 ? (
     curve.clear();
     curve.build_segments();
   );
-  choice == 6 ? (
+  choice == 6+18 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 7 ? (
+  choice == 7+18 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 8 ? (
+  choice == 8+18 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );

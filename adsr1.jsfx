@@ -66,7 +66,7 @@ function smooth(sample)
 function get_dec_point(curve*)
 local (i, ptr, point)
 (
-  loop(i=0; curve.points.size, 
+  loop(i=0; curve.points.size,
     ptr = curve.points.array_get(i);
     ptr[3] == 1 ? (
       point = ptr;
@@ -76,10 +76,10 @@ local (i, ptr, point)
   point;
 );
 
-function get_sus_point(curve*) 
+function get_sus_point(curve*)
 local (i, ptr, point)
 (
-  loop(i=0; curve.points.size, 
+  loop(i=0; curve.points.size,
     ptr = curve.points.array_get(i);
     ptr[3] == 2 ? (
       point = ptr;
@@ -90,26 +90,26 @@ local (i, ptr, point)
 );
 
 // sets points x coordinate to match att, dec, sus and rel
-function build_curve() 
+function build_curve()
 local (duration, i, point, attpoint, decpoint, suspoint, relpoint, dp0, sp0, dp1, sp1)
 (
   // for each point, store its relative position
   duration = att + dec + rel;
-  
+
   attpoint = curve.points.array_first();
   decpoint = get_dec_point(curve);
   suspoint = get_sus_point(curve);
   relpoint = curve.points.array_last();
-  
+
   dp0 = decpoint[0];
   sp0 = suspoint[0];
-  
-  decpoint[0] = att / duration; 
+
+  decpoint[0] = att / duration;
   suspoint[0] = (att + dec) / duration;
-  
+
   dp1 = decpoint[0];
   sp1 = suspoint[0];
-  
+
   // apply attack points range change
   i = 0;
   while((point = curve.points.array_get(i))[3] !== 1) (
@@ -132,7 +132,7 @@ local (duration, i, point, attpoint, decpoint, suspoint, relpoint, dp0, sp0, dp1
   );
 );
 
-function get_curve_y(curve*, x) 
+function get_curve_y(curve*, x)
 local(val)
 (
   val =  1 - curve.get_y_at(x);
@@ -175,6 +175,7 @@ while (midirecv(offset, msg1, note, vel)) (
     xpos = rsuspoint[0];
     rcurve.build_segments();
   );
+  midisend(offset, msg1, note, vel);
 );
 
 @sample
@@ -191,12 +192,12 @@ midi_trigger ? (
     midi_trigger = 0;
     xpos = 1;
   );
-  !release && xpos >= suspoint[0] ? ( 
-    xpos = sus_loop 
+  !release && xpos >= suspoint[0] ? (
+    xpos = sus_loop
       ? decpoint[0]
       : suspoint[0]; // sustain
   );
-  value = release 
+  value = release
     ? value.smooth(get_curve_y(rcurve, xpos))
     : value.smooth(get_curve_y(curve, xpos));
   slider_automate(value);
@@ -311,8 +312,8 @@ local(point, prev, next, xx, yy)
   xx = (xx - winx) / winw;
   yy = (yy - winy) / winh;
 
-  selected_point == 0 
-  || selected_point == curve.points.size - 1 
+  selected_point == 0
+  || selected_point == curve.points.size - 1
   || point[3]
   ? (
     point[1] = yy;

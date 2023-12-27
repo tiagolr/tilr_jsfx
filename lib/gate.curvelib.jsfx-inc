@@ -192,7 +192,7 @@ local (seg, p1, p2)
     seg[2] = p1[1]; // y1
     seg[3] = p2[1]; // y2
     seg[4] = p1[2]; // tension
-    seg[5] = pow(1.1, abs(p1[2] * 50));
+    seg[5] = pow(1.1, abs(p1[2] * 50)); // power, unused
     p1 = p2;
     p2 = points.array_next(p2);
   );
@@ -236,14 +236,18 @@ local(y, i)
   Based of https://github.com/KottV/SimpleSide/blob/main/Source/types/SSCurve.cpp
 */
 function get_y(seg, x)
-local (exp, pwr)
+global(tension_mult)
+local (rise, ten, pwr)
 (
-  exp = seg[4];
-  pwr = seg[5];
+  rise = seg[2] > seg[3];
+  ten = seg[4] + (rise ? -tension_mult / 100 : tension_mult / 100);
+  ten > 1 ? ten = 1;
+  ten < -1 ? ten = -1;
+  pwr = pow(1.1, abs(ten * 50));
 
   seg[0] == seg[1] ? ( // x1 == x2
     seg[3]; // FIX glitch
-  ) : exp >= 0 ? (
+  ) : ten >= 0 ? (
     pow((x - seg[0]) / (seg[1] - seg[0]), pwr) * (seg[3] - seg[2]) + seg[2];
   ) : (
     -1 * (pow(1 - (x - seg[0]) / (seg[1] - seg[0]), pwr) - 1) * (seg[3] - seg[2]) + seg[2];

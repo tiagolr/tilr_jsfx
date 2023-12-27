@@ -129,6 +129,7 @@ while (midirecv(offset, msg1, note, vel)) (
     midi_trigger = 1;
     xpos = 0;
   );
+  midisend(offset, msg1, note, vel);
 );
 
 @sample
@@ -181,7 +182,7 @@ mode == 1 && sync && midi_trigger ? (
 
 @gfx 600 350
 
-!gridsegs ? gridsegs = 16;
+!gridsegs ? gridsegs = 8;
 color_active = 0x00FFFF;
 color_bg = 0x141618;
 hover_radius = 8;
@@ -463,7 +464,7 @@ drawx = winx;
 gfx_x = drawx; gfx_y = 10;
 gfx_set(1,1,1);
 gfx_drawstr("Paint:");
-drawx += 60;
+drawx += 55;
 label = paint_mode == 0 ? "Erase" : paint_mode == 1 ? "Line"
   : paint_mode == 2 ? "Saw up" : paint_mode == 3 ? "Saw dn"
   : paint_mode == 4 ? "Tri";
