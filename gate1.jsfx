@@ -15,7 +15,7 @@ slider20:value=0.5<0,1,0.01>Value
 import gate.curvelib.jsfx-inc
 import gate.mouselib.jsfx-inc
 
-options:gfx_hz=60 no_meter
+options:gfx_hz=60 no_meter gmem=mseg1
 
 @serialize
 store_pattern(pattern - 1);
@@ -57,6 +57,32 @@ local(buf)
   buf = patterns + pattern * (1 + 3 * 1000);
   curve.points.size = buf[0];
   memcpy(curve.buf, buf + 1, 3 * 1000);
+  curve.build_segments();
+);
+
+function copy_curve() 
+local(i)
+(
+  xx = curve.buf[1];
+  gmem[0] = curve.points.size;
+  loop(i=0; 1000, 
+    gmem[i+1] = curve.buf[i];
+    i += 1;
+  );
+);
+
+function paste_curve () 
+local(i)
+(
+  xxx = gmem[0];
+  xxxx = gmem[3];
+  gmem[0] ? (
+    curve.points.size = gmem[0];
+    loop(i=0; 1000,
+      curve.buf[i] = gmem[i+1];
+      i += 1;
+    );
+  );
   curve.build_segments();
 );
 
@@ -509,8 +535,8 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
   strcat(menu, "|>Smooth|");
   strcat(menu, dual_smooth ? "Single smooth|" : "!Single smooth|");
   strcat(menu, dual_smooth ? "<!Dual smooth" : "<Dual smooth");
-  strcat(menu, "||Invert|Reverse|Clear");
-  strcat(menu, "|>Load");
+  strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
+  strcat(menu, "||>Load");
   strcat(menu, "|Sine|Triangle|<Random");
   choice = gfx_showmenu(menu);
   choice > 0 && choice <= 18 ? (
@@ -537,14 +563,20 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
     curve.build_segments();
   );
   choice == 6+18 ? (
+    copy_curve();
+  );
+  choice == 7+18 ? (
+    paste_curve();
+  );
+  choice == 8+18 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 7+18 ? (
+  choice == 9+18 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 8+18 ? (
+  choice == 10+18 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );
