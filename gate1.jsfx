@@ -467,34 +467,25 @@ local (seg, mousex, mousey)
 );
 
 function draw_grid ()
-local(i, j)
+local(i)
 (
-  gfx_set(1, 1, 1, 0.075);
-  loop(i=0; gridsegs + 1,
+  loop(i = 0; gridsegs + 1,
     gfx_line(winx, winy + gridy * i, winx + winw, winy + gridy * i, 0);
     gfx_line(winx + gridx * i, winy, winx + gridx * i, winy + winh, 0);
     i += 1;
   );
 );
 
-function draw_wave_pre() 
+function draw_wave(samples) 
 local(i)
 (
-  gfx_set(.5,.5,.5);
-  gfx_a = 0.5;
-  loop(i=0;winw,
-    gfx_line(i + winx, winh + winy, i + winx, winh - abs(pre_samples[i]) * winh + winy, 0);
-    i += 1;
-  );
-);
-
-function draw_wave_post() 
-local(i)
-(
-  gfx_set(1,1,0);
-  gfx_a = 0.5;
-  loop(i=0;winw,
-    gfx_line(i + winx, winh + winy, i + winx, winh - abs(post_samples[i]) * winh + winy, 0); 
+  gfx_x = winx;
+  gfx_y = winh - min(abs(samples[0]),1) * winh + winy;
+  loop(i = 0; winw,
+    gfx_a = 0.0625;
+    gfx_triangle(gfx_x, gfx_y, gfx_x, winh + winy, i+winx, winh+winy, i+winx, winh - min(abs(samples[i]),1) * winh + winy);
+    gfx_a = 0.5;
+    gfx_lineto(i + winx, winh - min(abs(samples[i]),1) * winh + winy);
     i += 1;
   );
 );
@@ -515,12 +506,15 @@ function draw_button (x, y, w, label, toggled) (
 mouse.update_mouse_state();
 gfx_clear = color_bg;
 
-draw_grid();
-
 draw_wave && (!sync || play_state & 1) ? (
-  draw_wave_pre();
-  draw_wave_post();
+  gfx_set(.5,.5,.5);
+  draw_wave(pre_samples);
+  gfx_set(1,1,0);
+  draw_wave(post_samples);
 );
+
+gfx_set(1, 1, 1, 0.075);
+draw_grid();
 
 // draw seek
 !sync || play_state & 1 ? (
