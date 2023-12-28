@@ -22,6 +22,7 @@ store_pattern(pattern - 1);
 file_var(0, dual_smooth);
 file_var(0, paint_mode);
 file_var(0, gridsegs);
+file_var(0, draw_wave);
 file_mem(0, patterns, npatterns * (1 + 3 * 1000));
 
 file_avail(0) >= 0 ? (
@@ -41,7 +42,10 @@ paint_mode = 1; // 0 = Erase, 1 = Line
 npatterns = 12;
 lpattern = -1;
 trigger_channel = 10;
+draw_wave = 1;
 patterns = 100000; // buffer to store patterns 12 * (1 + 3 * 1000)
+pre_samples = 200000; // buffer with pre volume samples - winx size
+post_samples = 300000; // buffer with post volume samples - winx size
 
 function store_pattern(pattern) 
 local(buf)
@@ -63,7 +67,6 @@ local(buf)
 function copy_curve() 
 local(i)
 (
-  xx = curve.buf[1];
   gmem[0] = curve.points.size;
   loop(i=0; 1000, 
     gmem[i+1] = curve.buf[i];
@@ -74,8 +77,6 @@ local(i)
 function paste_curve () 
 local(i)
 (
-  xxx = gmem[0];
-  xxxx = gmem[3];
   gmem[0] ? (
     curve.points.size = gmem[0];
     loop(i=0; 1000,
@@ -193,6 +194,8 @@ while (midirecv(offset, msg1, note, vel)) (
 // when playback starts reset env smooth
 mode == 0 && sync && (!lplay_state & 1) && (play_state & 1)  ? (
   value.smooth = get_curve_y(beat_pos / sync_qn + phase);
+  memset(pre_samples,0,winw);
+  memset(post_samples,0,winw);
 );
 
 lplay_state = play_state;
@@ -204,8 +207,19 @@ lplay_state = play_state;
   nextv = get_curve_y(xpos);
   value = value.smooth2(nextv, nextv > value);
   slider_automate(value);
+  
+  winpos = floor(xpos * winw);
+  lwinpos != winpos ? (
+    pre_samples[winpos] = 0;
+    post_samples[winpos] = 0;
+  );
+  lwinpos = winpos; 
+  pre_samples[winpos] < abs((spl0 + spl1) / 2) 
+    ? pre_samples[winpos] = (spl0 + spl1) / 2;
   spl0 *= value;
   spl1 *= value;
+  post_samples[winpos] < abs((spl0 + spl1) / 2)
+    ? post_samples[winpos] = (spl0 + spl1) / 2;
 );
 
 sync && play_state & 1 ? (
@@ -215,8 +229,19 @@ sync && play_state & 1 ? (
   nextv = get_curve_y(xpos);
   value = value.smooth2(nextv, nextv > value);
   slider_automate(value);
+  
+  winpos = floor(xpos * winw);
+  lwinpos != winpos ? (
+    pre_samples[winpos] = 0;
+    post_samples[winpos] = 0;
+  );
+  lwinpos = winpos;
+  pre_samples[winpos] < abs((spl0 + spl1) / 2) 
+    ? pre_samples[winpos] = (spl0 + spl1) / 2;
   spl0 *= value;
   spl1 *= value;
+  post_samples[winpos] < abs((spl0 + spl1) / 2)
+    ? post_samples[winpos] = (spl0 + spl1) / 2;
 );
 
 @gfx 600 350
@@ -452,6 +477,28 @@ local(i, j)
   );
 );
 
+function draw_wave_pre() 
+local(i)
+(
+  gfx_set(.5,.5,.5);
+  gfx_a = 0.5;
+  loop(i=0;winw,
+    gfx_line(i + winx, winh + winy, i + winx, winh - abs(pre_samples[i]) * winh + winy, 0);
+    i += 1;
+  );
+);
+
+function draw_wave_post() 
+local(i)
+(
+  gfx_set(1,1,0);
+  gfx_a = 0.5;
+  loop(i=0;winw,
+    gfx_line(i + winx, winh + winy, i + winx, winh - abs(post_samples[i]) * winh + winy, 0); 
+    i += 1;
+  );
+);
+
 function draw_button (x, y, w, label, toggled) (
   gfx_a = 1;
   set_color(color_active);
@@ -469,6 +516,11 @@ mouse.update_mouse_state();
 gfx_clear = color_bg;
 
 draw_grid();
+
+draw_wave && (!sync || play_state & 1) ? (
+  draw_wave_pre();
+  draw_wave_post();
+);
 
 // draw seek
 !sync || play_state & 1 ? (
@@ -535,6 +587,7 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
   strcat(menu, "|>Smooth|");
   strcat(menu, dual_smooth ? "Single smooth|" : "!Single smooth|");
   strcat(menu, dual_smooth ? "<!Dual smooth" : "<Dual smooth");
+  strcat(menu, draw_wave ? "|!Draw wave" : "|Draw wave");
   strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
   strcat(menu, "||>Load");
   strcat(menu, "|Sine|Triangle|<Random");
@@ -551,32 +604,35 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
     set_smooth();
   );
   choice == 3+18 ? (
+    draw_wave = !draw_wave;
+  );
+  choice == 4+18 ? (
     curve.invert();
     curve.build_segments();
   );
-  choice == 4+18 ? (
+  choice == 5+18 ? (
     curve.reverse();
     curve.build_segments();
   );
-  choice == 5+18 ? (
+  choice == 6+18 ? (
     curve.clear();
     curve.build_segments();
   );
-  choice == 6+18 ? (
+  choice == 7+18 ? (
     copy_curve();
   );
-  choice == 7+18 ? (
+  choice == 8+18 ? (
     paste_curve();
   );
-  choice == 8+18 ? (
+  choice == 9+18 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 9+18 ? (
+  choice == 10+18 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 10+18 ? (
+  choice == 11+18 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );
