@@ -91,6 +91,11 @@ samps = delayms * 0.001 * srate; // delay time in samples
 
 @sample
 
+play_state & 1 && !lplay_state & 1 ? (
+  samps.smooth = samps;
+);
+lplay_state = play_state;
+
 samps.smooth();
 
 // modulation sinewave

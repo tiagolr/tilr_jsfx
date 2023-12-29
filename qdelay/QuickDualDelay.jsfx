@@ -114,6 +114,12 @@ samps2 = delayms2 * 0.001 * srate;
 
 @sample
 
+play_state & 1 && !lplay_state & 1 ? (
+  samps1.smooth = samps1;
+  samps2.smooth = samps2;
+);
+lplay_state = play_state;
+
 samps1.smooth();
 samps2.smooth();
 
