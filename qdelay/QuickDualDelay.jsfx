@@ -36,6 +36,23 @@ function sine_wave(cycle) (
   sin(cycle * 2 * $pi);
 );
 
+function rc_set(rc)
+  instance(a) (
+    a = 1 / (rc * srate + 1);
+);
+function rc_lp(sample)
+  instance(lp, a) (
+    lp += a * (sample - lp);
+);
+function smooth()
+  instance (lp, smooth) (
+    lp = smooth;
+    smooth = this.rc_lp(this);
+);
+
+samps1.rc_set(0.33);
+samps2.rc_set(0.33);
+
 @slider
 cycle = 0;
 feedback = _feedback / 100;
@@ -97,6 +114,9 @@ samps2 = delayms2 * 0.001 * srate;
 
 @sample
 
+samps1.smooth();
+samps2.smooth();
+
 // modulation sinewave
 mod_amp ? (
   cycle += mod_freq / srate;
@@ -107,8 +127,8 @@ mod_amp ? (
 );
 
 // read with cubic interpolation
-val0 = d0.delay_read3(samps1 + wave * mod_amp);
-val1 = d1.delay_read3(samps2 + wave * mod_amp);
+val0 = d0.delay_read3(samps1.smooth + wave * mod_amp);
+val1 = d1.delay_read3(samps2.smooth + wave * mod_amp);
 
 // apply filters on delay signal
 lp_freq < 20000 ? (
