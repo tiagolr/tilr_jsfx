@@ -450,13 +450,16 @@ local(i)
 (
   gfx_set(0,0,0, 0.5);
   gfx_triangle(winx, winy, winx, winy+winh, winx+winw, winy+winh);
-  gfx_set(1, 1, 1, 0.075);
+  gfx_set(1, 1, 1);
   loop(i = 0; gridsegs + 1,
+    gfx_a = gridsegs % 4 == 0 && i && i % 4 == 0 && i < gridsegs ? .15 : 0.075;
     gfx_line(winx, winy + gridy * i, winx + winw, winy + gridy * i, 0);
     gfx_line(winx + gridx * i, winy, winx + gridx * i, winy + winh, 0);
+    gfx_a = 0.04;
+    gfx_line(winx + gridx * i, winy, winx + winw, winy + winh - gridy * i);
+    gfx_line(winx, winy + gridy * i, winx + winw - gridx * i, winy + winh); 
     i += 1;
   );
-  gfx_line(winx, winy, winx + winw, winy + winh);
 );
 
 function draw_seek () 
