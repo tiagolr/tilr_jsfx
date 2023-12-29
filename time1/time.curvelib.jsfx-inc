@@ -181,8 +181,8 @@ local(ptr)
   while(points.size) (
     points.array_remove(points.array_get(1));
   );
-  this.insert_point(0,0.5,0);
-  this.insert_point(1,0.5,0);
+  this.insert_point(0,0,0,0);
+  this.insert_point(1,0,0,0);
 );
 
 function build_segments()
@@ -210,20 +210,20 @@ function load_sine()
 instance(points)
 (
   points.array_clear();
-  this.insert_point(0, 1, 0.33);
-  this.insert_point(0.25, 0.5, -0.33);
-  this.insert_point(0.5, 0, 0.33);
-  this.insert_point(0.75, 0.5, -0.33);
-  this.insert_point(1, 1, 0);
+  this.insert_point(0, 1, 0.33, 1);
+  this.insert_point(0.25, 0.5, -0.33, 1);
+  this.insert_point(0.5, 0, 0.33, 1);
+  this.insert_point(0.75, 0.5, -0.33, 1);
+  this.insert_point(1, 1, 0, 1);
 );
 
 function load_triangle()
 instance(points)
 (
   points.array_clear();
-  curve.insert_point(0,1,0);
-  curve.insert_point(0.5,0,0);
-  curve.insert_point(1,1,0);
+  curve.insert_point(0,1,0,1);
+  curve.insert_point(0.5,0,0,1);
+  curve.insert_point(1,1,0,1);
 );
 
 function load_random(grid)

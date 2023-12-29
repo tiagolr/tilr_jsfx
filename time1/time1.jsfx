@@ -177,7 +177,6 @@ play_state & 1 ? (
 
   xpos -= floor(xpos);
   value = curve.get_y_at(xpos);
-  next = curve.get_y_at(xpos + 1 / srate);
 
   d0.delay_write(spl0);
   d1.delay_write(spl1);
@@ -191,17 +190,16 @@ play_state & 1 ? (
   pre_samples[winpos] < abs((spl0 + spl1) / 2)
     ? pre_samples[winpos] = (spl0 + spl1) / 2;
 
-  value == next ? (
+  value === prev ? (
     spl0 = d0.delay_read(1 + value * d0.size);
     spl1 = d1.delay_read(1 + value * d1.size);
   ) : (
-    abs(value * d0.size - next * d0.size) > 5 ? (
-      sudden += 1;
-    );
-    // interpolate delay when time is changing only
+    // interpolate delay only when time is changing
     spl0 = d0.delay_read3(1 + value * d0.size);
     spl1 = d1.delay_read3(1 + value * d1.size);
-  );
+  ); 
+  
+  prev = value;
 
   post_samples[winpos] < abs((spl0 + spl1) / 2)
     ? post_samples[winpos] = (spl0 + spl1) / 2;
@@ -429,12 +427,26 @@ local (seg, mousex, mousey)
 function draw_grid ()
 local(i)
 (
+  gfx_set(0,0,0, 0.5);
+  gfx_triangle(winx, winy, winx, winy+winh, winx+winw, winy+winh);
+  gfx_set(1, 1, 1, 0.075);
   loop(i = 0; gridsegs + 1,
     gfx_line(winx, winy + gridy * i, winx + winw, winy + gridy * i, 0);
     gfx_line(winx + gridx * i, winy, winx + gridx * i, winy + winh, 0);
     i += 1;
   );
   gfx_line(winx, winy, winx + winw, winy + winh);
+);
+
+function draw_seek () 
+local(ypos, x)
+(
+  gfx_set(0,1,0,0.5);
+  x = xpos * winw + winx;
+  gfx_line(x, winy, x, winy + winh);
+  ypos = value;
+  gfx_set(0,1,0,1);
+  gfx_circle(x, ypos * winh + winy, 5);
 );
 
 function draw_wave(samples)
@@ -474,19 +486,9 @@ draw_wave && (!sync || play_state & 1) ? (
   draw_wave(post_samples);
 );
 
-gfx_set(0,0,0, 0.5);
-gfx_triangle(winx, winy, winx, winy+winh, winx+winw, winy+winh);
-gfx_set(1, 1, 1, 0.075);
 draw_grid();
 
-// draw seek
-play_state & 1 ? (
-  gfx_set(0,1,1,0.5);
-  gfx_line(xpos * winw + winx, winy, xpos * winw + winx, winy + winh);
-  ypos = value;
-  gfx_set(0,1,1,1);
-  gfx_circle(xpos * winw + winx, ypos * winh + winy, 5);
-);
+play_state & 1 ? draw_seek();
 
 gfx_set(1,1,1,1);
 curve.draw_segments(winx, winy, winw, winh);
