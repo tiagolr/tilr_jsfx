@@ -36,6 +36,7 @@ npatterns = 12;
 lpattern = -1;
 trigger_channel = 11;
 draw_wave = 0;
+anoise = 1; // anti-noise/clicks 0 = no anti-noise, 1 = low, 2 - strong
 patterns = 100000; // buffer to store patterns 12 * (1 + 3 * 1000)
 pre_samples = 200000; // buffer with pre volume samples - winx size
 post_samples = 300000; // buffer with post volume samples - winx size
@@ -145,6 +146,9 @@ on_slider();
 
 beats_per_spl = tempo / (60 * srate);
 beat_pos = beat_position;
+anoise == 0 ? ansamps = 0; // no anti-noise
+anoise == 1 ? ansamps = floor(0.0015 * srate); // low anti-noise
+anoise == 2 ? ansamps = floor(0.01 * srate); // high anti-noise
 
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
@@ -191,13 +195,30 @@ play_state & 1 ? (
     ? pre_samples[winpos] = (spl0 + spl1) / 2;
 
   value === prev ? (
-    spl0 = d0.delay_read(1 + value * d0.size);
-    spl1 = d1.delay_read(1 + value * d1.size);
+    outl = d0.delay_read(1 + value * d0.size);
+    outr = d1.delay_read(1 + value * d1.size);
   ) : (
     // interpolate delay only when time is changing
-    spl0 = d0.delay_read3(1 + value * d0.size);
-    spl1 = d1.delay_read3(1 + value * d1.size);
-  ); 
+    outl = d0.delay_read3(1 + value * d0.size);
+    outr = d1.delay_read3(1 + value * d1.size);
+  );
+  
+  // when y value jumps activate cross fade / anti-click
+  abs(value - prev) > 0.01 ? (
+    xfade = ansamps;
+    xfadepos = 1 + prev * d0.size;
+  );
+  
+  // anti-noise cross fade
+  // fades in new signal fades out old signal
+  xfade ? ( 
+    outl = outl * (ansamps - xfade) / ansamps + d0.delay_read3(xfadepos + ansamps - xfade) * xfade / ansamps;
+    outr = outr * (ansamps - xfade) / ansamps + d1.delay_read3(xfadepos + ansamps - xfade) * xfade / ansamps;
+    xfade -= 1;
+  );
+  
+  spl0 = outl;
+  spl1 = outr;
   
   prev = value;
 
@@ -556,6 +577,10 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
       : sprintf(#, "|%i", i));
     i += 1;
   );
+  strcat(menu, "|>Click Reduction");
+  strcat(menu, anoise == 0 ? "|!Off" : "|Off");
+  strcat(menu, anoise == 1 ? "|!Low" : "|Low");
+  strcat(menu, anoise == 2 ? "|<!High" : "|<High");
   strcat(menu, draw_wave ? "|!Draw wave" : "|Draw wave");
   strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
   strcat(menu, "||>Load");
@@ -565,35 +590,44 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
     trigger_channel = choice - 1;
   );
   choice == 1+18 ? (
+    anoise = 0;
+  );
+  choice == 2 + 18 ? (
+    anoise = 1;
+  );
+  choice == 3 + 18 ? (
+    anoise = 2;
+  );
+  choice == 4+18 ? (
     draw_wave = !draw_wave;
   );
-  choice == 2+18 ? (
+  choice == 5+18 ? (
     curve.invert();
     curve.build_segments();
   );
-  choice == 3+18 ? (
+  choice == 6+18 ? (
     curve.reverse();
     curve.build_segments();
   );
-  choice == 4+18 ? (
+  choice == 7+18 ? (
     curve.clear();
     curve.build_segments();
   );
-  choice == 5+18 ? (
+  choice == 8+18 ? (
     copy_curve();
   );
-  choice == 6+18 ? (
+  choice == 9+18 ? (
     paste_curve();
   );
-  choice == 7+18 ? (
+  choice == 10+18 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 8+18 ? (
+  choice == 11+18 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 9+18 ? (
+  choice == 12+18 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );
