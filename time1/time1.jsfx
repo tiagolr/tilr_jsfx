@@ -361,12 +361,12 @@ local (seg, px, py, i, point, x, y, coolinear)
 (
   found = 0;
   // if xy in point and point not edge delete point
-  loop(i=1; curve.points.size - 1,
+  loop(i=0; curve.points.size,
     point = curve.points.array_get(i);
     px = winx + winw * point[0];
     py = winy + winh * point[1];
     !found && point_in_rect(mouse.x, mouse.y, px-hover_radius, py-hover_radius, hover_radius * 2, hover_radius * 2) ? (
-      point !== curve.points.array_last() ? (
+      i && point !== curve.points.array_last() ? (
         curve.remove_point(i);
       );
       found = 1;
@@ -380,7 +380,7 @@ local (seg, px, py, i, point, x, y, coolinear)
     y = curve.get_y_at(x);
     px = x * winw + winx;
     py = y * winh + winy;
-    !found && !is_collinear(seg) && point_in_rect(mouse.x, mouse.y, px-hover_radius, py-hover_radius, hover_radius * 2, hover_radius * 2) ? (
+    !found && !is_collinear(seg) && seg[6] && point_in_rect(mouse.x, mouse.y, px-hover_radius, py-hover_radius, hover_radius * 2, hover_radius * 2) ? (
       point = curve.points.array_get(i);
       point[2] = 0; // reset tension
       found = 1;
@@ -474,15 +474,16 @@ local(ypos, x)
 );
 
 function draw_wave(samples)
-local(i)
+local(i, ypos)
 (
   gfx_x = winx;
   gfx_y = winh - min(abs(samples[0]),1) * winh + winy;
   loop(i = 0; winw,
-    gfx_a = 0.0625;
-    gfx_triangle(gfx_x, gfx_y, gfx_x, winh + winy, i+winx, winh+winy, i+winx, winh - min(abs(samples[i]),1) * winh + winy);
-    gfx_a = 0.5;
-    gfx_lineto(i + winx, winh - min(abs(samples[i]),1) * winh + winy);
+    ypos = min(abs(samples[i]),1);
+    gfx_a = ypos ? 0.0625 : 0;
+    gfx_triangle(gfx_x, gfx_y, gfx_x, winh + winy, i+winx, winh+winy, i+winx, winh - ypos * winh + winy);
+    gfx_a = ypos ? 0.5 : 0;
+    gfx_lineto(i + winx, winh - ypos * winh + winy);
     i += 1;
   );
 );

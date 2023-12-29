@@ -246,7 +246,7 @@ sync && play_state & 1 ? (
 @gfx 600 350
 
 !gridsegs ? gridsegs = 8;
-color_active = 0x00FFFF;
+color_active = 0xFF8080;
 color_bg = 0x141618;
 hover_radius = 8;
 hover = 0;
@@ -275,14 +275,14 @@ local (x, y, xx, yy)
   y = curve.get_y_at(x);
   xx = x * winw + winx;
   yy = y * winh + winy;
-  gfx_set(0,1,1);
+  set_color(color_active);
   gfx_circle(xx, yy, 3);
 
   selected_midpoint == -1 && selected_point == -1 && !hover
   && mouse_in_rect(xx - hover_radius, yy - hover_radius, hover_radius * 2, hover_radius * 2) ?
   (
     hover = 1;
-    gfx_set(0,1,1, 0.5);
+    gfx_a = 0.5;
     gfx_circle(xx, yy, hover_radius, 1);
     mouse.left_click ? (
       selected_midpoint = i;
@@ -290,7 +290,7 @@ local (x, y, xx, yy)
   );
 
   selected_midpoint == i ? (
-    gfx_set(0,1,1, 1);
+    gfx_a = 1;
     gfx_circle(xx, yy, 3, 1);
   );
 );
@@ -383,12 +383,14 @@ local (found, seg, px, py, i, point, x, y, coolinear)
 (
   found = 0;
   // if xy in point and point not edge delete point
-  loop(i=1; curve.points.size - 2,
+  loop(i=0; curve.points.size,
     point = curve.points.array_get(i);
     px = winx + winw * point[0];
     py = winy + winh * point[1];
     !found && point_in_rect(mouse.x, mouse.y, px-hover_radius, py-hover_radius, hover_radius * 2, hover_radius * 2) ? (
-      curve.remove_point(i);
+      i && point != curve.points.array_last() ? (
+        curve.remove_point(i);
+      );
       found = 1;
     );
     i += 1;
@@ -468,7 +470,9 @@ local (seg, mousex, mousey)
 function draw_grid ()
 local(i)
 (
+  gfx_set(1, 1, 1);
   loop(i = 0; gridsegs + 1,
+    gfx_a = gridsegs % 4 == 0 && i && i % 4 == 0 && i < gridsegs ? .15 : 0.075;
     gfx_line(winx, winy + gridy * i, winx + winw, winy + gridy * i, 0);
     gfx_line(winx + gridx * i, winy, winx + gridx * i, winy + winh, 0);
     i += 1;
@@ -476,15 +480,16 @@ local(i)
 );
 
 function draw_wave(samples)
-local(i)
+local(i, ypos)
 (
   gfx_x = winx;
   gfx_y = winh - min(abs(samples[0]),1) * winh + winy;
   loop(i = 0; winw,
-    gfx_a = 0.0625;
-    gfx_triangle(gfx_x, gfx_y, gfx_x, winh + winy, i+winx, winh+winy, i+winx, winh - min(abs(samples[i]),1) * winh + winy);
-    gfx_a = 0.5;
-    gfx_lineto(i + winx, winh - min(abs(samples[i]),1) * winh + winy);
+    ypos = min(abs(samples[i]),1);
+    gfx_a = ypos ? 0.0625 : 0;
+    gfx_triangle(gfx_x, gfx_y, gfx_x, winh + winy, i+winx, winh+winy, i+winx, winh - ypos * winh + winy);
+    gfx_a = ypos ? 0.5 : 0;
+    gfx_lineto(i + winx, winh - ypos * winh + winy);
     i += 1;
   );
 );
@@ -508,21 +513,22 @@ gfx_clear = color_bg;
 draw_wave && (!sync || play_state & 1) ? (
   gfx_set(.5,.5,.5);
   draw_wave(pre_samples);
-  gfx_set(1,1,0);
+  set_color(color_active);
   draw_wave(post_samples);
 );
 
-gfx_set(1, 1, 1, 0.075);
 draw_grid();
 
-// draw seek
-!sync || play_state & 1 ? (
-  gfx_set(1,0,0,0.5);
+function draw_seek () 
+(
+  gfx_set(0.5,1,1,0.5);
   gfx_line(xpos * winw + winx, winy, xpos * winw + winx, winy + winh);
-  ypos = (1- value);
-  gfx_set(1,1,0,1);
-  gfx_circle(xpos * winw + winx, ypos * winh + winy, 5);
+  gfx_set(.5,1,1,1);
+  gfx_circle(xpos * winw + winx, (1-value) * winh + winy, 5);
 );
+
+// draw seek
+!sync || play_state & 1 ? draw_seek();
 
 gfx_set(1,1,1,1);
 curve.draw_segments(winx, winy, winw, winh);
@@ -638,7 +644,7 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 50, 10+2) ? (
 );
 
 drawx -= 20;
-gfx_set(0,1,1);
+set_color(color_active);
 gfx_triangle(drawx, 10-2, drawx+10, 15-2, drawx, 20-2);
 mouse.left_click && mouse_in_rect(drawx, 10-2, 10, 20-2) ? (
   gridsegs += 1;
@@ -666,7 +672,7 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
 );
 
 drawx -= 18;
-gfx_set(0,1,1);
+set_color(color_active);
 gfx_triangle(drawx, 15-2, drawx+10, 10-2, drawx+10, 20-2);
 mouse.left_click && mouse_in_rect(drawx, 10-2, 10, 20-2) ? (
   gridsegs -= 1;
