@@ -67,7 +67,7 @@ import gate.array.jsfx-inc
 function curve_init(buf, npoints)
 instance(points, segments)
 (
-  buf = points.array_init(buf, npoints, 3); // x,y,tension
+  buf = points.array_init(buf, npoints, 4); // x,y,tension, type
   buf = segments.array_init(buf, npoints-1, 6); // x1,x2,y1,y2,tension,power
   buf;
 );
@@ -75,7 +75,7 @@ instance(points, segments)
 /*
   Inserts point ordered by x
 */
-function insert_point(x, y, tension)
+function insert_point(x, y, tension, type)
 instance(points)
 local (ptr, p)
 (
@@ -84,6 +84,7 @@ local (ptr, p)
     ptr[0] = x;
     ptr[1] = y;
     ptr[2] = tension;
+    ptr[3] = type;
   ) : (
     ptr = points.array_last();
     while (ptr >= 0) (
@@ -92,6 +93,7 @@ local (ptr, p)
         p[0] = x;
         p[1] = y;
         p[2] = tension;
+        p[3] = type;
         ptr = -1;
       ) : (
         ptr -= points.num;
@@ -174,8 +176,8 @@ local(ptr)
   while(points.size) (
     points.array_remove(points.array_get(1));
   );
-  this.insert_point(0,0.5,0);
-  this.insert_point(1,0.5,0);
+  this.insert_point(0,0.5,0,1);
+  this.insert_point(1,0.5,0,1);
 );
 
 function build_segments()
@@ -202,20 +204,20 @@ function load_sine()
 instance(points)
 (
   points.array_clear();
-  this.insert_point(0, 1, 0.33);
-  this.insert_point(0.25, 0.5, -0.33);
-  this.insert_point(0.5, 0, 0.33);
-  this.insert_point(0.75, 0.5, -0.33);
-  this.insert_point(1, 1, 0);
+  this.insert_point(0, 1, 0.33, 1);
+  this.insert_point(0.25, 0.5, -0.33, 1);
+  this.insert_point(0.5, 0, 0.33, 1);
+  this.insert_point(0.75, 0.5, -0.33, 1);
+  this.insert_point(1, 1, 0, 1);
 );
 
 function load_triangle()
 instance(points)
 (
   points.array_clear();
-  curve.insert_point(0,1,0);
-  curve.insert_point(0.5,0,0);
-  curve.insert_point(1,1,0);
+  curve.insert_point(0,1,0,1);
+  curve.insert_point(0.5,0,0,1);
+  curve.insert_point(1,1,0,1);
 );
 
 function load_random(grid)
@@ -224,10 +226,10 @@ local(y, i)
 (
   points.array_clear();
   y = rand();
-  this.insert_point(0, y, 0);
-  this.insert_point(1, y, 0);
+  this.insert_point(0, y, 0, 1);
+  this.insert_point(1, y, 0, 1);
   loop(i=0; grid,
-    this.insert_point(min(0.999999,max(0.00001, rand()/grid + i/grid)), rand(), 0);
+    this.insert_point(min(0.999999,max(0.00001, rand()/grid + i/grid)), rand(), 0, 1);
     i += 1;
   );
 );

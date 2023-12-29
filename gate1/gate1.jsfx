@@ -39,28 +39,29 @@ selected_midpoint = -1;
 midi_trigger = 0;
 dual_smooth = 1;
 paint_mode = 1; // 0 = Erase, 1 = Line
+point_mode = 1; // 0 = hold, 1 line
 npatterns = 12;
 lpattern = -1;
 trigger_channel = 10;
 draw_wave = 1;
-patterns = 100000; // buffer to store patterns 12 * (1 + 3 * 1000)
+patterns = 100000; // buffer to store patterns 12 * (1 + 4 * 1000)
 pre_samples = 200000; // buffer with pre volume samples - winx size
 post_samples = 300000; // buffer with post volume samples - winx size
 
 function store_pattern(pattern)
 local(buf)
 (
-  buf = patterns + pattern * (1 + 3 * 1000);
+  buf = patterns + pattern * (1 + 4 * 1000);
   buf[0] = curve.points.size;
-  memcpy(buf + 1, curve.buf, 3 * 1000);
+  memcpy(buf + 1, curve.buf, 4 * 1000);
 );
 
 function load_pattern(pattern)
 local(buf)
 (
-  buf = patterns + pattern * (1 + 3 * 1000);
+  buf = patterns + pattern * (1 + 4 * 1000);
   curve.points.size = buf[0];
-  memcpy(curve.buf, buf + 1, 3 * 1000);
+  memcpy(curve.buf, buf + 1, 4 * 1000);
   curve.build_segments();
 );
 
@@ -68,7 +69,7 @@ function copy_curve()
 local(i)
 (
   gmem[0] = curve.points.size;
-  loop(i=0; 1000 * 3,
+  loop(i=0; 1000 * 4,
     gmem[i+1] = curve.buf[i];
     i += 1;
   );
@@ -79,7 +80,7 @@ local(i)
 (
   gmem[0] ? (
     curve.points.size = gmem[0];
-    loop(i=0; 1000 * 3,
+    loop(i=0; 1000 * 4,
       curve.buf[i] = gmem[i+1];
       i += 1;
     );
@@ -88,9 +89,9 @@ local(i)
 );
 
 curve.curve_init(0, 1000);
-curve.insert_point(0,1,0);
-curve.insert_point(0.5,0,0);
-curve.insert_point(1,1,0);
+curve.insert_point(0,1,0,1);
+curve.insert_point(0.5,0,0,1);
+curve.insert_point(1,1,0,1);
 curve.build_segments();
 
 loop(i=0; npatterns, // init all memory patterns with same curve
@@ -421,7 +422,7 @@ local (found, seg, px, py, i, point, x, y, coolinear)
     y = (py - winy) / winh;
     x >= 0 && x <= 1 && y >= 0 && y <= 1 ? ( // point in env window
       x == 1 ? x -= 0.000001; // special case avoid inserting point after last point
-      curve.insert_point(x, y, 0);
+      curve.insert_point(x, y, 0, point_mode);
     );
   );
   curve.build_segments();
@@ -445,24 +446,24 @@ local (seg, mousex, mousey)
   ) :
   paint_mode == 1 ? ( // line mode
     curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
-    curve.insert_point(seg / gridsegs + 0.00001, mousey, 0);
-    curve.insert_point((seg+1) / gridsegs - 0.00001, mousey, 0);
+    curve.insert_point(seg / gridsegs + 0.00001, mousey, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, mousey, 0, 1);
   ) :
   paint_mode == 2 ? ( // saw up
     curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
-    curve.insert_point(seg / gridsegs + 0.00001, 1, 0);
-    curve.insert_point((seg+1) / gridsegs - 0.00001, mousey, 0);
+    curve.insert_point(seg / gridsegs + 0.00001, 1, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, mousey, 0, 1);
   ) :
   paint_mode == 3 ? ( // saw down
     curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
-    curve.insert_point(seg / gridsegs + 0.00001, mousey, 0);
-    curve.insert_point((seg+1) / gridsegs - 0.00001, 1, 0);
+    curve.insert_point(seg / gridsegs + 0.00001, mousey, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, 1, 0, 1);
   ) :
   paint_mode == 4 ? ( // triangle
     curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
-    curve.insert_point(seg / gridsegs + 0.00001, 1, 0);
-    curve.insert_point(seg / gridsegs + (((seg+1) / gridsegs - seg / gridsegs) / 2), mousey, 0);
-    curve.insert_point((seg+1) / gridsegs - 0.00001, 1, 0);
+    curve.insert_point(seg / gridsegs + 0.00001, 1, 0, 1);
+    curve.insert_point(seg / gridsegs + (((seg+1) / gridsegs - seg / gridsegs) / 2), mousey, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, 1, 0, 1);
   );
   curve.build_segments();
 );
