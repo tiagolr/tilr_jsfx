@@ -157,7 +157,7 @@ while (midirecv(offset, msg1, note, vel)) (
 );
 
 @sample
-
+ 
 // when playback resets
 (!lplay_state & 1) && (play_state & 1)  ? (
   init_delay();
@@ -195,6 +195,9 @@ play_state & 1 ? (
     spl0 = d0.delay_read(1 + value * d0.size);
     spl1 = d1.delay_read(1 + value * d1.size);
   ) : (
+    abs(value * d0.size - next * d0.size) > 5 ? (
+      sudden += 1;
+    );
     // interpolate delay when time is changing only
     spl0 = d0.delay_read3(1 + value * d0.size);
     spl1 = d1.delay_read3(1 + value * d1.size);

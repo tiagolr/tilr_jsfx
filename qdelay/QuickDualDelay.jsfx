@@ -14,9 +14,9 @@ slider11:mode=0<0,1,1{Normal,Ping-Pong}>Mode
 slider12:spread=0<-100,100,1>Ping-Pong Spread
 
 slider14:lp_freq=20000<20,20000,1:log>Low Pass
-slider15:lp_q=0.707<0.1,4.0,0.01:log>Low Pass Q
+slider15:lp_q=0.707<0.707,2.0,0.01:log>Low Pass Q
 slider16:hp_freq=20<20,20000,1:log>High Pass
-slider17:hp_q=0.707<0.1,4.0,0.01:log>High Pass Q
+slider17:hp_q=0.707<0.707,2.0,0.01:log>High Pass Q
 
 slider19:mod_amp=0<0,100>Modulation amp
 slider20:mod_freq=1<1,8>Modulation freq (Hz)
@@ -54,14 +54,15 @@ samps1.rc_set(0.33);
 samps2.rc_set(0.33);
 
 @slider
-cycle = 0;
 feedback = _feedback / 100;
 feedback2 = delay_sync ? feedback : _feedback2 / 100;
 lfactor = spread > 0 ? 1 - spread / 100 : 1;
 rfactor = spread < 0 ? 1 + spread / 100 : 1;
 
-lp.rbj_lp(lp_freq, lp_q);
-hp.rbj_hp(hp_freq, hp_q);
+lp_l.rbj_lp(lp_freq, lp_q);
+lp_r.rbj_lp(lp_freq, lp_q);
+hp_l.rbj_hp(hp_freq, hp_q);
+hp_r.rbj_hp(hp_freq, hp_q);
 
 dry = _dry / 100;
 wet = _wet / 100;
@@ -138,12 +139,12 @@ val1 = d1.delay_read3(samps2.smooth + wave * mod_amp);
 
 // apply filters on delay signal
 lp_freq < 20000 ? (
-  val0 = lp.rbj_df1(val0);
-  val1 = lp.rbj_df2(val1);
+  val0 = lp_l.rbj_df1(val0);
+  val1 = lp_r.rbj_df1(val1);
 );
 hp_freq > 20 ? (
-  val0 = hp.rbj_df1(val0);
-  val1 = hp.rbj_df2(val1);
+  val0 = hp_l.rbj_df1(val0);
+  val1 = hp_r.rbj_df1(val1);
 );
 
 // write values in delay lines

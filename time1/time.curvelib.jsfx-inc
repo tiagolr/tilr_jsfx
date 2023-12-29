@@ -297,6 +297,8 @@ local (i, px, py)
     gfx_lineto(i + winx, py * winh + winy);
     i += 1;
   );
+  
+  gfx_lineto(i + winx, points.array_last()[1] * winh + winy); 
 );
 
 
