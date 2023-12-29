@@ -67,7 +67,7 @@ import mseg.array.jsfx-inc
 function curve_init(buf, npoints)
 instance(points, segments)
 (
-  buf = points.array_init(buf, npoints, 3); // x,y,tension
+  buf = points.array_init(buf, npoints, 4); // x,y,tension
   buf = segments.array_init(buf, npoints-1, 6); // x1,x2,y1,y2,tension,power
   buf;
 );
@@ -75,26 +75,29 @@ instance(points, segments)
 /*
   Inserts point ordered by x
 */
-function insert_point(x, y, tension)
+function insert_point(x, y, tension, type)
 instance(points)
-local (ptr, p)
+local (ptr, p, i)
 (
   points.size == 0 ? (
     ptr = points.array_add();
     ptr[0] = x;
     ptr[1] = y;
     ptr[2] = tension;
+    ptr[3] = type;
   ) : (
-    ptr = points.array_last();
-    while (ptr >= 0) (
+    i = points.size - 1;
+    while (i >= 0) (
+      ptr = points.array_get(i);
       ptr[0] <= x ? (
         p = points.array_insert(ptr + points.num);
         p[0] = x;
         p[1] = y;
         p[2] = tension;
-        ptr = -1;
+        p[3] = type;
+        i = -1;
       ) : (
-        ptr -= points.num;
+        i -= 1;
       );
     );
   );
@@ -106,7 +109,7 @@ local (ptr)
 (
   ptr = points.array_first();
   while (ptr >= 0) (
-    ptr[0] == x && ptr[1] == y ? (
+    ptr[0] === x && ptr[1] === y ? (
       points.array_remove(ptr);
       ptr = -1;
     ) : (
@@ -174,8 +177,8 @@ local(ptr)
   while(points.size) (
     points.array_remove(points.array_get(1));
   );
-  this.insert_point(0,0.5,0);
-  this.insert_point(1,0.5,0);
+  this.insert_point(0,0.5,0,1);
+  this.insert_point(1,0.5,0,1);
 );
 
 function build_segments()
@@ -199,23 +202,23 @@ local (seg, p1, p2)
 );
 
 function load_sine()
-instance(points) 
+instance(points)
 (
   points.array_clear();
-  this.insert_point(0, 1, 0.33);
-  this.insert_point(0.25, 0.5, -0.33);
-  this.insert_point(0.5, 0, 0.33);
-  this.insert_point(0.75, 0.5, -0.33);
-  this.insert_point(1, 1, 0);
+  this.insert_point(0, 1, 0.33, 1);
+  this.insert_point(0.25, 0.5, -0.33, 1);
+  this.insert_point(0.5, 0, 0.33, 1);
+  this.insert_point(0.75, 0.5, -0.33, 1);
+  this.insert_point(1, 1, 0, 1);
 );
 
 function load_triangle()
 instance(points)
 (
   points.array_clear();
-  curve.insert_point(0,1,0);
-  curve.insert_point(0.5,0,0);
-  curve.insert_point(1,1,0);
+  curve.insert_point(0,1,0,1);
+  curve.insert_point(0.5,0,0,1);
+  curve.insert_point(1,1,0,1);
 );
 
 function load_random(grid)
@@ -224,10 +227,10 @@ local(y, i)
 (
   points.array_clear();
   y = rand();
-  this.insert_point(0, y, 0);
-  this.insert_point(1, y, 0);
+  this.insert_point(0, y, 0, 1);
+  this.insert_point(1, y, 0, 1);
   loop(i=0; grid,
-    this.insert_point(min(0.999999,max(0.00001, rand()/grid + i/grid)), rand(), 0);
+    this.insert_point(min(0.999999,max(0.00001, rand()/grid + i/grid)), rand(), 0,1);
     i += 1;
   );
 );
@@ -279,8 +282,8 @@ local (i, px, py)
 (
   gfx_x = winx;
   gfx_y = points.array_first()[1] * winh + winy;
-  
-  loop(i = 0; winw + 1, 
+
+  loop(i = 0; winw + 1,
     py = this.get_y_at(i / winw);
     gfx_a = 0.0625;
     gfx_triangle(gfx_x, gfx_y, gfx_x, winh + winy, i + winx, winh + winy, i + winx, py * winh + winy);

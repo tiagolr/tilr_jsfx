@@ -41,11 +41,12 @@ selected_midpoint = -1;
 midi_trigger = 0;
 dual_smooth = 0;
 paint_mode = 1; // 0 = Erase, 1 = Line
+point_mode = 1; // 0 = hold, 1 = line
 
 curve.curve_init(0, 1000);
-curve.insert_point(0,1,0);
-curve.insert_point(0.5,0,0);
-curve.insert_point(1,1,0);
+curve.insert_point(0,1,0,1);
+curve.insert_point(0.5,0,0,1);
+curve.insert_point(1,1,0,1);
 curve.build_segments();
 
 function rc_set2(rca, rcb)
@@ -358,7 +359,7 @@ local (found, seg, px, py, i, point, x, y, coolinear)
     y = (py - winy) / winh;
     x >= 0 && x <= 1 && y >= 0 && y <= 1 ? ( // point in env window
       x == 1 ? x -= 0.000001; // special case avoid inserting point after last point
-      curve.insert_point(x, y, 0);
+      curve.insert_point(x, y, 0, point_mode);
     );
   );
   curve.build_segments();
@@ -382,24 +383,24 @@ local (seg, mousex, mousey)
   ) :
   paint_mode == 1 ? ( // line mode
     curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
-    curve.insert_point(seg / gridsegs + 0.00001, mousey, 0);
-    curve.insert_point((seg+1) / gridsegs - 0.00001, mousey, 0);
+    curve.insert_point(seg / gridsegs + 0.00001, mousey, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, mousey, 0, 1);
   ) :
   paint_mode == 2 ? ( // saw up
     curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
-    curve.insert_point(seg / gridsegs + 0.00001, 1, 0);
-    curve.insert_point((seg+1) / gridsegs - 0.00001, mousey, 0);
+    curve.insert_point(seg / gridsegs + 0.00001, 1, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, mousey, 0, 1);
   ) :
   paint_mode == 3 ? ( // saw down
     curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
-    curve.insert_point(seg / gridsegs + 0.00001, mousey, 0);
-    curve.insert_point((seg+1) / gridsegs - 0.00001, 1, 0);
+    curve.insert_point(seg / gridsegs + 0.00001, mousey, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, 1, 0, 1);
   ) :
   paint_mode == 4 ? ( // triangle
     curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
-    curve.insert_point(seg / gridsegs + 0.00001, 1, 0);
-    curve.insert_point(seg / gridsegs + (((seg+1) / gridsegs - seg / gridsegs) / 2), mousey, 0);
-    curve.insert_point((seg+1) / gridsegs - 0.00001, 1, 0);
+    curve.insert_point(seg / gridsegs + 0.00001, 1, 0, 1);
+    curve.insert_point(seg / gridsegs + (((seg+1) / gridsegs - seg / gridsegs) / 2), mousey, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, 1, 0, 1);
   );
   curve.build_segments();
 );
