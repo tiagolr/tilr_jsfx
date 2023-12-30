@@ -69,7 +69,7 @@ SKFilter (or Saikes filters) is a set of unique filters extracted from [Yutani B
 * Filter modes and morphing
 * Oversampling up to 8x
 
-## Quick Delay
+## QuickDelay
 
 Simple delay with ping-pong mode, tempo sync and feedback filters.
 
@@ -83,7 +83,7 @@ Simple delay with ping-pong mode, tempo sync and feedback filters.
 * Low pass and high pass feedback filters with Q controls
 * Delay modulation
 
-## Quick Dual Delay
+## QuickDualDelay
 
 Dual delay with independent or sync times, ping-pong mode, tempo sync and feedback filters.
 
@@ -97,3 +97,9 @@ Dual delay with independent or sync times, ping-pong mode, tempo sync and feedba
 * Tempo sync
 * Low pass and high pass feedback filters with Q controls
 * Delay modulation
+
+## QuickFilter
+
+Simple filter with 9 modes and smooth interpolation from ReEQ
+
+![](doc/qfilter.png)
