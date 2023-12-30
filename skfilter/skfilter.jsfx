@@ -107,8 +107,8 @@ oversampling > 1 ? (
   f = 0;
   loop(oversampling,
     f += 1;
-    ssl = oversampling*upsampleL.upSample(oversampling);
-    ssr = oversampling*upsampleR.upSample(oversampling);
+    ssl = oversampling*upsampleL.upSample(oversampling) * preamp;
+    ssr = oversampling*upsampleR.upSample(oversampling) * preamp;
 
     filter.processSample(filter_type);
     ssl *= inv_preamp;
