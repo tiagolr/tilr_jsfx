@@ -118,7 +118,7 @@ local (ptr)
 (
   ptr = points.array_first();
   while (ptr >= 0) (
-    ptr[0] == x && ptr[1] == y ? (
+    ptr[0] === x && ptr[1] === y ? (
       points.array_remove(ptr);
       ptr = -1;
     ) : (

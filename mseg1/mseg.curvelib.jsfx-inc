@@ -244,7 +244,7 @@ local (ten, pwr)
   ten = seg[4];
   pwr = seg[5];
 
-  seg[0] == seg[1] ? ( // x1 == x2
+  seg[0] === seg[1] ? ( // x1 == x2
     seg[3]; // FIX glitch
   ) : ten >= 0 ? (
     pow((x - seg[0]) / (seg[1] - seg[0]), pwr) * (seg[3] - seg[2]) + seg[2];

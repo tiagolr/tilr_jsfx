@@ -30,7 +30,7 @@ snap = 1;
 selected_point = -1;
 selected_midpoint = -1;
 midi_trigger = 0;
-paint_mode = 1; // 0 = Erase, 1 = Line
+paint_mode = 0; // 0 = Erase, 1 = Line
 point_mode = 0; // 0 = Hold, 1 = Curve
 npatterns = 12;
 lpattern = -1;
@@ -161,7 +161,7 @@ while (midirecv(offset, msg1, note, vel)) (
 );
 
 @sample
- 
+
 // when playback resets
 (!lplay_state & 1) && (play_state & 1)  ? (
   init_delay();
@@ -202,24 +202,24 @@ play_state & 1 ? (
     outl = d0.delay_read3(1 + value * d0.size);
     outr = d1.delay_read3(1 + value * d1.size);
   );
-  
+
   // when y value jumps activate cross fade / anti-click
   abs(value - prev) > 0.01 ? (
     xfade = ansamps;
     xfadepos = 1 + prev * d0.size;
   );
-  
+
   // anti-noise cross fade
   // fades in new signal fades out old signal
-  xfade ? ( 
+  xfade ? (
     outl = outl * (ansamps - xfade) / ansamps + d0.delay_read3(xfadepos + ansamps - xfade) * xfade / ansamps;
     outr = outr * (ansamps - xfade) / ansamps + d1.delay_read3(xfadepos + ansamps - xfade) * xfade / ansamps;
     xfade -= 1;
   );
-  
+
   spl0 = outl;
   spl1 = outr;
-  
+
   prev = value;
 
   post_samples[winpos] < abs((spl0 + spl1) / 2)
@@ -399,7 +399,7 @@ local (seg, px, py, i, point, x, y, coolinear)
     y = (py - winy) / winh;
     x >= 0 && x <= 1 && y >= 0 && y <= 1 ? ( // point in env window
       x == 1 ? x -= 0.000001; // special case avoid inserting point after last point
-      curve.insert_point(x, y, 0, point_mode);
+      selected_point = curve.insert_point(x, y, 0, point_mode);
     );
   );
   curve.build_segments();
@@ -457,12 +457,12 @@ local(i)
     gfx_line(winx + gridx * i, winy, winx + gridx * i, winy + winh, 0);
     gfx_a = 0.04;
     gfx_line(winx + gridx * i, winy, winx + winw, winy + winh - gridy * i);
-    gfx_line(winx, winy + gridy * i, winx + winw - gridx * i, winy + winh); 
+    gfx_line(winx, winy + gridy * i, winx + winw - gridx * i, winy + winh);
     i += 1;
   );
 );
 
-function draw_seek () 
+function draw_seek ()
 local(ypos, x)
 (
   gfx_set(0,1,0,0.5);
@@ -704,7 +704,7 @@ local(i, point, found)
   found;
 );
 
-function on_right_click () 
+function on_right_click ()
 local(point, choice)
 (
   point = get_point_at_mouse();
@@ -721,7 +721,7 @@ local(point, choice)
 
 mouse.right_click ? on_right_click();
 
-mouse.right && mouse.x > winx && mouse.x < winx + winw 
+mouse.right && mouse.x > winx && mouse.x < winx + winw
 && mouse.y > winy && mouse.y < winy + winh ?
 (
   get_point_at_mouse() < 0 ? (

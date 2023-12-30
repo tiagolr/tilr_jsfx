@@ -77,14 +77,16 @@ instance(points, segments)
 */
 function insert_point(x, y, tension, type)
 instance(points)
-local (ptr, p, i)
+local (ptr, p, i, index)
 (
+  index = -1;
   points.size == 0 ? (
     ptr = points.array_add();
     ptr[0] = x;
     ptr[1] = y;
     ptr[2] = tension;
     ptr[3] = type;
+    index = 0;
   ) : (
     i = points.size - 1;
     while (i >= 0) (
@@ -95,16 +97,14 @@ local (ptr, p, i)
         p[1] = y;
         p[2] = tension;
         p[3] = type;
+        index = i + 1;
         i = -1;
       ) : (
         i -= 1;
       );
     );
   );
-);
-
-function insert_point(x, y, tension) (
-  this.insert_point(x, y, tension, 0);
+  index;
 );
 
 function remove_point(x, y)
@@ -113,7 +113,7 @@ local (ptr)
 (
   ptr = points.array_first();
   while (ptr >= 0) (
-    ptr[0] == x && ptr[1] == y ? (
+    ptr[0] === x && ptr[1] === y ? (
       points.array_remove(ptr);
       ptr = -1;
     ) : (
@@ -232,12 +232,19 @@ local(y, i)
 (
   points.array_clear();
   y = rand();
-  this.insert_point(0, y, 0);
-  this.insert_point(1, y, 0);
+  this.insert_point(0, y, 0, 0);
+  this.insert_point(1, y, 0, 0);
   loop(i=0; grid,
-    this.insert_point(min(0.999999,max(0.00001, rand()/grid + i/grid)), rand(), 0);
+    this.insert_point(min(0.999999,max(0.00001, rand()/grid + i/grid)), rand(), 0, 0);
     i += 1;
   );
+);
+
+function copy_from(curve*)
+instance(points)
+(
+  points.size = curve.points.size;
+  memcpy(points.buf, curve.points.buf, points.size * points.num);
 );
 
 /*
