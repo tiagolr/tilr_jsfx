@@ -43,7 +43,7 @@ GATE-1 is an envelope generator for gate/volume control
 
 ## TIME-1
 
-TIME-1 is a playback/time and pitch editor with an envelope similar to plugins like GrossBeat and TimeShaper.
+TIME-1 is a playback/time and pitch editor similar to plugins like GrossBeat and TimeShaper.
 
 ![](doc/time1.png)
 
