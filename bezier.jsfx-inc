@@ -79,27 +79,32 @@ instance(points, segments)
 */
 function insert_point(x, y, tension)
 instance(points)
-local (ptr)
+local (ptr, p, i, index)
 (
+  index = -1;
   points.size == 0 ? (
     ptr = points.array_add();
     ptr[0] = x;
     ptr[1] = y;
     ptr[2] = tension;
+    index = 0;
   ) : (
-    ptr = points.array_last();
-    while (ptr >= 0) (
+    i = points.size - 1;
+    while (i >= 0) (
+      ptr = points.array_get(i);
       ptr[0] <= x ? (
         p = points.array_insert(ptr + points.num);
         p[0] = x;
         p[1] = y;
         p[2] = tension;
-        ptr = -1;
+        index = i + 1;
+        i = -1;
       ) : (
-        ptr -= points.num;
+        i -= 1;
       );
     );
   );
+  index;
 );
 
 function remove_point(x, y)
