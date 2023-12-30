@@ -82,7 +82,7 @@ lmorph != morph ? (
   lmorph = morph;
 );
 
-//check_safety();
+check_safety();
 
 @sample
 
@@ -172,5 +172,12 @@ filter_type == 0 ? gfx_drawstr("2-pole linear state variable filter (12 dB/oct).
 : filter_type == 25 ? gfx_drawstr("Ladder filter")
 : filter_type == 26 ? gfx_drawstr("2-pole ladder filter with allpass filter for resonance.\nDrive this one hard.")
 : filter_type == 27 ? gfx_drawstr("2-pole SVF filter with antisaturator.\nDrive this one hard.")
-: filter_type == 28 ? gfx_drawstr("4-pole SVF filter with antisaturator.\nDrive this one hard.")
+: filter_type == 28 ? gfx_drawstr("4-pole SVF filter with antisaturator.\nDrive this one hard.");
+
+gfx_x = 5;
+gfx_y += 10;
+cutoff_hz = 0.5 * sampling_ratio * srate * exp((1.0 - clamp(min(limited_cutoff, cutoff), 0.0, 0.99)) * log(20/22050));
+
+warning_msg = warning ? "(Cutoff clamped! Increase oversampling to go to higher values)." : "";
+(cutoff_hz < 1000) ? gfx_printf("Cutoff: %d Hz %s", cutoff_hz, warning_msg) : gfx_printf("%.2f kHz %s", cutoff_hz / 1000, warning_msg);
 
