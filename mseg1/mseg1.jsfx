@@ -17,7 +17,7 @@ import mseg.mouselib.jsfx-inc
 in_pin:none
 out_pin:none
 
-options:gfx_hz=60
+options:gfx_hz=60 gmem=mseg1
 
 @serialize
 file_var(0, curve.points.size);
@@ -42,12 +42,36 @@ midi_trigger = 0;
 dual_smooth = 0;
 paint_mode = 1; // 0 = Erase, 1 = Line
 point_mode = 1; // 0 = hold, 1 = line
+show_about = 0;
 
 curve.curve_init(0, 1000);
 curve.insert_point(0,1,0,1);
 curve.insert_point(0.5,0,0,1);
 curve.insert_point(1,1,0,1);
 curve.build_segments();
+
+function copy_curve()
+local(i)
+(
+  gmem[0] = curve.points.size;
+  loop(i=0; 1000 * 4,
+    gmem[i+1] = curve.buf[i];
+    i += 1;
+  );
+);
+
+function paste_curve ()
+local(i)
+(
+  gmem[0] ? (
+    curve.points.size = gmem[0];
+    loop(i=0; 1000 * 4,
+      curve.buf[i] = gmem[i+1];
+      i += 1;
+    );
+  );
+  curve.build_segments();
+);
 
 function rc_set2(rca, rcb)
 instance (a, b)
@@ -359,7 +383,7 @@ local (found, seg, px, py, i, point, x, y, coolinear)
     y = (py - winy) / winh;
     x >= 0 && x <= 1 && y >= 0 && y <= 1 ? ( // point in env window
       x == 1 ? x -= 0.000001; // special case avoid inserting point after last point
-      curve.insert_point(x, y, 0, point_mode);
+      selected_point = curve.insert_point(x, y, 0, point_mode);
     );
   );
   curve.build_segments();
@@ -483,6 +507,8 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
   choice ? paint_mode = choice - 1;
 );
 
+mouse.left_click ? show_about = 0;
+
 // draw right buttons
 drawx = gfx_w - 40;
 gfx_x = drawx; gfx_y = 10;
@@ -495,9 +521,10 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
   strcpy(menu, ">Smooth|");
   strcat(menu, dual_smooth ? "Single smooth|" : "!Single smooth|");
   strcat(menu, dual_smooth ? "<!Dual smooth" : "<Dual smooth");
-  strcat(menu, "||Invert|Reverse|Clear");
-  strcat(menu, "|>Load");
+  strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
+  strcat(menu, "||>Load");
   strcat(menu, "|Sine|Triangle|<Random");
+  strcat(menu, "|About");
   choice = gfx_showmenu(menu);
   choice == 1 ? (
     dual_smooth = 0;
@@ -520,16 +547,25 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
     curve.build_segments();
   );
   choice == 6 ? (
+    copy_curve();
+  );
+  choice == 7 ? (
+    paste_curve();
+  );
+  choice == 8 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 7 ? (
+  choice == 9 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 8 ? (
+  choice == 10 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
+  );
+  choice == 11 ? (
+    show_about = 1;
   );
 );
 
@@ -603,3 +639,40 @@ mouse.double_click ? (
   selected_midpoint = -1;
   selected_point = -1;
 );
+
+mouse.wheel && mouse_in_rect(winx,winy,winw,winh) ? (
+  gridsegs -= mouse.wheel;
+  gridsegs < 2 ? gridsegs = 32;
+  gridsegs > 32 ? gridsegs = 2;
+);
+
+function draw_about ()
+local(xsize, ysize, txt, pad)
+(
+  gfx_setfont(1, "Arial", 16);
+  xsize = 400;
+  ysize = 220;
+  pad = 20;
+  gfx_x = 0; gfx_y = 0;
+  gfx_blurto(gfx_w, gfx_h);
+  gfx_x = 0; gfx_y = 0;
+  gfx_blurto(gfx_w, gfx_h);
+  gfx_set(0,0,0,0.8);
+  gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
+  txt = #;
+  strcpy(txt, "MSEG-1 1.0\nTilr 2024\n\n");
+  strcat(txt, "MSEG-1 is a multi-segment envelope/LFO generator.\n");
+  strcat(txt, "Link params to value slider for modulation.\n\n");
+  strcat(txt, "Left click - move points or set tension\n");
+  strcat(txt, "Double click - remove or add points\n");
+  strcat(txt, "Right click - Paint mode\n");
+  strcat(txt, "Alt Right click - Erase mode\n");
+  strcat(txt, "Control - Snapping On");
+  gfx_x = gfx_w/2 - xsize/2 + pad;
+  gfx_y = gfx_h/2 - ysize/2 + pad;
+  gfx_set(1,1,1);
+  gfx_drawstr(txt,0,gfx_w/2+xsize/2-pad,gfx_h/2+ysize/2-pad);
+  gfx_setfont(0);
+);
+
+show_about ? draw_about();

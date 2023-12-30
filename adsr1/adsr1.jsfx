@@ -379,7 +379,7 @@ local (found, seg, px, py, i, point, x, y, coolinear)
     y = (py - winy) / winh;
     x >= 0 && x <= 1 && y >= 0 && y <= 1 ? ( // point in env window
       x == 1 ? x -= 0.000001; // special case avoid inserting point after last point
-      curve.insert_point(x, y, 0, 0);
+      selected_point = curve.insert_point(x, y, 0, 0);
     );
   );
   curve.build_segments();

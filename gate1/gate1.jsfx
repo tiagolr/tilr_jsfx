@@ -44,6 +44,7 @@ npatterns = 12;
 lpattern = -1;
 trigger_channel = 10;
 draw_wave = 1;
+show_about = 0;
 patterns = 100000; // buffer to store patterns 12 * (1 + 4 * 1000)
 pre_samples = 200000; // buffer with pre volume samples - winx size
 post_samples = 300000; // buffer with post volume samples - winx size
@@ -247,7 +248,7 @@ sync && play_state & 1 ? (
 @gfx 600 350
 
 !gridsegs ? gridsegs = 8;
-color_active = 0xFF8080;
+color_active = 0xFF8050;
 color_bg = 0x141618;
 hover_radius = 8;
 hover = 0;
@@ -422,7 +423,7 @@ local (found, seg, px, py, i, point, x, y, coolinear)
     y = (py - winy) / winh;
     x >= 0 && x <= 1 && y >= 0 && y <= 1 ? ( // point in env window
       x == 1 ? x -= 0.000001; // special case avoid inserting point after last point
-      curve.insert_point(x, y, 0, point_mode);
+      selected_point = curve.insert_point(x, y, 0, point_mode);
     );
   );
   curve.build_segments();
@@ -520,7 +521,7 @@ draw_wave && (!sync || play_state & 1) ? (
 
 draw_grid();
 
-function draw_seek () 
+function draw_seek ()
 (
   gfx_set(0.5,1,1,0.5);
   gfx_line(xpos * winw + winx, winy, xpos * winw + winx, winy + winh);
@@ -566,6 +567,8 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
   choice ? paint_mode = choice - 1;
 );
 
+mouse.left_click ? show_about = 0;
+
 // draw right buttons
 drawx = gfx_w - 40;
 gfx_x = drawx; gfx_y = 10;
@@ -591,6 +594,7 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
   strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
   strcat(menu, "||>Load");
   strcat(menu, "|Sine|Triangle|<Random");
+  strcat(menu, "|About");
   choice = gfx_showmenu(menu);
   choice > 0 && choice <= 18 ? (
     trigger_channel = choice - 1;
@@ -635,6 +639,9 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
   choice == 11+18 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
+  );
+  choice == 12+18 ? (
+    show_about = 1;
   );
 );
 
@@ -708,3 +715,40 @@ mouse.double_click ? (
   selected_midpoint = -1;
   selected_point = -1;
 );
+
+mouse.wheel && mouse_in_rect(winx,winy,winw,winh) ? (
+  gridsegs -= mouse.wheel;
+  gridsegs < 2 ? gridsegs = 32;
+  gridsegs > 32 ? gridsegs = 2;
+);
+
+function draw_about ()
+local(xsize, ysize, txt, pad)
+(
+  gfx_setfont(1, "Arial", 16);
+  xsize = 420;
+  ysize = 220;
+  pad = 20;
+  gfx_x = 0; gfx_y = 0;
+  gfx_blurto(gfx_w, gfx_h);
+  gfx_x = 0; gfx_y = 0;
+  gfx_blurto(gfx_w, gfx_h);
+  gfx_set(0,0,0,0.8);
+  gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
+  txt = #;
+  strcpy(txt, "GATE-1 1.0\nTilr 2024\n\n");
+  strcat(txt, "GATE-1 is an envelope generator for gate/volume control.\n\n");
+  strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 10 (default)\n");
+  strcat(txt, "Left click - move points or set tension\n");
+  strcat(txt, "Double click - remove or add points\n");
+  strcat(txt, "Right click - Paint mode\n");
+  strcat(txt, "Alt Right click - Erase mode\n");
+  strcat(txt, "Control - Snapping On");
+  gfx_x = gfx_w/2 - xsize/2 + pad;
+  gfx_y = gfx_h/2 - ysize/2 + pad;
+  gfx_set(1,1,1);
+  gfx_drawstr(txt,0,gfx_w/2+xsize/2-pad,gfx_h/2+ysize/2-pad);
+  gfx_setfont(0);
+);
+
+show_about ? draw_about();
