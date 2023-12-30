@@ -1,5 +1,7 @@
 The following JSFX are published and available on ReaPack
 
+# Effects
+
 ## MSEG-1
 
 MSEG-1 is a multi-segment LFO / Envelope generator
@@ -103,3 +105,91 @@ Dual delay with independent or sync times, ping-pong mode, tempo sync and feedba
 Simple filter with 9 modes and smooth interpolation from ReEQ
 
 ![](doc/qfilter.png)
+
+# Synths
+
+## JS3Osc
+
+JSFX polyphonic synth based of IL 3xOsc.
+
+![](doc/js3osc.png)
+
+#### Features:
+
+* Polyphonic voicing
+* Filter, pitch and amplitude envelopes per voice
+* Three oscillators with 6 wave types
+* Oscillator phase stereo detuning and offset
+
+## JSwavesynth
+
+JSFX polyphonic synth with a unison engine.
+
+![](doc/jswavesynth.png)
+
+#### Features:
+
+* Single cycle waveforms read from wav files
+* Polyphonic voices with independent adsr
+* 8 unison voices with detune and panning controls
+* ADSR for volume pitch and filter
+
+## JSAdditiv
+
+Polyphonic additive synthesizer
+
+![](doc/jsadditiv.png)
+
+#### Features:
+
+* Wavetable oscillator that reads single cycle waveforms from disk
+* Additive synthesis engine that allows to modify the wave
+* Wave editors for harmonics amplitude and phase
+* 8 voices unison engine
+* Pitch, amplitude and filter adsr
+
+## JSModulator
+
+Polyphonic FM synth with 4 operators
+
+![](doc/jsmodulator.png)
+
+#### Features:
+
+* 4 wavetable operators with additive synthesis
+* FM matrix 4x4
+* Global envelope and envelope per operator
+* Operator harmonics and phase editor
+* Filter per voice with envelope ADSR
+* Envelope curve/tension controls
+
+## JSDrumpad
+
+
+JSFX drumpad synth inspired by vsts like Microtonic and DSK Synthdrums.
+
+![](doc/jsdrumpad.png)
+
+#### Features:
+
+* 1x OSC (Sine, Triangle, Saw, or Square wave)
+* 1x Noise generator (Stereo or mono)
+* 3x Envelopes (osc, pitch and noise)
+* 2x Filter (Noise color/lp, LowPass, BandPass and HighPass)
+* 1x Distortion (Tube)
+* 1x Band EQ
+
+## JSDrumsynth
+
+Lightweight JSFX drum synth capable of sounding as good (or as bad) as other vsts like Microtonic and DSK Synthdrums.
+
+![](doc/jsdrumsynth.png)
+
+### Features 7x Pads with:
+
+* 1x OSC (Sine, Triangle, Saw, or Square wave)
+* 1x Noise generator (Stereo or mono)
+* 3x Envelopes (osc, pitch and noise)
+* 2x Filter (Noise color/lp, LowPass, BandPass and HighPass)
+* 1x Distortion (Tube)
+* 1x Band EQ
