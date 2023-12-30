@@ -27,7 +27,7 @@ ADSR-1 is an ADSR envelope generator
 
 ## GATE-1
 
-GATE-1 is an envelope generator, specialized on gate/volume control
+GATE-1 is an envelope generator for gate/volume control
 
 ![](doc/gate1.png)
 
