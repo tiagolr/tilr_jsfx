@@ -86,7 +86,9 @@ check_safety();
 
 @sample
 
-spl0 || spl1 ? (
+processing = max(0.9 * processing, spl0 || spl1);
+
+processing ? (
 cutoff.smooth();
 resonance.smooth();
 drive.smooth();
@@ -137,6 +139,9 @@ oversampling > 1 ? (
 spl0 *= final_boost;
 spl1 *= final_boost;
 );
+
+// We need to make sure that both input and output are silent before shutting down the filter.
+processing = max(processing, spl0 || spl1);
 
 @gfx 460 60
 
