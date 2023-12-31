@@ -556,11 +556,14 @@ gfx_x = drawx; gfx_y = 10;
 gfx_set(1,1,1);
 gfx_drawstr("Pt:");
 drawx += 30;
-label = point_mode == 0 ? "Hold" : "Curve";
+label = point_mode == 0 ? "Hold" : point_mode == 1 ? "Curve"
+  : point_mode == 2 ? "SCurve" : point_mode == 3 ? "Pulse"
+  : point_mode == 4 ? "Wave" : point_mode == 5 ? "Tri"
+  : point_mode == 6 ? "Stairs" : point_mode == 7 ? "SStairs";
 draw_button(drawx, 10, 60, label, 0);
 mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
   gfx_x = drawx; gfx_y = 20;
-  choice = gfx_showmenu("Hold|Curve");
+  choice = gfx_showmenu("Hold|Curve|S-Curve|Pulse|Wave|Triangle|Stairs|Smooth Stairs");
   choice > 0 ? point_mode = choice - 1;
 );
 
@@ -721,6 +724,12 @@ local(point, choice, menu)
     menu = #;
     strcpy(menu, point[3] == 0 ? "!Hold" : "Hold");
     strcat(menu, point[3] == 1 ? "|!Curve":"|Curve");
+    strcat(menu, point[3] == 2 ? "|!S-Curve":"|S-Curve");
+    strcat(menu, point[3] == 3 ? "|!Pulse":"|Pulse");
+    strcat(menu, point[3] == 4 ? "|!Wave":"|Wave");
+    strcat(menu, point[3] == 5 ? "|!Triangle":"|Triangle");
+    strcat(menu, point[3] == 6 ? "|!Stairs":"|Stairs");
+    strcat(menu, point[3] == 7 ? "|!Smooth Stairs":"|Smooth Stairs");
     choice = gfx_showmenu(menu);
     choice > 0 ? (
       point[3] = choice - 1;

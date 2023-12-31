@@ -310,12 +310,12 @@ local(x1, x2, y1, y2, ten, pwr, xx1, yy1, xx2, yy2, xx, yy, t, step_index)
   gy = (y2 - y1) / t; // gridy
   step_index = ((x - x1) / gx)|0;
   
-  xx1 = gx * step_index;
-  xx2 = gx * (step_index + 1);
+  xx1 = x1 + gx * step_index;
+  xx2 = x1 + gx * (step_index + 1);
   xx = (xx1 + xx2) / 2;
   
-  yy1 = gy * step_index;
-  yy2 = gy * (step_index + 1);
+  yy1 = y1 + gy * step_index;
+  yy2 = y1 + gy * (step_index + 1);
   yy = (yy1 + yy2) / 2;
   
   x1 == x2 ? ( 
