@@ -55,10 +55,11 @@ function cl01(v)
 
 function check_safety()
 (
+  limited_cutoff = 1;
   warning = 0;
   ((filter_type == 1) || (filter_type==6)) && (oversampling == 1) ? (
     cutoff > safety_limit_ms20 ? (
-      limited_cutoff = safety_limit_m20;
+      limited_cutoff = safety_limit_ms20;
       warning = 1;
     );
   );
