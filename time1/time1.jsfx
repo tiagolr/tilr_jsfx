@@ -85,8 +85,8 @@ local(i)
 );
 
 curve.curve_init(0, 1000);
-curve.insert_point(0,0,0,0);
-curve.insert_point(1,0,0,0);
+curve.insert_point(0,0,0,2);
+curve.insert_point(1,1,0,0);
 curve.build_segments();
 
 loop(i=0; npatterns, // init all memory patterns with same curve
@@ -712,14 +712,17 @@ local(i, point, found)
 );
 
 function on_right_click ()
-local(point, choice)
+local(point, choice, menu)
 (
   point = get_point_at_mouse();
   point >= 0 ? (
+    point = curve.points.array_get(point);
     gfx_x = mouse.x; gfx_y = mouse.y;
-    choice = gfx_showmenu("Hold|Curve");
+    menu = #;
+    strcpy(menu, point[3] == 0 ? "!Hold" : "Hold");
+    strcat(menu, point[3] == 1 ? "|!Curve":"|Curve");
+    choice = gfx_showmenu(menu);
     choice > 0 ? (
-      point = curve.points.array_get(point);
       point[3] = choice - 1;
       curve.build_segments();
     );

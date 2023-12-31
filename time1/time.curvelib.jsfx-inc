@@ -251,18 +251,135 @@ instance(points)
   Based of https://github.com/KottV/SimpleSide/blob/main/Source/types/SSCurve.cpp
 */
 function get_y_curve(seg, x)
-local (ten, pwr)
+local (x1,x2,y1,y2,ten, pwr)
 (
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
   ten = seg[4];
   pwr = seg[5];
 
-  seg[0] == seg[1] ? ( // x1 == x2
-    seg[3]; // FIX glitch
+  x1 == x2 ? ( // x1 == x2
+    y2; // FIX
   ) : ten >= 0 ? (
-    pow((x - seg[0]) / (seg[1] - seg[0]), pwr) * (seg[3] - seg[2]) + seg[2];
+    pow((x - x1) / (x2 - x1), pwr) * (y2 - y1) + y1;
   ) : (
-    -1 * (pow(1 - (x - seg[0]) / (seg[1] - seg[0]), pwr) - 1) * (seg[3] - seg[2]) + seg[2];
+    -1 * (pow(1 - (x - x1) / (x2 - x1), pwr) - 1) * (y2 - y1) + y1;
   );
+);
+
+function get_y_scurve(seg, x)
+local(x1, x2, y1, y2, ten, pwr, xx, yy)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+  pwr = seg[5];
+  
+  xx = (x2 + x1) / 2;
+  yy = (y2 + y1) / 2;
+  
+  x1 == x2 ? ( 
+    y2;
+  ) : x < xx && ten >= 0 ? (
+    pow((x - x1) / (xx - x1), pwr) * (yy - y1) + y1;
+  ) : x < xx && ten < 0 ? (
+    -1 * (pow(1 - (x - x1) / (xx - x1), pwr) - 1) * (yy - y1) + y1;
+  ) : x >= xx && ten >= 0 ? (
+    -1 * (pow(1 - (x - xx) / (x2 - xx), pwr) - 1) * (y2 - yy) + yy;
+  ) : (
+    pow((x - xx) / (x2 - xx), pwr) * (y2 - yy) + yy;
+  );
+);
+
+
+function get_y_wave(seg, x)
+local (ten, x1, x2, y1, y2, t, amp, vshift, freq)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+  
+  t = 2 * floor(abs(ten^2 * 100) + 1) - 1; // wave num
+  amp = (y2 - y1) / 2;
+  vshift = y1 + amp;
+  freq = t * 2 * $pi / (2 * (x2 - x1));
+  -amp * cos(freq * (x - x1)) + vshift;
+);
+
+function get_y_triangle(seg, x)
+local(ten, x1, x2, y1, y2, amp, t, tt) 
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+  
+  // amplitude and period
+  tt = 2 * floor(abs(ten^2 * 100) + 1) - 1;// wave num
+  amp = y2 - y1;
+  t = (x2 - x1) * 2 / tt;
+  
+  //-amp * (2 * abs((x - x1) / t - floor(1/2 + (x - x1) / t)) - 1/2) + y1;
+  amp * (2 * abs((x - x1) / t - floor(1/2 + (x - x1) / t))) + y1;
+);
+
+/*
+  Modulus that works with fractional numbers
+*/
+function mod(a,b) (
+  b == 0 ? (
+    0;
+  ) : (
+    while( a >= b ) (
+      a -= b;
+    );
+    a;
+  );
+);
+
+function round(x) (
+  floor(x + 0.5 * sign(x));
+);
+
+function get_y_pulse(seg, x)
+local(ten, x1, x2, y1, y2, t, cycle_width, x_in_cycle)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+  t = max(floor(ten^2 * 100), 1); // num waves
+  
+  cycle_width = (x2 - x1) / t;
+  x_in_cycle = mod((x - x1), cycle_width);
+  x_in_cycle < cycle_width / 2 
+    ? (ten >= 0 ? y1 : y2)
+    : (ten >= 0 ? y2 : y1);
+);
+
+function get_y_stairs(seg, x)
+local(ten, x1, x2, y1, y2, t)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+  t = max(floor(ten^2 * 100), 2); // num waves
+  t = 2;
+  
+  step_size = (x2 - x1) / t;
+  step_index = ((x - x1) / step_size)|0;
+  y_step_size = (y2 - y1) / (t - 1);
+  y1 + (step_index) * y_step_size;
 );
 
 function get_y_at(x)
@@ -270,11 +387,12 @@ instance(segments)
 local (seg, val)
 (
   val = 0;
-  seg = segments.array_last(); //
+  seg = segments.array_last();
   while(seg >= 0) (
     seg[0] <= x && seg[1] >= x ? (
       seg[6] == 0 ? val = seg[2];
       seg[6] == 1 ? val = get_y_curve(seg, x);
+      seg[6] == 2 ? val = get_y_stairs(seg, x);
       seg = -1;
     ) : (
       seg -= segments.num;
