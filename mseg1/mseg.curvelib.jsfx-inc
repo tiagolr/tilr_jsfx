@@ -68,7 +68,7 @@ function curve_init(buf, npoints)
 instance(points, segments)
 (
   buf = points.array_init(buf, npoints, 4); // x,y,tension
-  buf = segments.array_init(buf, npoints-1, 6); // x1,x2,y1,y2,tension,power
+  buf = segments.array_init(buf, npoints-1, 7); // x1,x2,y1,y2,tension,power
   buf;
 );
 
@@ -200,6 +200,7 @@ local (seg, p1, p2)
     seg[3] = p2[1]; // y2
     seg[4] = p1[2]; // tension
     seg[5] = pow(1.1, abs(p1[2] * 50));
+    seg[6] = p1[3]; // type
     p1 = p2;
     p2 = points.array_next(p2);
   );
@@ -242,18 +243,182 @@ local(y, i)
 /*
   Based of https://github.com/KottV/SimpleSide/blob/main/Source/types/SSCurve.cpp
 */
-function get_y(seg, x)
-local (ten, pwr)
+function get_y_curve(seg, x)
+local (x1,x2,y1,y2,ten, pwr)
 (
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
   ten = seg[4];
   pwr = seg[5];
 
-  seg[0] === seg[1] ? ( // x1 == x2
-    seg[3]; // FIX glitch
+  x1 == x2 ? ( // x1 == x2
+    y2; // FIX
   ) : ten >= 0 ? (
-    pow((x - seg[0]) / (seg[1] - seg[0]), pwr) * (seg[3] - seg[2]) + seg[2];
+    pow((x - x1) / (x2 - x1), pwr) * (y2 - y1) + y1;
   ) : (
-    -1 * (pow(1 - (x - seg[0]) / (seg[1] - seg[0]), pwr) - 1) * (seg[3] - seg[2]) + seg[2];
+    -1 * (pow(1 - (x - x1) / (x2 - x1), pwr) - 1) * (y2 - y1) + y1;
+  );
+);
+
+function get_y_scurve(seg, x)
+local(x1, x2, y1, y2, ten, pwr, xx, yy)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+  pwr = seg[5];
+
+  xx = (x2 + x1) / 2;
+  yy = (y2 + y1) / 2;
+
+  x1 == x2 ? (
+    y2;
+  ) : x < xx && ten >= 0 ? (
+    pow((x - x1) / (xx - x1), pwr) * (yy - y1) + y1;
+  ) : x < xx && ten < 0 ? (
+    -1 * (pow(1 - (x - x1) / (xx - x1), pwr) - 1) * (yy - y1) + y1;
+  ) : x >= xx && ten >= 0 ? (
+    -1 * (pow(1 - (x - xx) / (x2 - xx), pwr) - 1) * (y2 - yy) + yy;
+  ) : (
+    pow((x - xx) / (x2 - xx), pwr) * (y2 - yy) + yy;
+  );
+);
+
+function get_y_smooth_stairs(seg, x)
+local(x1, x2, y1, y2, ten, pwr, xx1, yy1, xx2, yy2, xx, yy, t, step_index)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+  pwr = 4;
+  t = max(floor(ten^2 * 150), 1); // num waves
+
+  gx = (x2 - x1) / t; // gridx
+  gy = (y2 - y1) / t; // gridy
+  step_index = ((x - x1) / gx)|0;
+
+  xx1 = x1 + gx * step_index;
+  xx2 = x1 + gx * (step_index + 1);
+  xx = (xx1 + xx2) / 2;
+
+  yy1 = y1 + gy * step_index;
+  yy2 = y1 + gy * (step_index + 1);
+  yy = (yy1 + yy2) / 2;
+
+  x1 == x2 ? (
+    y2;
+  ) : x < xx && ten >= 0 ? (
+    pow((x - xx1) / (xx - xx1), pwr) * (yy - yy1) + yy1;
+  ) : x < xx && ten < 0 ? (
+    -1 * (pow(1 - (x - xx1) / (xx - xx1), pwr) - 1) * (yy - yy1) + yy1;
+  ) : x >= xx && ten >= 0 ? (
+    -1 * (pow(1 - (x - xx) / (xx2 - xx), pwr) - 1) * (yy2 - yy) + yy;
+  ) : (
+    pow((x - xx) / (xx2 - xx), pwr) * (yy2 - yy) + yy;
+  );
+);
+
+
+function get_y_wave(seg, x)
+local (ten, x1, x2, y1, y2, t, amp, vshift, freq)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+
+  t = 2 * floor(abs(ten^2 * 100) + 1) - 1; // wave num
+  amp = (y2 - y1) / 2;
+  vshift = y1 + amp;
+  freq = t * 2 * $pi / (2 * (x2 - x1));
+  -amp * cos(freq * (x - x1)) + vshift;
+);
+
+function get_y_triangle(seg, x)
+local(ten, x1, x2, y1, y2, amp, t, tt)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+
+  // amplitude and period
+  tt = 2 * floor(abs(ten^2 * 100) + 1) - 1;// wave num
+  amp = y2 - y1;
+  t = (x2 - x1) * 2 / tt;
+  amp * (2 * abs((x - x1) / t - floor(1/2 + (x - x1) / t))) + y1;
+);
+
+/*
+  Modulus that works with fractional numbers
+*/
+function mod(a,b) (
+  b == 0 ? (
+    0;
+  ) : (
+    while( a >= b ) (
+      a -= b;
+    );
+    a;
+  );
+);
+
+function round(x) (
+  floor(x + 0.5 * sign(x));
+);
+
+function get_y_pulse(seg, x)
+local(ten, x1, x2, y1, y2, t, cycle_width, x_in_cycle)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+  t = max(floor(ten^2 * 100), 1); // num waves
+
+  x == x2 ? (
+    y2
+  ) : (
+    cycle_width = (x2 - x1) / t;
+    x_in_cycle = mod((x - x1), cycle_width);
+    x_in_cycle < cycle_width / 2
+      ? (ten >= 0 ? y1 : y2)
+      : (ten >= 0 ? y2 : y1);
+  );
+);
+
+function get_y_stairs(seg, x)
+local(ten, x1, x2, y1, y2, t, step_size, step_index, y_step_size)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+  t = max(floor(ten^2 * 150), 2); // num waves
+
+  ten >= 0 ? (
+    step_size = (x2 - x1) / t;
+    step_index = ((x - x1) / step_size)|0;
+    y_step_size = (y2 - y1) / (t-1);
+  ) : (
+    step_size = (x2 - x1) / (t-1);
+    step_index = ceil((x - x1) / step_size);
+    y_step_size = (y2 - y1) / t;
+  );
+  x == x2 ? (
+    y2
+  ) : (
+    y1 + step_index * y_step_size;
   );
 );
 
@@ -262,10 +427,17 @@ instance(segments)
 local (seg, val)
 (
   val = 0;
-  seg = segments.array_last(); //
+  seg = segments.array_last();
   while(seg >= 0) (
     seg[0] <= x && seg[1] >= x ? (
-      val = get_y(seg, x);
+      seg[6] == 0 ? val = seg[2];
+      seg[6] == 1 ? val = get_y_curve(seg, x);
+      seg[6] == 2 ? val = get_y_scurve(seg, x);
+      seg[6] == 3 ? val = get_y_pulse(seg, x);
+      seg[6] == 4 ? val = get_y_wave(seg, x);
+      seg[6] == 5 ? val = get_y_triangle(seg, x);
+      seg[6] == 6 ? val = get_y_stairs(seg, x);
+      seg[6] == 7 ? val = get_y_smooth_stairs(seg, x);
       seg = -1;
     ) : (
       seg -= segments.num;
@@ -295,6 +467,8 @@ local (i, px, py)
     gfx_lineto(i + winx, py * winh + winy);
     i += 1;
   );
+
+  gfx_lineto(i + winx, points.array_last()[1] * winh + winy);
 );
 
 
