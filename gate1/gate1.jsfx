@@ -274,7 +274,9 @@ function draw_midpoint(seg, i)
 local (x, y, xx, yy)
 (
   x = (seg[1] + seg[0]) * 0.5;
-  y = curve.get_y_at(x);
+  y = seg[6] > 1
+    ? (seg[2] + seg[3]) / 2
+    : curve.get_y_at(x);
   xx = x * winw + winx;
   yy = y * winh + winy;
   set_color(color_active);
@@ -567,6 +569,22 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
   choice ? paint_mode = choice - 1;
 );
 
+drawx += 70;
+gfx_x = drawx; gfx_y = 10;
+gfx_set(1,1,1);
+gfx_drawstr("Pt:");
+drawx += 30;
+label = point_mode == 0 ? "Hold" : point_mode == 1 ? "Curve"
+  : point_mode == 2 ? "SCurve" : point_mode == 3 ? "Pulse"
+  : point_mode == 4 ? "Wave" : point_mode == 5 ? "Tri"
+  : point_mode == 6 ? "Stairs" : point_mode == 7 ? "SStairs";
+draw_button(drawx, 10, 60, label, 0);
+mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
+  gfx_x = drawx; gfx_y = 20;
+  choice = gfx_showmenu("Hold|Curve|S-Curve|Pulse|Wave|Triangle|Stairs|Smooth Stairs");
+  choice > 0 ? point_mode = choice - 1;
+);
+
 mouse.left_click ? show_about = 0;
 
 // draw right buttons
@@ -695,10 +713,55 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 10, 20-2) ? (
   );
 );
 
+function get_point_at_mouse()
+local(i, point, found)
+(
+  found = -1;
+  i = 0;
+  loop(i=0; curve.points.size,
+    point = curve.points.array_get(i);
+    px = winx + winw * point[0];
+    py = winy + winh * point[1];
+    point_in_rect(mouse.x, mouse.y, px-hover_radius, py-hover_radius, hover_radius * 2, hover_radius * 2) ? (
+      found = i;
+    );
+    i += 1;
+  );
+  found;
+);
+
+function on_right_click ()
+local(point, choice, menu)
+(
+  point = get_point_at_mouse();
+  point >= 0 ? (
+    point = curve.points.array_get(point);
+    gfx_x = mouse.x; gfx_y = mouse.y;
+    menu = #;
+    strcpy(menu, point[3] == 0 ? "!Hold" : "Hold");
+    strcat(menu, point[3] == 1 ? "|!Curve":"|Curve");
+    strcat(menu, point[3] == 2 ? "|!S-Curve":"|S-Curve");
+    strcat(menu, point[3] == 3 ? "|!Pulse":"|Pulse");
+    strcat(menu, point[3] == 4 ? "|!Wave":"|Wave");
+    strcat(menu, point[3] == 5 ? "|!Triangle":"|Triangle");
+    strcat(menu, point[3] == 6 ? "|!Stairs":"|Stairs");
+    strcat(menu, point[3] == 7 ? "|!Smooth Stairs":"|Smooth Stairs");
+    choice = gfx_showmenu(menu);
+    choice > 0 ? (
+      point[3] = choice - 1;
+      curve.build_segments();
+    );
+  );
+);
+
+mouse.right_click ? on_right_click();
+
 mouse.right && mouse.x > winx && mouse.x < winx + winw
 && mouse.y > winy && mouse.y < winy + winh ?
 (
-  paint();
+  get_point_at_mouse() < 0 ? (
+    paint();
+  );
 );
 
 mouse.double_click ? (
