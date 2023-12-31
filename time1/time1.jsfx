@@ -742,9 +742,7 @@ local(point, choice, menu)
 
 mouse.right_click ? on_right_click();
 
-mouse.right && mouse.x > winx && mouse.x < winx + winw
-&& mouse.y > winy && mouse.y < winy + winh ?
-(
+mouse.right && mouse_in_rect(winx,winy,winw,winh) ? (
   get_point_at_mouse() < 0 ? (
     paint();
   );
