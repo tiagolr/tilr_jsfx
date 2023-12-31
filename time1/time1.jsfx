@@ -30,8 +30,8 @@ snap = 1;
 selected_point = -1;
 selected_midpoint = -1;
 midi_trigger = 0;
-paint_mode = 0; // 0 = Erase, 1 = Line
-point_mode = 0; // 0 = Hold, 1 = Curve
+paint_mode = 0; // 0 = Erase, 1 = Line ..
+point_mode = 0; // 0 = Hold, 1 = Curve, 2 = scurve ..
 npatterns = 12;
 lpattern = -1;
 trigger_channel = 11;
@@ -85,8 +85,8 @@ local(i)
 );
 
 curve.curve_init(0, 1000);
-curve.insert_point(0,0,0,2);
-curve.insert_point(1,1,0,0);
+curve.insert_point(0,0,0,0);
+curve.insert_point(1,0,0,0);
 curve.build_segments();
 
 loop(i=0; npatterns, // init all memory patterns with same curve

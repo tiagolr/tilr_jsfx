@@ -295,6 +295,42 @@ local(x1, x2, y1, y2, ten, pwr, xx, yy)
   );
 );
 
+function get_y_smooth_stairs(seg, x)
+local(x1, x2, y1, y2, ten, pwr, xx1, yy1, xx2, yy2, xx, yy, t, step_index)
+(
+  x1 = seg[0];
+  x2 = seg[1];
+  y1 = seg[2];
+  y2 = seg[3];
+  ten = seg[4];
+  pwr = 4;
+  t = max(floor(ten^2 * 150), 1); // num waves
+  
+  gx = (x2 - x1) / t; // gridx
+  gy = (y2 - y1) / t; // gridy
+  step_index = ((x - x1) / gx)|0;
+  
+  xx1 = gx * step_index;
+  xx2 = gx * (step_index + 1);
+  xx = (xx1 + xx2) / 2;
+  
+  yy1 = gy * step_index;
+  yy2 = gy * (step_index + 1);
+  yy = (yy1 + yy2) / 2;
+  
+  x1 == x2 ? ( 
+    y2;
+  ) : x < xx && ten >= 0 ? (
+    pow((x - xx1) / (xx - xx1), pwr) * (yy - yy1) + yy1;
+  ) : x < xx && ten < 0 ? (
+    -1 * (pow(1 - (x - xx1) / (xx - xx1), pwr) - 1) * (yy - yy1) + yy1;
+  ) : x >= xx && ten >= 0 ? (
+    -1 * (pow(1 - (x - xx) / (xx2 - xx), pwr) - 1) * (yy2 - yy) + yy;
+  ) : (
+    pow((x - xx) / (xx2 - xx), pwr) * (yy2 - yy) + yy;
+  );
+);
+
 
 function get_y_wave(seg, x)
 local (ten, x1, x2, y1, y2, t, amp, vshift, freq)
@@ -403,7 +439,12 @@ local (seg, val)
     seg[0] <= x && seg[1] >= x ? (
       seg[6] == 0 ? val = seg[2];
       seg[6] == 1 ? val = get_y_curve(seg, x);
-      seg[6] == 2 ? val = get_y_stairs(seg, x);
+      seg[6] == 2 ? val = get_y_scurve(seg, x);
+      seg[6] == 3 ? val = get_y_pulse(seg, x);
+      seg[6] == 4 ? val = get_y_wave(seg, x);
+      seg[6] == 5 ? val = get_y_triangle(seg, x);
+      seg[6] == 6 ? val = get_y_stairs(seg, x);
+      seg[6] == 7 ? val = get_y_smooth_stairs(seg, x);
       seg = -1;
     ) : (
       seg -= segments.num;
