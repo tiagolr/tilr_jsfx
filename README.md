@@ -6,7 +6,7 @@ The following JSFX are published and available on ReaPack
 
 MSEG-1 is a multi-segment LFO / Envelope generator
 
-![](doc/mseg1-2.png)
+![](doc/mseg1.png)
 
 Features:
 
