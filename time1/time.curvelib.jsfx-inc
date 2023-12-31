@@ -325,8 +325,6 @@ local(ten, x1, x2, y1, y2, amp, t, tt)
   tt = 2 * floor(abs(ten^2 * 100) + 1) - 1;// wave num
   amp = y2 - y1;
   t = (x2 - x1) * 2 / tt;
-  
-  //-amp * (2 * abs((x - x1) / t - floor(1/2 + (x - x1) / t)) - 1/2) + y1;
   amp * (2 * abs((x - x1) / t - floor(1/2 + (x - x1) / t))) + y1;
 );
 
@@ -358,28 +356,41 @@ local(ten, x1, x2, y1, y2, t, cycle_width, x_in_cycle)
   ten = seg[4];
   t = max(floor(ten^2 * 100), 1); // num waves
   
-  cycle_width = (x2 - x1) / t;
-  x_in_cycle = mod((x - x1), cycle_width);
-  x_in_cycle < cycle_width / 2 
-    ? (ten >= 0 ? y1 : y2)
-    : (ten >= 0 ? y2 : y1);
+  x == x2 ? (
+    y2
+  ) : (
+    cycle_width = (x2 - x1) / t;
+    x_in_cycle = mod((x - x1), cycle_width);
+    x_in_cycle < cycle_width / 2 
+      ? (ten >= 0 ? y1 : y2)
+      : (ten >= 0 ? y2 : y1);
+  );
 );
 
 function get_y_stairs(seg, x)
-local(ten, x1, x2, y1, y2, t)
+local(ten, x1, x2, y1, y2, t, step_size, step_index, y_step_size)
 (
   x1 = seg[0];
   x2 = seg[1];
   y1 = seg[2];
   y2 = seg[3];
   ten = seg[4];
-  t = max(floor(ten^2 * 100), 2); // num waves
-  t = 2;
+  t = max(floor(ten^2 * 150), 2); // num waves
   
-  step_size = (x2 - x1) / t;
-  step_index = ((x - x1) / step_size)|0;
-  y_step_size = (y2 - y1) / (t - 1);
-  y1 + (step_index) * y_step_size;
+  ten >= 0 ? (
+    step_size = (x2 - x1) / t;
+    step_index = ((x - x1) / step_size)|0;
+    y_step_size = (y2 - y1) / (t-1);
+  ) : (
+    step_size = (x2 - x1) / (t-1);
+    step_index = ceil((x - x1) / step_size);
+    y_step_size = (y2 - y1) / t;
+  );
+  x == x2 ? (
+    y2 
+  ) : (
+    y1 + step_index * y_step_size;
+  );
 );
 
 function get_y_at(x)

@@ -205,7 +205,7 @@ play_state & 1 ? (
   );
 
   // when y value jumps activate cross fade / anti-click
-  abs(value - prev) > 0.01 ? (
+  abs(value - prev) > 0.001 ? (
     xfade = ansamps;
     xfadepos = 1 + prev * d0.size;
   );
