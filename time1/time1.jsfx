@@ -256,7 +256,9 @@ function draw_midpoint(seg, i)
 local (x, y, xx, yy)
 (
   x = (seg[1] + seg[0]) * 0.5;
-  y = curve.get_y_at(x);
+  y = seg[6] > 1 
+    ? (seg[2] + seg[3]) / 2
+    : curve.get_y_at(x);
   xx = x * winw + winx;
   yy = y * winh + winy;
   set_color(color_active);
