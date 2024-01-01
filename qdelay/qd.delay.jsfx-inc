@@ -9,27 +9,6 @@
 
 @init
 
-function memalloc(size)
-(
-    __memory_index = __memory_next + 8;
-    __memory_next = __memory_index + size;
-    memset(__memory_index, 0.0, size);
-    __memory_index;
-);
-
-function memalloc(size, noreinit)
-(
-    noreinit == 0 ? (
-        __memory_index = __memory_next + 8;
-        __memory_next = __memory_index + size;
-        memset(__memory_index, 0.0, size);
-    ) : (
-        __memory_index = __memory_next + 8;
-        __memory_next = __memory_index + size;
-    );
-    __memory_index;
-);
-
 /*******************************************************
 DELAY
 =====
@@ -198,9 +177,9 @@ Example
     spl1 = (spl1 + val1) * 0.5;
 
 ********************************************************/
-function delay(size)
+function delay(buf, size)
 (
-    this.buf = memalloc(size);
+    this.buf = buf;
     this.size = size;
     this.curpos = 0;
     this.curval = 0;
@@ -529,9 +508,9 @@ function _sdelay_update_amps()
     this.amp2 < 0 ? this.amp2 = 0.0 : this.amp2 > 1 ? this.amp2 = 1.0;
 );
 
-function sdelay(size xfade)
+function sdelay(buf size xfade)
 (
-    this.delay.delay(size);
+    this.delay.delay(buf, size);
     this.xfade = xfade;
     this.current = 1;
     this.timer = 0;

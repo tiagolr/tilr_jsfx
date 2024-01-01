@@ -14,17 +14,20 @@ slider11:hp_q=0.707<0.707,2.0,0.01:log>High Pass Q
 
 slider13:mod_amp=0<0,100>Modulation amp
 slider14:mod_freq=1<1,8>Modulation freq (Hz)
+slider15:_semitones=0<-12,12,1>Transpose
 
-slider16:_dry=100<0,100>Dry signal
-slider17:_wet=100<0,100>Wet signal
+slider17:_dry=100<0,100>Dry signal
+slider18:_wet=100<0,100>Wet signal
 
 import qd.delay.jsfx-inc
 import qd.rbj_filter.jsfx-inc
+import qd.saike_pitchlib.jsfx-inc
 
 @init
+
 // 10 second stereo delay line
-d0.delay(srate * 10);
-d1.delay(srate * 10);
+d0.delay(2000000, srate * 10);
+d1.delay(3000000, srate * 10);
 
 function sine_wave(cycle) (
   sin(cycle * 2 * $pi);
@@ -44,6 +47,15 @@ function smooth()
     smooth = this.rc_lp(this);
 );
 
+function init_pitchlib ()
+(
+  transition_region = 1024;
+  bufferSize = 4 * transition_region;
+  shifter.pitchShifter(1, transition_region, bufferSize, 2*65536, 3*65536, transition_region, 1);
+);
+
+init_pitchlib();
+
 samps.rc_set(0.33);
 
 @slider
@@ -56,6 +68,7 @@ lp_r.rbj_lp(lp_freq, lp_q);
 hp_l.rbj_hp(hp_freq, hp_q);
 hp_r.rbj_hp(hp_freq, hp_q);
 
+semitones = 2*((2^(_semitones/12))-1.0);
 dry = _dry / 100;
 wet = _wet / 100;
 
@@ -122,14 +135,24 @@ hp_freq > 20 ? (
   val1 = hp_r.rbj_df1(val1);
 );
 
-// write values in delay lines
-mode == 0 ? (
-  d0.delay_write(spl0 + val0 * feedback);
-  d1.delay_write(spl1 + val1 * feedback);
-) : mode == 1 ? (
-  d0.delay_write(spl0 * lfactor + val1 * feedback);
-  d1.delay_write(spl1 * rfactor + val0 * feedback);
+mode == 0 ? ( // normal
+  left = spl0 + val0 * feedback;
+  right = spl1 + val1 * feedback;
+) : ( // ping pong
+  left = spl0 * lfactor + val1 * feedback;
+  right = spl1 * rfactor + val0 * feedback
 );
+
+_semitones ? (
+  shifter.pitchShifterUpdate(left, right);
+  shifter.setPitchShifterSpeed(semitones);
+  left = shifter.outL;
+  right = shifter.outR;
+);
+
+// write values in delay lines
+d0.delay_write(left);
+d1.delay_write(right);
 
 // sum and output
 spl0 = spl0*dry + val0*wet;
