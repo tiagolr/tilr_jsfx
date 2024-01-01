@@ -55,7 +55,7 @@ TIME-1 is a playback/time and pitch editor similar to plugins like GrossBeat and
 
 * Time and pitch envelope editor
 * 12 patterns triggered by midi notes
-* Paint mode - erase, line, saw up, saw down ..
+* Paint mode - erase, line
 * Point type - hold, curve, s-curve, stairs ..
 * Anti clicking with 3 modes (Off, Low, High)
 * Pre and post waveform display
