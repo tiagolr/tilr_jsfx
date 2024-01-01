@@ -1,4 +1,6 @@
 desc:QDelay
+author:tilr
+about: QuickDualDelay with a nicer interface
 
 slider1:delay_sync=1<0,1,1{No,Yes}>-Sync Delays
 

@@ -116,6 +116,7 @@ delayms > 10000 ? delayms = 10000;
 delay_sync ? (
   sync2 = sync;
   delayms2 = delayms;
+  _feedback2 = _feedback;
 ) : (
   sync2 > 0 ? (
     delayms2 = get_time_sync(sync2);
