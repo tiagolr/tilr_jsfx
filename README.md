@@ -12,7 +12,8 @@ Features:
 
 * Tempo sync or hz rate
 * LFO and MIDI trigger modes
-* Paint mode - erase, line, saw up, saw down
+* Paint mode - erase, line, saw up, saw down ..
+* Point type - hold, curve, s-curve, stairs ..
 * Output smooth and attack-release smooth
 
 ## ADSR-1
@@ -37,7 +38,8 @@ GATE-1 is an envelope generator for gate/volume control
 
 * Multi-segment editor
 * 12 patterns triggered by midi notes
-* Paint mode - erase, line, saw up saw down
+* Paint mode - erase, line, saw up, saw down ..
+* Point type - hold, curve, s-curve, stairs ..
 * Tempo sync or lfo rate (Hz)
 * Attack and release smooth
 * Pre and post waveform display
@@ -53,8 +55,8 @@ TIME-1 is a playback/time and pitch editor similar to plugins like GrossBeat and
 
 * Time and pitch envelope editor
 * 12 patterns triggered by midi notes
-* Paint mode - erase, line
-* Points mode - Hold and curve
+* Paint mode - erase, line, saw up, saw down ..
+* Point type - hold, curve, s-curve, stairs ..
 * Anti clicking with 3 modes (Off, Low, High)
 * Pre and post waveform display
 
