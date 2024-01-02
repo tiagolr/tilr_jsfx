@@ -83,8 +83,8 @@ function on_slider()
   feedback2 = delay_sync ? feedback : _feedback2 / 100;
   lfactor = spread > 0 ? 1 - spread / 100 : 1;
   rfactor = spread < 0 ? 1 + spread / 100 : 1;
-  rhaas = !mode && -spread > 0 ? srate / 100 * -spread / 100 : 0; // 100 ms max haas
-  lhaas = !mode && spread > 0 ? srate / 100 * spread / 100 : 0; // 100 ms max haas
+  rhaas = !mode && -spread > 0 ? srate / 100 * -spread / 100 : 0; // 10 ms max haas
+  lhaas = !mode && spread > 0 ? srate / 100 * spread / 100 : 0; // 10 ms max haas
 
   sync ? pref_sync1 = sync;
   sync2 ? pref_sync2 = sync;
