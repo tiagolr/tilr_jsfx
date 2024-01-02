@@ -2,19 +2,19 @@
 -- @author tilr
 -- @version 1.2
 -- @provides
---   tilr_Snapshooter/rtk.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter apply snap 1.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter apply snap 2.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter apply snap 3.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter apply snap 4.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter save snap 1.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter save snap 2.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter save snap 3.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter save snap 4.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter write snap 1.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter write snap 2.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter write snap 3.lua
---   [main] tilr_Snapshooter/tilr_Snapshooter write snap 4.lua
+--   lib/rtk.lua
+--   [main] lib/Snapshooter apply snap 1.lua
+--   [main] lib/Snapshooter apply snap 2.lua
+--   [main] lib/Snapshooter apply snap 3.lua
+--   [main] lib/Snapshooter apply snap 4.lua
+--   [main] lib/Snapshooter save snap 1.lua
+--   [main] lib/Snapshooter save snap 2.lua
+--   [main] lib/Snapshooter save snap 3.lua
+--   [main] lib/Snapshooter save snap 4.lua
+--   [main] lib/Snapshooter write snap 1.lua
+--   [main] lib/Snapshooter write snap 2.lua
+--   [main] lib/Snapshooter write snap 3.lua
+--   [main] lib/Snapshooter write snap 4.lua
 -- @screenshot https://raw.githubusercontent.com/tiagolr/snapshooter/master/doc/snapshooter.gif
 -- @about
 --   # Snapshooter

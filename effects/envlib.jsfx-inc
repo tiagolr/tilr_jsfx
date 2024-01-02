@@ -1,4 +1,5 @@
 desc:envlib
+noindex: true
 
 // Copyright (C) 2023 TiagoLr
 // Envlib 1.0 based of zenvelib.v1 by dwelx
