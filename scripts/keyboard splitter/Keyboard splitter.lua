@@ -1,3 +1,19 @@
+-- @description Keyboard splitter
+-- @author tilr
+-- @version 1.1
+-- @changelog
+--   Region shortcuts
+--   Colored pitch key
+--   Pitch key follows note transpose
+-- @provides
+--   lib/rtk.lua
+--   [effect] lib/MIDI Keyvel Filter.jsfx
+-- @screenshot https://raw.githubusercontent.com/tiagolr/keyboard-splitter/master/doc/keyboard-splitter.gif
+-- @about
+--   # Keyboard splitter
+--
+--   Manage tracks keyboard splitting using a visual keymap.
+
 function log(t)
   reaper.ShowConsoleMsg(t .. '\n')
 end
@@ -17,7 +33,7 @@ end
 
 local sep = package.config:sub(1, 1)
 local script_folder = debug.getinfo(1).source:match("@?(.*[\\|/])")
-rtk = dofile(script_folder .. 'tilr_Keyboard splitter' .. sep .. 'rtk.lua')
+rtk = dofile(script_folder .. 'lib' .. sep .. 'rtk.lua')
 
 globals = {
   win_x = nil,

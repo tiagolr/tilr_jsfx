@@ -1,6 +1,7 @@
 -- This is generated code. See https://reapertoolkit.dev/ for more info.
 -- version: 1.2.0
 -- build: Wed Mar 23 00:22:10 UTC 2022
+-- @noindex
 __RTK_VERSION='1.2.0'
 rtk=(function()
 __mod_rtk_core=(function()

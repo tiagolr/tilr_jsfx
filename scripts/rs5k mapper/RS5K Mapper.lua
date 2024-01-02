@@ -1,3 +1,16 @@
+-- @description RS5K Mapper
+-- @author tilr
+-- @version 1.1
+-- @changelog
+--   Region shortcuts
+--   Colored pitch key
+-- @provides lib/rtk.lua
+-- @screenshot https://raw.githubusercontent.com/tiagolr/rs5kmapper/master/doc/rs5kmapper.gif
+-- @about
+--   # RS5K Mapper
+--
+--   Allows mapping multiple ReaSamplomatic5000 instances using a visual keymap
+
 function log(t)
   reaper.ShowConsoleMsg(t .. '\n')
 end
@@ -17,7 +30,7 @@ end
 
 local sep = package.config:sub(1, 1)
 local script_folder = debug.getinfo(1).source:match("@?(.*[\\|/])")
-rtk = dofile(script_folder .. 'tilr_RS5K Mapper' .. sep .. 'rtk.lua')
+rtk = dofile(script_folder .. 'lib' .. sep .. 'rtk.lua')
 
 globals = {
   win_x = nil,

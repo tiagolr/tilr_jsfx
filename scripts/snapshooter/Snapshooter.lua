@@ -653,7 +653,7 @@ end
 function ui_start()
   local sep = package.config:sub(1, 1)
   local script_folder = debug.getinfo(1).source:match("@?(.*[\\|/])")
-  local rtk = dofile(script_folder .. 'tilr_Snapshooter' .. sep .. 'rtk.lua')
+  local rtk = dofile(script_folder .. 'lib' .. sep .. 'rtk.lua')
   local window = rtk.Window{ w=470, h=553, title='Snapshooter'}
   window.onmove = function (self)
     reaper.SetProjExtState(0, 'snapshooter', 'win_x', self.x)
