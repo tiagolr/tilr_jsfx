@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<index version="1" commit="cc10f99d64e31776f91fa95c6d2caf96ec982a67">
+  <category name="scripts/keyboard splitter/tilr_Keyboard splitter">
+    <reapack name="rtk.lua" type="script">
+      <version name="1.3.0" time="2024-01-02T22:34:58Z">
+        <source main="main">https://github.com/tiagolr/tilr_jsfx/raw/cc10f99d64e31776f91fa95c6d2caf96ec982a67/scripts/keyboard%20splitter/tilr_Keyboard%20splitter/rtk.lua</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="scripts/rs5k mapper/tilr_RS5K Mapper">
+    <reapack name="rtk.lua" type="script">
+      <version name="1.3.0" time="2024-01-02T22:34:58Z">
+        <source main="main">https://github.com/tiagolr/tilr_jsfx/raw/cc10f99d64e31776f91fa95c6d2caf96ec982a67/scripts/rs5k%20mapper/tilr_RS5K%20Mapper/rtk.lua</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="scripts/snapshooter/tilr_Snapshooter">
+    <reapack name="rtk.lua" type="script">
+      <version name="1.2.0" time="2024-01-02T22:34:58Z">
+        <source main="main">https://github.com/tiagolr/tilr_jsfx/raw/cc10f99d64e31776f91fa95c6d2caf96ec982a67/scripts/snapshooter/tilr_Snapshooter/rtk.lua</source>
+      </version>
+    </reapack>
+  </category>
+</index>
