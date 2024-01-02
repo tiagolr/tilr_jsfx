@@ -138,7 +138,6 @@ function on_slider() (
   lsync = sync;
 );
 
-
 @slider
 
 on_slider();

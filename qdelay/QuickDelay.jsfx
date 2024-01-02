@@ -7,17 +7,17 @@ slider4:mode=0<0,1,1{Normal,Ping-Pong}>Mode
 slider5:spread=0<-100,100,1>Ping-Pong Spread
 
 slider8:lp_freq=20000<20,20000,1:log>Low Pass
-slider9:lp_q=0.707<0.707,2,0.01:log>Low Pass Q
+slider9:lp_q=0.707<0.707,4,0.01:log>Low Pass Q
 
 slider10:hp_freq=20<20,20000,1:log>High Pass
-slider11:hp_q=0.707<0.707,2.0,0.01:log>High Pass Q
+slider11:hp_q=0.707<0.707,4,0.01:log>High Pass Q
 
 slider13:mod_amp=0<0,100>Modulation amp
 slider14:mod_freq=1<1,8>Modulation freq (Hz)
 slider15:_semitones=0<-12,12,1>Transpose
 
-slider17:_dry=100<0,100>Dry signal
-slider18:_wet=100<0,100>Wet signal
+slider17:_dry=100<0,100>Dry
+slider18:_wet=100<0,100>Wet
 
 import qd.delay.jsfx-inc
 import qd.rbj_filter.jsfx-inc
@@ -56,7 +56,7 @@ function init_pitchlib ()
 
 init_pitchlib();
 
-samps.rc_set(0.33);
+samps.rc_set(0.5);
 
 @slider
 feedback = _feedback / 100;
