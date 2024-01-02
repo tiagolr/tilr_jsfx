@@ -11,7 +11,7 @@ slider8:sync2=0<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,
 slider9:_feedback2=0<0,100>Feedback 2
 
 slider11:mode=0<0,1,1{Normal,Ping-Pong}>Mode
-slider12:spread=0<-100,100,1>Ping-Pong Spread
+slider12:spread=0<-100,100,1>Spread
 
 slider14:lp_freq=20000<20,20000,1:log>Low Pass
 slider15:lp_q=0.707<0.707,4,0.01:log>Low Pass Q
