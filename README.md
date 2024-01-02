@@ -113,9 +113,15 @@ Not published on ReaPack.
 
 ## QuickFilter
 
-Simple filter with 9 modes and smooth interpolation from ReEQ
+Simple filter with 9 modes and smooth interpolation from ReEQ.
 
 ![](doc/qfilter.png)
+
+## Notes to CC
+
+Convert midi notes to CC messages, useful for keytracking modulation.
+
+Supports configs like min and max note, min and max CC values, off notes value and more.
 
 # Synths
 
