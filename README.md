@@ -107,7 +107,6 @@ Dual delay with independent or sync times, ping-pong mode, tempo sync, feedback 
 ## QDelay
 
 A nicer interface for QuickDualDelay.
-Not published on ReaPack.
 
 ![](doc/qdelay2.png)]
 
