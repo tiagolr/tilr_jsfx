@@ -1,3 +1,34 @@
+-- @description Snapshooter
+-- @author tilr
+-- @version 1.2
+-- @provides
+--   tilr_Snapshooter/rtk.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter apply snap 1.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter apply snap 2.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter apply snap 3.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter apply snap 4.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter save snap 1.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter save snap 2.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter save snap 3.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter save snap 4.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter write snap 1.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter write snap 2.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter write snap 3.lua
+--   [main] tilr_Snapshooter/tilr_Snapshooter write snap 4.lua
+-- @screenshot https://raw.githubusercontent.com/tiagolr/snapshooter/master/doc/snapshooter.gif
+-- @about
+--   # Snapshooter
+--
+--   Snapshooter allows to create param snapshots and recall or write them to the playlist creating patch morphs.
+--   Different from SWS snapshots, only the params changed are written to the playlist as automation points.
+--
+--   Features:
+--     * Stores and retrieves FX params
+--     * Stores and retrieves mixer states for track Volume, Pan, Mute and Sends
+--     * Writes only changed params by diffing the current state and selected snapshot
+--     * Transition snapshots using tween and ease functions
+--     * Tested with hundreds of params with minimal overhead
+
 function log(t)
   reaper.ShowConsoleMsg(t .. '\n')
 end
