@@ -13,7 +13,7 @@ slider8:sync2=0<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,
 slider9:_feedback2=0<0,100>-Feedback 2
 
 slider11:mode=0<0,1,1{Normal,Ping-Pong}>-Mode
-slider12:spread=100<-100,100,1>-Ping-Pong Spread
+slider12:spread=0<-100,100,1>-Ping-Pong Spread
 
 slider14:lp_freq=20000<20,20000,1:log>-Low Pass
 slider15:lp_q=0.707<0.707,4.0,0.01:log>-Low Pass Q
@@ -83,6 +83,8 @@ function on_slider()
   feedback2 = delay_sync ? feedback : _feedback2 / 100;
   lfactor = spread > 0 ? 1 - spread / 100 : 1;
   rfactor = spread < 0 ? 1 + spread / 100 : 1;
+  rhaas = !mode && -spread > 0 ? srate / 100 * -spread / 100 : 0; // 100 ms max haas
+  lhaas = !mode && spread > 0 ? srate / 100 * spread / 100 : 0; // 100 ms max haas
 
   sync ? pref_sync1 = sync;
   sync2 ? pref_sync2 = sync;
@@ -184,8 +186,8 @@ mod_amp ? (
 );
 
 // read with cubic interpolation
-val0 = d0.delay_read3(samps1.smooth + wave * mod_amp);
-val1 = d1.delay_read3(samps2.smooth + wave * mod_amp);
+val0 = d0.delay_read3(samps1.smooth + wave * mod_amp + lhaas);
+val1 = d1.delay_read3(samps2.smooth + wave * mod_amp + rhaas);
 
 // apply filters on delay signal
 lp_freq < 20000 ? (
@@ -293,11 +295,7 @@ mouse.left_click && mouse_in_rect(drawx-5, drawy -30, 50,20) ? (
   mode = !mode;
   on_slider();
 );
-!mode ? (
-  gfx_a = 0.25;
-);
-draw_knob(drawx, drawy, 12, "Spread", 0, -100,100, 0, 1, sprintf(#, "%i %%", slider(12)),0);
-gfx_a = 1;
+draw_knob(drawx, drawy, 12, "Spread", 0, -100,100, 0, 1, mode ? sprintf(#, "%i %%", slider(12)) : sprintf(#, "%i ms", slider(12)),0);
 drawx += 80;
 gfx_x = drawx; gfx_y = drawy - 30;
 set_color(0x666666);

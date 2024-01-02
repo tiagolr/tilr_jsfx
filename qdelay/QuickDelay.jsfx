@@ -4,7 +4,7 @@ slider1:delayms=250<1,1000>Delay Time (ms)
 slider2:sync=0<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider3:_feedback=0<0,100>Feedback
 slider4:mode=0<0,1,1{Normal,Ping-Pong}>Mode
-slider5:spread=0<-100,100,1>Ping-Pong Spread
+slider5:spread=0<-100,100,1>Spread
 
 slider8:lp_freq=20000<20,20000,1:log>Low Pass
 slider9:lp_q=0.707<0.707,4,0.01:log>Low Pass Q
@@ -62,6 +62,8 @@ samps.rc_set(0.5);
 feedback = _feedback / 100;
 lfactor = spread > 0 ? 1 - spread / 100 : 1;
 rfactor = spread < 0 ? 1 + spread / 100 : 1;
+rhaas = !mode && -spread > 0 ? srate / 100 * -spread / 100 : 0; // 100 ms max haas
+lhaas = !mode && spread > 0 ? srate / 100 * spread / 100 : 0; // 100 ms max haas
 
 lp_l.rbj_lp(lp_freq, lp_q);
 lp_r.rbj_lp(lp_freq, lp_q);
@@ -122,8 +124,8 @@ mod_amp ? (
 );
 
 // read with cubic interpolation
-val0 = d0.delay_read3(samps.smooth + wave * mod_amp);
-val1 = d1.delay_read3(samps.smooth + wave * mod_amp);
+val0 = d0.delay_read3(samps.smooth + wave * mod_amp + lhaas);
+val1 = d1.delay_read3(samps.smooth + wave * mod_amp + rhaas);
 
 // apply filters on delay signal
 lp_freq < 20000 ? (
