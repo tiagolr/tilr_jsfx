@@ -1,6 +1,6 @@
 desc:MSEG-1
 
-slider1:mode=0<0,1,1{LFO,MIDI}>Mode
+slider1:mode=0<0,2,1{Play,Free,MIDI}>Trigger
 slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider3:ratehz=1<0.01,140,.01:log>Rate (Hz)
 slider4:phase=0<0,1,.01>Phase
@@ -113,7 +113,7 @@ function set_smooth() (
 function on_slider() (
   set_smooth();
   slider_show(ratehz, !sync);
-  slider_show(phase, sync);
+  //slider_show(phase, sync);
   _lfomin > _lfomax ? _lfomin = _lfomax;
   lfomin = _lfomin / 100;
   lfomax = _lfomax / 100;
@@ -145,11 +145,13 @@ on_slider();
 @block
 
 beats_per_spl = tempo / (60 * srate);
-beat_pos = beat_position;
+mode == 0 && (play_state & 1) ? (
+  beat_pos = beat_position;
+);
 
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
-  event == 0x90 && vel && mode == 1 ? (
+  event == 0x90 && vel && mode == 2 ? (
     lmidi_trigger = 0;
     midi_trigger = 1;
     xpos = 0;
@@ -159,43 +161,50 @@ while (midirecv(offset, msg1, note, vel)) (
 
 @sample
 
-// when playback starts reset env smooth
-mode == 0 && sync && (!lplay_state & 1) && (play_state & 1)  ? (
+// when playback starts
+mode == 0 && (!lplay_state & 1) && (play_state & 1) ? (
+  xpos = phase;
   value.smooth = get_curve_y(beat_pos / sync_qn + phase);
 );
-// when midi trigger starts reset env smooth
-mode == 1 && !lmidi_trigger && midi_trigger ? (
+// when midi trigger starts
+mode == 2 && !lmidi_trigger && midi_trigger ? (
   value.smooth = get_curve_y(0);
 );
 
 lplay_state = play_state;
 lmidi_trigger = midi_trigger;
 
-!sync && (mode == 0 || midi_trigger) ? (
-  counter += 1;
-  xpos += 1 / srate * ratehz;
-  mode == 0 ? (
-    xpos -= floor(xpos);
-  ) : xpos >= 1 ? (
-    midi_trigger = 0;
-    xpos = 0;
+mode == 0 ? (
+  sync ? (
+    beat_pos += beats_per_spl;
+    xpos = beat_pos / sync_qn + phase;
+  ) : (
+    xpos += 1 / srate * ratehz;
   );
-  nextv = get_curve_y(xpos);
-  value = value.smooth2(nextv, nextv > value);
-  slider_automate(value);
-);
-
-mode == 0 && sync && play_state & 1 ? (
-  beat_pos += beats_per_spl;
-  xpos = beat_pos / sync_qn + phase;
   xpos -= floor(xpos);
   nextv = get_curve_y(xpos);
   value = value.smooth2(nextv, nextv > value);
   slider_automate(value);
 );
 
-mode == 1 && sync && midi_trigger ? (
-  xpos += beats_per_spl / sync_qn;
+mode == 1 ? (
+  sync ? (
+    beat_pos += beats_per_spl;
+    xpos = beat_pos / sync_qn + phase;
+  ) : (
+    xpos += 1 / srate * ratehz;
+  );
+  xpos -= floor(xpos);
+  nextv = get_curve_y(xpos);
+  value = value.smooth2(nextv, nextv > value);
+  slider_automate(value);
+);
+
+// Tempo sync midi trigger
+mode == 2 && midi_trigger ? (
+  xpos += sync 
+    ? beats_per_spl / sync_qn
+    : 1 / srate * ratehz;
   xpos >= 1 ? (
     midi_trigger = 0;
     xpos = 1;
@@ -470,7 +479,7 @@ function draw_seek ()
 );
 
 // draw seek
-(!sync && mode == 0) || (play_state & 1 && mode == 0) || (mode == 1 && midi_trigger) ? (
+mode == 0 || mode == 1 || (mode == 2 && midi_trigger) ? (
   draw_seek();
 );
 
@@ -629,11 +638,11 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 10, 20-2) ? (
   gridsegs < 2 ? gridsegs = 32;
 );
 
-!sync && !mode ? (
+!sync && (mode == 0 || mode == 1) ? (
   drawx -= 60;
   draw_button(drawx, 10, 50, "Rtrig", 0);
   mouse.left_click && mouse_in_rect(drawx, 10-2, 50, 10+2) ? (
-    xpos = 0;
+    xpos = phase;
   );
 );
 
