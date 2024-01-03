@@ -1,8 +1,9 @@
+reverse = !!process.argv.find(s => s == '-r')
 fs = require('fs')
 s = fs.readFileSync('index.xml').toString('utf-8')
 
 function replace(cat, name) {
-  s = s.replace(`category name="${cat}"`, `category name="${name}"`)
+  s = s.replace(`category name="${reverse ? name : cat}"`, `category name="${reverse ? cat : name}"`)
 }
 
 replace('adsr1', 'Modulation')

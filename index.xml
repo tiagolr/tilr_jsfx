@@ -295,42 +295,6 @@ Yutani Bass
       </version>
     </reapack>
   </category>
-  <category name="Other">
-    <reapack name="Notes to CC.jsfx" type="effect" desc="Notes to CC">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 Notes to CC\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Sends CC events on midi notes, note pitch is mapped to CC value, useful for keytrack modulation.\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Includes controls for CC param, note min, note max and param range values.\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.1" author="tilr" time="2024-01-03T11:41:38Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/aba373f74becf057a86e143ad9fe1edcae12a050/other/Notes%20to%20CC.jsfx</source>
-      </version>
-    </reapack>
-  </category>
-  <category name="Other">
-    <reapack name="Notes to CC.jsfx" type="effect" desc="Notes to CC">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 Notes to CC s\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Sends CC events on midi notes, note pitch is mapped to CC value, useful for keytrack modulation.\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Includes controls for CC param, note min, note max and param range values.\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.1" author="tilr" time="2024-01-03T11:44:07Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/06d7678bc86b692953d52e2a93d688abbe7fae6d/other/Notes%20to%20CC.jsfx</source>
-      </version>
-    </reapack>
-  </category>
   <category name="Synth">
     <reapack name="js3osc.jsfx" type="effect" desc="JS3Osc">
       <metadata>
