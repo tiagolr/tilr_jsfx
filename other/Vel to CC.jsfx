@@ -1,8 +1,7 @@
-/**
- * Maps midi notes velocity to CC automation
- */
-
-desc:Vel to CC
+desc: Vel to CC
+author: tilr
+version: 1.0
+about: Maps midi notes velocity to CC automation
 
 in_pin:none
 out_pin:none

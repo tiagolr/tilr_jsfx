@@ -1,8 +1,7 @@
-/**
-  * Key and velocity midi filter
-  */
-
 desc:MIDI Keyvel Filter
+author: tilr
+version: 1.1
+about: Key and velocity midi filter
 
 slider1:0<0, 127, 1>Note min
 slider2:127<0, 127, 1>Note max

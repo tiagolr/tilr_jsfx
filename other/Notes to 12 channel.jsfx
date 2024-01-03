@@ -1,8 +1,7 @@
-/**
- * Splits incomming midi notes into 12 channels C -> Chn1, C# -> Chn2 and so on
- */
-
 desc:Notes to 12 channel
+author: tilr
+version: 1.0
+about: Splits incomming midi notes into 12 channels C -> Chn1, C# -> Chn2 and so on
 
 @init
 statNoteOn = $x90;

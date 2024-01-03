@@ -1,8 +1,12 @@
-/**
- * Maps midi notes to CC automation
- */
-
 desc:Notes to CC
+author: tilr
+version: 1.1
+about:
+  # Notes to CC
+
+  Sends CC events on midi notes, note pitch is mapped to CC value, useful to create keyboard param modulations or keytracking.
+
+  Includes controls for CC param, note min, note max and param range values.
 
 in_pin:none
 out_pin:none
