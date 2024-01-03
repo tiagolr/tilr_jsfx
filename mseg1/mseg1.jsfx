@@ -14,7 +14,7 @@ about:
   Features:
 
   * Tempo sync or Hz rate
-  * LFO and MIDI trigger modes
+  * Sync, Free and MIDI trigger modes
   * Paint mode - erase, line, saw up, saw down
   * Output smooth and attack-release smooth
 

@@ -19,7 +19,7 @@ MSEG-1 is a multi-segment LFO / Envelope generator
 Features:
 
 * Tempo sync or hz rate
-* LFO and MIDI trigger modes
+* Sync, free and MIDI trigger modes
 * Paint mode - erase, line, saw up, saw down ..
 * Point type - hold, curve, s-curve, stairs ..
 * Output smooth and attack-release smooth
