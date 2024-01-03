@@ -37,6 +37,7 @@ file_var(0, dual_smooth);
 file_var(0, paint_mode);
 file_var(0, gridsegs);
 file_var(0, draw_wave);
+file_var(0, always_playing);
 file_mem(0, patterns, npatterns * (1 + 4 * 1000));
 
 file_avail(0) >= 0 ? (

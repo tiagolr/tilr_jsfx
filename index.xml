@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="d73c618c72b1a59a1710d0f64973af977aa627f7">
+<index version="1" commit="faf844d168458bba1e5521fb8f8a4ddda9db19a3">
   <category name="adsr1">
     <reapack name="adsr1.jsfx" type="effect" desc="ADSR-1">
       <metadata>
@@ -328,7 +328,7 @@ fix volume knob clicking]]></changelog>
 {\pard \ql \f0 \sa180 \li0 \fi0 MSEG-1 is a multi-segment LFO / Envelope generator\par}
 {\pard \ql \f0 \sa180 \li0 \fi0 Features:\par}
 {\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Tempo sync or Hz rate\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab LFO and MIDI trigger modes\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Sync, Free and MIDI trigger modes\par}
 {\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Paint mode - erase, line, saw up, saw down\par}
 {\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Output smooth and attack-release smooth\sa180\par}
 }
