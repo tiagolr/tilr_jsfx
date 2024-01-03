@@ -45,6 +45,7 @@ file_var(0, dual_smooth);
 file_var(0, paint_mode);
 file_var(0, gridsegs);
 file_var(0, draw_wave);
+file_var(0, always_playing);
 file_mem(0, patterns, npatterns * (1 + 3 * 1000));
 
 file_avail(0) >= 0 ? (
@@ -67,6 +68,7 @@ lpattern = -1;
 trigger_channel = 10;
 draw_wave = 1;
 show_about = 0;
+always_playing = 0;
 patterns = 100000; // buffer to store patterns 12 * (1 + 4 * 1000)
 pre_samples = 200000; // buffer with pre volume samples - winx size
 post_samples = 300000; // buffer with post volume samples - winx size
@@ -162,7 +164,6 @@ function set_smooth() (
 function on_slider() (
   set_smooth();
   slider_show(ratehz, !sync);
-  slider_show(phase, sync);
   _lfomin > _lfomax ? _lfomin = _lfomax;
   lfomin = _lfomin / 100;
   lfomax = _lfomax / 100;
@@ -201,7 +202,9 @@ on_slider();
 @block
 
 beats_per_spl = tempo / (60 * srate);
-beat_pos = beat_position;
+sync && play_state ? (
+  beat_pos = beat_position;
+);
 
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
@@ -224,30 +227,17 @@ sync && (!lplay_state & 1) && (play_state & 1)  ? (
 
 lplay_state = play_state;
 
-!sync ? (
-  xpos += 1 / srate * ratehz;
-  xpos -= floor(xpos);
-  nextv = get_curve_y(xpos);
-  value = value.smooth2(nextv, nextv > value);
-  slider_automate(value);
-
-  winpos = floor(xpos * winw);
-  lwinpos != winpos ? (
-    pre_samples[winpos] = 0;
-    post_samples[winpos] = 0;
+(play_state & 1 || always_playing) ? (
+  //beat_pos += sync ? beats_per_spl;
+  //xpos = beat_pos / sync_qn + phase;
+  sync ? (
+    beat_pos += beats_per_spl;
+    xpos = beat_pos / sync_qn + phase;
+  ) : (
+    beat_pos += 1 / srate * ratehz;
+    xpos = beat_pos + phase;
   );
-  lwinpos = winpos;
-  pre_samples[winpos] < abs((spl0 + spl1) / 2)
-    ? pre_samples[winpos] = (spl0 + spl1) / 2;
-  spl0 *= value;
-  spl1 *= value;
-  post_samples[winpos] < abs((spl0 + spl1) / 2)
-    ? post_samples[winpos] = (spl0 + spl1) / 2;
-);
-
-sync && play_state & 1 ? (
-  beat_pos += beats_per_spl;
-  xpos = beat_pos / sync_qn + phase;
+  
   xpos -= floor(xpos);
   nextv = get_curve_y(xpos);
   value = value.smooth2(nextv, nextv > value);
@@ -554,7 +544,9 @@ function draw_seek ()
 );
 
 // draw seek
-!sync || play_state & 1 ? draw_seek();
+play_state & 1 || always_playing ? (
+  draw_seek();
+);
 
 gfx_set(1,1,1,1);
 curve.draw_segments(winx, winy, winw, winh);
@@ -606,6 +598,26 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
   choice = gfx_showmenu("Hold|Curve|S-Curve|Pulse|Wave|Triangle|Stairs|Smooth Stairs");
   choice > 0 ? point_mode = choice - 1;
 );
+
+drawx += 70;
+gfx_line(drawx, 10-2, drawx, 20);
+drawx += 5;
+mouse.left_click && mouse_in_rect(drawx, 10-4, 20, 17) ? (
+  always_playing = !always_playing;
+);
+always_playing ? (
+  gfx_rect(drawx+4, 10, 11, 9);
+) : (
+  gfx_triangle(drawx+5, 10-1, drawx+5, 10+10-1, drawx+5+10, 10-1+5);
+);
+!sync && always_playing ? (
+  drawx += 25;
+  draw_button(drawx, 10, 20, "R", 0);
+  mouse.left_click && mouse_in_rect(drawx, 10-2, 20, 10+2) ? (
+    beat_pos = -phase;
+  );
+);
+
 
 mouse.left_click ? show_about = 0;
 
@@ -725,14 +737,6 @@ gfx_triangle(drawx, 15-2, drawx+10, 10-2, drawx+10, 20-2);
 mouse.left_click && mouse_in_rect(drawx, 10-2, 10, 20-2) ? (
   gridsegs -= 1;
   gridsegs < 2 ? gridsegs = 32;
-);
-
-!sync ? (
-  drawx -= 60;
-  draw_button(drawx, 10, 50, "Rtrig", 0);
-  mouse.left_click && mouse_in_rect(drawx, 10-2, 50, 10+2) ? (
-    xpos = 0;
-  );
 );
 
 function get_point_at_mouse()

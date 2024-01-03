@@ -18,7 +18,7 @@ about:
   * Paint mode - erase, line, saw up, saw down
   * Output smooth and attack-release smooth
 
-slider1:mode=0<0,2,1{Sync,Free,MIDI}>Mode
+slider1:mode=0<0,2,1{Sync,Free,MIDI}>Trigger
 slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider3:ratehz=1<0.01,140,.01:log>Rate (Hz)
 slider4:phase=0<0,1,.01>Phase
@@ -592,7 +592,7 @@ mode == 1 ? (
   drawx += 5;
   draw_button(drawx, 10, 20, "R", 0);
   mouse.left_click && mouse_in_rect(drawx, 10-2, 50, 10+2) ? (
-    beat_pos = 0;
+    beat_pos = sync ? -phase * sync_qn : -phase;
   );
 );
 
