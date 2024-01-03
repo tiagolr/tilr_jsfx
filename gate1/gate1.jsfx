@@ -265,12 +265,11 @@ color_bg = 0x141618;
 hover_radius = 8;
 hover = 0;
 winx = 10;
-winy = 30;
+winy = gfx_w < 480 ? 50 : 30;
 winw = gfx_w - 20;
-winh = gfx_h - 40;
+winh = gfx_h - winy - 10;
 gridx = winw / gridsegs;
 gridy = winh / gridsegs;
-
 
 function set_color(color) (
   gfx_r = (color & 0xFF0000) / 0xFF0000;
@@ -623,12 +622,13 @@ mouse.left_click ? show_about = 0;
 
 // draw right buttons
 drawx = gfx_w - 40;
-gfx_x = drawx; gfx_y = 10;
+drawy = gfx_w < 480 ? 30 : 10;
+gfx_x = drawx; gfx_y = drawy;
 set_color(color_active);
-gfx_drawstr("...", 1, gfx_x+30, 22);
-mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
+gfx_drawstr("...", 1, gfx_x+30, drawy+12);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   gfx_x = drawx;
-  gfx_y = 20;
+  gfx_y = drawy+10;
   menu = #;
   strcpy(menu, ">Trigger Chn");
   loop(i=0; 18,
@@ -698,26 +698,26 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 30, 10+2) ? (
 );
 
 drawx -= 60;
-draw_button(drawx, 10, 50, "Snap", snap || mouse.control);
-mouse.left_click && mouse_in_rect(drawx, 10-2, 50, 10+2) ? (
+draw_button(drawx, drawy, 50, "Snap", snap || mouse.control);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 50, 10+2) ? (
   snap = !snap;
 );
 
 drawx -= 20;
 set_color(color_active);
-gfx_triangle(drawx, 10-2, drawx+10, 15-2, drawx, 20-2);
-mouse.left_click && mouse_in_rect(drawx, 10-2, 10, 20-2) ? (
+gfx_triangle(drawx, drawy-2, drawx+10, drawy+5-2, drawx, drawy+10-2);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 10, 10) ? (
   gridsegs += 1;
   gridsegs > 32 ? gridsegs = 2;
 );
 
 drawx -= 65;
-gfx_x = drawx; gfx_y = 10;
+gfx_x = drawx; gfx_y = drawy;
 gfx_set(1,1,1);
-gfx_drawstr(sprintf(#, "Grid %i", gridsegs), 1, drawx + 60, 20);
+gfx_drawstr(sprintf(#, "Grid %i", gridsegs), 1, drawx + 60, drawy+10);
 //draw_button(drawx, 10, 60, sprintf(#, "Grid %i", gridsegs), 0);
-mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
-  gfx_x = drawx; gfx_y = 20;
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 60, 10+2) ? (
+  gfx_x = drawx; gfx_y = drawy+10;
   choice = gfx_showmenu("2|3|4|5|6|8|10|12|16|32");
   choice == 1 ? gridsegs = 2;
   choice == 2 ? gridsegs = 3;
@@ -733,8 +733,8 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
 
 drawx -= 18;
 set_color(color_active);
-gfx_triangle(drawx, 15-2, drawx+10, 10-2, drawx+10, 20-2);
-mouse.left_click && mouse_in_rect(drawx, 10-2, 10, 20-2) ? (
+gfx_triangle(drawx, drawy+5-2, drawx+10, drawy-2, drawx+10, drawy+10-2);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 10, 10) ? (
   gridsegs -= 1;
   gridsegs < 2 ? gridsegs = 32;
 );
