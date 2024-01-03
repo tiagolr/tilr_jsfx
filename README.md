@@ -1,3 +1,13 @@
+# Install
+
+1. Install [SWS extensions](https://www.sws-extension.org/)
+2. On Reaper click `Extensions > ReaPack > Import repositoires`
+3. Paste the following address
+
+```
+https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/index.xml
+```
+
 # Effects
 
 ## MSEG-1

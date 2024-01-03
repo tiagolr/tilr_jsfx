@@ -4,7 +4,7 @@ version: 1.1
 about:
   # Notes to CC
 
-  Sends CC events on midi notes, note pitch is mapped to CC value, useful to create keyboard param modulations or keytracking.
+  Sends CC events on midi notes, note pitch is mapped to CC value, useful for keytrack modulation.
 
   Includes controls for CC param, note min, note max and param range values.
 
