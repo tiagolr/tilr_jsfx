@@ -600,15 +600,15 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
 );
 
 drawx += 70;
-gfx_line(drawx, 10-2, drawx, 20);
+gfx_line(drawx, 10-2, drawx, 18);
 drawx += 5;
 mouse.left_click && mouse_in_rect(drawx, 10-4, 20, 17) ? (
   always_playing = !always_playing;
 );
 always_playing ? (
-  gfx_rect(drawx+4, 10, 11, 9);
+  gfx_rect(drawx+4, 10-1, 11, 9);
 ) : (
-  gfx_triangle(drawx+5, 10-1, drawx+5, 10+10-1, drawx+5+10, 10-1+5);
+  gfx_triangle(drawx+5, 10-2, drawx+5, 10+10-2, drawx+5+10, 10-2 +5);
 );
 !sync && always_playing ? (
   drawx += 25;
