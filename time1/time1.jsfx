@@ -565,22 +565,25 @@ loop(i = 0; curve.segments.size,
 
 // draw left buttons
 drawx = winx;
-gfx_x = drawx; gfx_y = 10;
+drawy = gfx_w < 450 ? 30 : 10;
+gfx_x = drawx; 
+gfx_y = drawy;
 gfx_set(1,1,1);
 gfx_drawstr("Paint:");
 drawx += 55;
 label = paint_mode == 0 ? "Erase" : paint_mode == 1 ? "Line"
   : paint_mode == 2 ? "Saw up" : paint_mode == 3 ? "Saw dn"
   : paint_mode == 4 ? "Tri";
-draw_button(drawx, 10, 60, label, 0);
-mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
-  gfx_x = drawx; gfx_y = 20;
+draw_button(drawx, drawy, 60, label, 0);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 60, 10+2) ? (
+  gfx_x = drawx; gfx_y = drawy+10;
   choice = gfx_showmenu("Erase (Alt + RClick)|Line");
   choice ? paint_mode = choice - 1;
 );
 
 drawx += 70;
-gfx_x = drawx; gfx_y = 10;
+gfx_x = drawx; 
+gfx_y = drawy;
 gfx_set(1,1,1);
 gfx_drawstr("Pt:");
 drawx += 30;
@@ -588,29 +591,29 @@ label = point_mode == 0 ? "Hold" : point_mode == 1 ? "Curve"
   : point_mode == 2 ? "SCurve" : point_mode == 3 ? "Pulse"
   : point_mode == 4 ? "Wave" : point_mode == 5 ? "Tri"
   : point_mode == 6 ? "Stairs" : point_mode == 7 ? "SStairs";
-draw_button(drawx, 10, 60, label, 0);
-mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
-  gfx_x = drawx; gfx_y = 20;
+draw_button(drawx, drawy, 60, label, 0);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 60, 10+2) ? (
+  gfx_x = drawx; gfx_y = drawy+10;
   choice = gfx_showmenu("Hold|Curve|S-Curve|Pulse|Wave|Triangle|Stairs|Smooth Stairs");
   choice > 0 ? point_mode = choice - 1;
 );
 drawx += 70;
-gfx_line(drawx, 10-2, drawx, 18);
+gfx_line(drawx, drawy-2, drawx, drawy+8);
 drawx += 5;
-mouse.left_click && mouse_in_rect(drawx, 10-4, 20, 17) ? (
+mouse.left_click && mouse_in_rect(drawx, drawy-4, 20, 17) ? (
   always_playing = !always_playing;
 );
 always_playing ? (
-  gfx_rect(drawx+4, 10-1, 11, 9);
+  gfx_rect(drawx+4, drawy-1, 11, 9);
 ) : (
-  gfx_triangle(drawx+5, 10-2, drawx+5, 10+10-2, drawx+5+10, 10-2+5);
+  gfx_triangle(drawx+5, drawy-2, drawx+5, drawy+10-2, drawx+5+10, drawy-2+5);
 );
 
 mouse.left_click ? show_about = 0;
 
 // draw right buttons
 drawx = gfx_w - 40;
-drawy = gfx_w < 450 ? 30 : 10;
+drawy = 10;
 gfx_x = drawx; gfx_y = drawy;
 set_color(color_active);
 gfx_drawstr("...", 1, gfx_x+30, drawy+12);
