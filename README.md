@@ -1,7 +1,7 @@
 # Install
 
 1. Install [SWS extensions](https://www.sws-extension.org/)
-2. On Reaper go to `Extensions > ReaPack > Import repositories`
+2. Go to reaper `Extensions > ReaPack > Import repositories`
 3. Paste the following address
 
 ```
