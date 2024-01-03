@@ -3,7 +3,7 @@ author: tilr
 version: 1.1
 changelog: Change rbj filters to svf for smooth interpolation
 provides:
-  jsdrumpad.jsfx.rpl
+  jsdrumpad.jsfx.RPL
   dp.envlib.jsfx-inc
   dp.gfxlib.jsfx-inc
   dp.mouselib.jsfx-inc
