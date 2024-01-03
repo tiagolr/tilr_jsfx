@@ -1,4 +1,19 @@
-desc:ADSR-1
+desc: ADSR-1
+author: tilr
+version: 1.0
+provides:
+  adsr.array.jsfx-inc
+  adsr.curvelib.jsfx-inc
+  adsr.mouselib.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/adsr1.png
+about:
+  # ADSR-1
+
+  ADSR-1 is an ADSR envelope generator with:
+
+  * Multi-segments / control points per stage
+  * Sustain looping
+  * Output smooth
 tags:instrument
 
 slider1:att=150<1,5000,1:log>Attack

@@ -1,5 +1,11 @@
 desc:QDelay
-author:tilr
+author: tilr
+version: 1.0
+provides:
+  qd.delay.jsfx-inc
+  qd.rbj_filter.jsfx-inc
+  qd.saike_pitchlib.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/qdelay2.png
 about: QuickDualDelay with a nicer interface
 
 slider1:delay_sync=1<0,1,1{No,Yes}>-Sync Delays
@@ -88,12 +94,12 @@ function on_slider()
 
   sync ? pref_sync1 = sync;
   sync2 ? pref_sync2 = sync;
-  
+
   lp_l.rbj_lp(lp_freq, lp_q);
   lp_r.rbj_lp(lp_freq, lp_q);
   hp_l.rbj_hp(hp_freq, hp_q);
   hp_r.rbj_hp(hp_freq, hp_q);
-  
+
   semitones = 2*((2^((_semitones|0)/12))-1.0);
   semitones_free = 2*(pow(2, _semitones_free / 12)-1);
   dry = _dry / 100;
@@ -136,14 +142,14 @@ pref_sync_type == 0 && sync && sync > 10 ? sync -= 10
 : pref_sync_type == 0 && sync && sync > 5 ? sync -= 5
 : pref_sync_type == 1 && sync && sync > 10 ? sync -= 5
 : pref_sync_type == 1 && sync && sync <= 5 ? sync += 5
-: pref_sync_type == 2 && sync && sync <= 5 ? sync += 10 
+: pref_sync_type == 2 && sync && sync <= 5 ? sync += 10
 : pref_sync_type == 2 && sync && sync <= 10 ? sync += 5;
 
 pref_sync_type2 == 0 && sync2 && sync2 > 10 ? sync2 -= 10
 : pref_sync_type2 == 0 && sync2 && sync2 > 5 ? sync2 -= 5
 : pref_sync_type2 == 1 && sync2 && sync2 > 10 ? sync2 -= 5
 : pref_sync_type2 == 1 && sync2 && sync2 <= 5 ? sync2 += 5
-: pref_sync_type2 == 2 && sync2 && sync2 <= 5 ? sync2 += 10 
+: pref_sync_type2 == 2 && sync2 && sync2 <= 5 ? sync2 += 10
 : pref_sync_type2 == 2 && sync2 && sync2 <= 10 ? sync2 += 5;
 
 sync > 0 ? (

@@ -1,4 +1,25 @@
-desc:TIME-1
+desc: TIME-1
+author: tilr
+version: 1.0
+provides:
+  time.array.jsfx-inc
+  time.curvelib.jsfx-inc
+  time.delay.jsfx-inc
+  time.mouselib.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/time1.png
+about:
+  # TIME-1
+
+  TIME-1 is a playback/time and pitch editor similar to plugins like GrossBeat and TimeShaper.
+
+  Features:
+
+  * Time and pitch envelope editor
+  * 12 patterns triggered by midi notes
+  * Paint mode - erase, line
+  * Point type - hold, curve, s-curve, stairs ..
+  * Anti clicking with 3 modes (Off, Low, High)
+  * Pre and post waveform display
 
 slider1:pattern=1<1,12,1>Pattern
 slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
@@ -255,7 +276,7 @@ function draw_midpoint(seg, i)
 local (x, y, xx, yy)
 (
   x = (seg[1] + seg[0]) * 0.5;
-  y = seg[6] > 1 
+  y = seg[6] > 1
     ? (seg[2] + seg[3]) / 2
     : curve.get_y_at(x);
   xx = x * winw + winx;

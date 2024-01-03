@@ -1,4 +1,25 @@
-desc:QuickDelay
+desc: QuickDelay
+author: tilr
+version: 1.0
+provides:
+  qd.delay.jsfx-inc
+  qd.rbj_filter.jsfx-inc
+  qd.saike_pitchlib.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/qdelay.png
+about:
+  # QuickDelay
+
+  A simple delay with ping-pong mode, tempo sync, feedback filters and pitch shift.
+
+  #### Features
+
+  * Dual or single delay modes
+  * Normal and ping-pong modes
+  * Ping-pong stereo width control
+  * Tempo sync
+  * Low pass and high pass feedback filters with Q controls
+  * Feedback pitch shift
+  * Delay modulation
 
 slider1:delayms=250<1,1000>Delay Time (ms)
 slider2:sync=0<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync

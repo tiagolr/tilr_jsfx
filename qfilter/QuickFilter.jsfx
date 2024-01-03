@@ -1,9 +1,11 @@
-/*
-  Multimode SVF filter with interpolation
-*/
+desc: QuickFilter
+author: tilr
+version: 1.0
+provides: qf.svf_filter.jsfx-inc
+about:
+  # QuickFilter
 
-desc:QuickFilter
-author: TiagoLr
+  Simple filter with 9 modes and smooth interpolation.
 
 import qf.svf_filter.jsfx-inc
 

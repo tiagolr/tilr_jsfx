@@ -1,4 +1,26 @@
-desc:GATE-1
+desc: GATE-1
+author: tilr
+version: 1.0
+provides:
+  gate.array.jsfx-inc
+  gate.curvelib.jsfx-inc
+  gate.mouselib.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/gate1.png
+about:
+  # GATE-1
+
+  GATE-1 is an envelope generator for gate/volume control
+
+  Features:
+
+  * Multi-segment editor
+  * 12 patterns triggered by midi notes
+  * Paint mode - erase, line, saw up, saw down ..
+  * Point type - hold, curve, s-curve, stairs ..
+  * Tempo sync or lfo rate (Hz)
+  * Attack and release smooth
+  * Pre and post waveform display
+  * Global tension control
 
 slider1:pattern=1<1,12,1>Pattern
 slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync

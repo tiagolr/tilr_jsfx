@@ -1,4 +1,22 @@
-desc:MSEG-1
+desc: MSEG-1
+author: tilr
+version: 1.0
+provides:
+  mseg.array.jsfx-inc
+  mseg.curvelib.jsfx-inc
+  mseg.mouselib.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/mseg1.png
+about:
+  # MSEG-1
+
+  MSEG-1 is a multi-segment LFO / Envelope generator
+
+  Features:
+
+  * Tempo sync or Hz rate
+  * LFO and MIDI trigger modes
+  * Paint mode - erase, line, saw up, saw down
+  * Output smooth and attack-release smooth
 
 slider1:mode=0<0,2,1{Play,Free,MIDI}>Trigger
 slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
@@ -202,7 +220,7 @@ mode == 1 ? (
 
 // Tempo sync midi trigger
 mode == 2 && midi_trigger ? (
-  xpos += sync 
+  xpos += sync
     ? beats_per_spl / sync_qn
     : 1 / srate * ratehz;
   xpos >= 1 ? (

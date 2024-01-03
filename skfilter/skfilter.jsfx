@@ -1,4 +1,20 @@
-desc:SKFilter
+desc: SKFilter
+author: tilr
+version: 1.0
+provides:
+  skf.Saike_Yutani_Filters.jsfx-inc
+  skf.Saike_Yutani_oversampling.jsfx-inc
+  skf.Saike_Yutani_upsamplers
+about:
+  # SKFilter
+  SKFilter (or Saikes filters) is a set of unique filters extracted from [Yutani Bass](https://github.com/JoepVanlier/JSFX/tree/master/Yutani)
+
+  #### Features
+  * 29 filter types
+  * Non-linear analog modelled filters
+  * Filter drive
+  * Filter modes and morphing
+  * Oversampling up to 8x
 
 slider1:filter_type=1<0,28,1{Linear,MS-20,Linear x2,Moog,Ladder,303,MS-20 asym,DblRes,DualPeak,TriplePeak,svf nl 2p,svf nl 4p,svf nl 2p inc,svf nl 4p inc,rectified resonance,Steiner,SteinerA,Muck,Pill2p,Pill4p,Pill2p Aggro,Pill4p Aggro,Pill2p Stacc,Pill4p Stacc,Ladder3,Ladder6,HLadder,SVF2,SVF4}>Filter type
 slider2:drive=0<0,48,1>Filter Drive (dB)
