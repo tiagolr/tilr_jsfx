@@ -7,13 +7,14 @@ changelog:
   fix volume knobs clicking
   next and prev wave buttons
 provides:
-  tilr_JSModulator/mod.array.jsfx-inc
-  tilr_JSModulator/mod.envlib.jsfx-inc
-  tilr_JSModulator/mod.fft_real_synth.jsfx-inc
-  tilr_JSModulator/mod.gfxlib.jsfx-inc
-  tilr_JSModulator/mod.mouselib.jsfx-inc
-  tilr_JSModulator/mod.osc.jsfx-inc
-  tilr_JSModulator/mod.wavetable.jsfx-inc
+  mod.array.jsfx-inc
+  mod.envlib.jsfx-inc
+  mod.fft_real_synth.jsfx-inc
+  mod.gfxlib.jsfx-inc
+  mod.mouselib.jsfx-inc
+  mod.osc.jsfx-inc
+  mod.wavetable.jsfx-inc
+  mod.rbj_filter.jsfx-inc
   [data] tilr_JSModulator/Complex 2.wav
   [data] tilr_JSModulator/Complex 3.wav
   [data] tilr_JSModulator/Complex 4.wav
@@ -39,7 +40,6 @@ provides:
   [data] tilr_JSModulator/Square.wav
   [data] tilr_JSModulator/Stairs.wav
   [data] tilr_JSModulator/Triangle.wav
-  tilr_JSModulator/mod.rbj_filter.jsfx-inc
 screenshot: https://raw.githubusercontent.com/tiagolr/jsmodulator/master/doc/ss.png
 about:
   # JSModulator
