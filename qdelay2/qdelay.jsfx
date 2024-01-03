@@ -2,9 +2,10 @@ desc:QDelay
 author: tilr
 version: 1.0
 provides:
-  qd.delay.jsfx-inc
-  qd.rbj_filter.jsfx-inc
-  qd.saike_pitchlib.jsfx-inc
+  qd2.delay.jsfx-inc
+  qd2.rbj_filter.jsfx-inc
+  qd2.saike_pitchlib.jsfx-inc
+  qd2.gfxlib.jsfx-inc
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/qdelay2.png
 about: QuickDualDelay with a nicer interface
 
@@ -34,10 +35,10 @@ slider22:_semitones_free=0<-12,12,.01>-Transpose Free
 slider24:_dry=100<0,100>-Dry signal
 slider25:_wet=100<0,100>-Wet signal
 
-import qd.delay.jsfx-inc
-import qd.rbj_filter.jsfx-inc
-import qd.saike_pitchlib.jsfx-inc
-import qd.gfxlib.jsfx-inc
+import qd2.delay.jsfx-inc
+import qd2.rbj_filter.jsfx-inc
+import qd2.saike_pitchlib.jsfx-inc
+import qd2.gfxlib.jsfx-inc
 
 @init
 
