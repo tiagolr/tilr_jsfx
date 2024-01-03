@@ -1,131 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="06d7678bc86b692953d52e2a93d688abbe7fae6d" name="Tilr JSFX">
-  <category name="Delay">
-    <reapack name="QuickDualDelay.jsfx" type="effect" desc="QuickDualDelay">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 QuickDualDelay\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Dual delay with independent or linked times, ping-pong mode, tempo sync, feedback filters and pitch shift.\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel3 \b \fs24 Features\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Dual delay with independent or sync time and feedback\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Normal and ping-pong modes\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Ping-pong stereo width control\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Tempo sync\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Low pass and high pass feedback filters with Q controls\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Feedback pitch shift\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Delay modulation\sa180\par}
-}
-]]></description>
-        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/qddelay.png</link>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T10:45:17Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qddelay/QuickDualDelay.jsfx</source>
-        <source file="qdd.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qddelay/qdd.delay.jsfx-inc</source>
-        <source file="qdd.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qddelay/qdd.rbj_filter.jsfx-inc</source>
-        <source file="qdd.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qddelay/qdd.saike_pitchlib.jsfx-inc</source>
-      </version>
-    </reapack>
-  </category>
-  <category name="Delay">
-    <reapack name="QuickDelay.jsfx" type="effect" desc="QuickDelay">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 QuickDelay\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 A simple delay with ping-pong mode, tempo sync, feedback filters and pitch shift.\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel3 \b \fs24 Features\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Dual or single delay modes\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Normal and ping-pong modes\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Ping-pong stereo width control\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Tempo sync\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Low pass and high pass feedback filters with Q controls\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Feedback pitch shift\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Delay modulation\sa180\par}
-}
-]]></description>
-        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/qdelay.png</link>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T10:40:04Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qdelay/QuickDelay.jsfx</source>
-        <source file="qd.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qdelay/qd.delay.jsfx-inc</source>
-        <source file="qd.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qdelay/qd.rbj_filter.jsfx-inc</source>
-        <source file="qd.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qdelay/qd.saike_pitchlib.jsfx-inc</source>
-      </version>
-    </reapack>
-  </category>
-  <category name="Delay">
-    <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 QuickDualDelay with a nicer interface\par}
-}
-]]></description>
-        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/qdelay2.png</link>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T10:45:17Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qdelay2/qdelay.jsfx</source>
-        <source file="qd2.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qdelay2/qd2.delay.jsfx-inc</source>
-        <source file="qd2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qdelay2/qd2.rbj_filter.jsfx-inc</source>
-        <source file="qd2.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qdelay2/qd2.saike_pitchlib.jsfx-inc</source>
-        <source file="qd2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qdelay2/qd2.gfxlib.jsfx-inc</source>
-      </version>
-    </reapack>
-  </category>
-  <category name="Filter">
-    <reapack name="QuickFilter.jsfx" type="effect" desc="QuickFilter">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 QuickFilter\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Simple filter with 9 modes and smooth interpolation.\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T10:40:04Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qfilter/QuickFilter.jsfx</source>
-        <source file="qf.svf_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qfilter/qf.svf_filter.jsfx-inc</source>
-      </version>
-    </reapack>
-  </category>
-  <category name="Filter">
-    <reapack name="skfilter.jsfx" type="effect" desc="SKFilter">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 SKFilter\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 SKFilter (or Saikes filters) is a set of unique filters extracted from {\field{\*\fldinst{HYPERLINK "https://github.com/JoepVanlier/JSFX/tree/master/Yutani"}}{\fldrslt{\ul
-Yutani Bass
-}}}
-\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel3 \b \fs24 Features\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab 29 filter types\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Non-linear analog modelled filters\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Filter drive\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Filter modes and morphing\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Oversampling up to 8x\sa180\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T10:45:17Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/skfilter/skfilter.jsfx</source>
-        <source file="skf.Saike_Yutani_Filters.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/skfilter/skf.Saike_Yutani_Filters.jsfx-inc</source>
-        <source file="skf.Saike_Yutani_oversampling.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/skfilter/skf.Saike_Yutani_oversampling.jsfx-inc</source>
-        <source file="skf.Saike_Yutani_upsamplers.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/skfilter/skf.Saike_Yutani_upsamplers.jsfx-inc</source>
-      </version>
-    </reapack>
-  </category>
+<index version="1" commit="d73c618c72b1a59a1710d0f64973af977aa627f7" name="Tilr JSFX">
   <category name="Modulation">
     <reapack name="adsr1.jsfx" type="effect" desc="ADSR-1">
       <metadata>
@@ -177,121 +51,6 @@ Yutani Bass
         <source file="gate.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/gate1/gate.array.jsfx-inc</source>
         <source file="gate.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/gate1/gate.curvelib.jsfx-inc</source>
         <source file="gate.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/gate1/gate.mouselib.jsfx-inc</source>
-      </version>
-    </reapack>
-  </category>
-  <category name="Modulation">
-    <reapack name="mseg1.jsfx" type="effect" desc="MSEG-1">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 MSEG-1\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 MSEG-1 is a multi-segment LFO / Envelope generator\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Features:\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Tempo sync or Hz rate\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab LFO and MIDI trigger modes\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Paint mode - erase, line, saw up, saw down\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Output smooth and attack-release smooth\sa180\par}
-}
-]]></description>
-        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/mseg1.png</link>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T10:40:04Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg1.jsfx</source>
-        <source file="mseg.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg.array.jsfx-inc</source>
-        <source file="mseg.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg.curvelib.jsfx-inc</source>
-        <source file="mseg.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg.mouselib.jsfx-inc</source>
-      </version>
-    </reapack>
-  </category>
-  <category name="Modulation">
-    <reapack name="time1.jsfx" type="effect" desc="TIME-1">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 TIME-1\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 TIME-1 is a playback/time and pitch editor similar to plugins like GrossBeat and TimeShaper.\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Features:\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Time and pitch envelope editor\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab 12 patterns triggered by midi notes\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Paint mode - erase, line\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Point type - hold, curve, s-curve, stairs ..\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Anti clicking with 3 modes (Off, Low, High)\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Pre and post waveform display\sa180\par}
-}
-]]></description>
-        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/time1.png</link>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T10:40:04Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time1.jsfx</source>
-        <source file="time.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.array.jsfx-inc</source>
-        <source file="time.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.curvelib.jsfx-inc</source>
-        <source file="time.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.delay.jsfx-inc</source>
-        <source file="time.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.mouselib.jsfx-inc</source>
-      </version>
-    </reapack>
-  </category>
-  <category name="Other">
-    <reapack name="MIDI Keyvel Filter.jsfx" type="effect" desc="MIDI Keyvel Filter">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 Key and velocity midi filter\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.1" author="tilr" time="2024-01-03T09:49:30Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/MIDI%20Keyvel%20Filter.jsfx</source>
-      </version>
-    </reapack>
-    <reapack name="Notes to 12 channel.jsfx" type="effect" desc="Notes to 12 channel">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 Splits incomming midi notes into 12 channels C -> Chn1, C# -> Chn2 and so on\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T09:49:30Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/Notes%20to%2012%20channel.jsfx</source>
-      </version>
-    </reapack>
-    <reapack name="Notes to CC.jsfx" type="effect" desc="Notes to CC">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 Notes to CC s\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Sends CC events on midi notes, note pitch is mapped to CC value, useful for keytrack modulation.\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Includes controls for CC param, note min, note max and param range values.\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.1" author="tilr" time="2024-01-03T09:49:30Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/Notes%20to%20CC.jsfx</source>
-      </version>
-    </reapack>
-    <reapack name="Vel to CC.jsfx" type="effect" desc="Vel to CC">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 Maps midi notes velocity to CC automation\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T09:49:30Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/Vel%20to%20CC.jsfx</source>
       </version>
     </reapack>
   </category>
@@ -555,6 +314,231 @@ fix volume knob clicking]]></changelog>
         <source type="data" file="tilr_JSWavesynth/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/aee96f73e6e634fa6350b2c7868d99b8040bd53a/jswavesynth/tilr_JSWavesynth/Square%202.wav</source>
         <source type="data" file="tilr_JSWavesynth/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/aee96f73e6e634fa6350b2c7868d99b8040bd53a/jswavesynth/tilr_JSWavesynth/Stairs.wav</source>
         <source type="data" file="tilr_JSWavesynth/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/aee96f73e6e634fa6350b2c7868d99b8040bd53a/jswavesynth/tilr_JSWavesynth/Triangle.wav</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Modulation">
+    <reapack name="mseg1.jsfx" type="effect" desc="MSEG-1">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 MSEG-1\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 MSEG-1 is a multi-segment LFO / Envelope generator\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 Features:\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Tempo sync or Hz rate\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab LFO and MIDI trigger modes\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Paint mode - erase, line, saw up, saw down\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Output smooth and attack-release smooth\sa180\par}
+}
+]]></description>
+        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/mseg1.png</link>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T10:40:04Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg1.jsfx</source>
+        <source file="mseg.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg.array.jsfx-inc</source>
+        <source file="mseg.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg.curvelib.jsfx-inc</source>
+        <source file="mseg.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg.mouselib.jsfx-inc</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Other">
+    <reapack name="MIDI Keyvel Filter.jsfx" type="effect" desc="MIDI Keyvel Filter">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Key and velocity midi filter\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.1" author="tilr" time="2024-01-03T09:49:30Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/MIDI%20Keyvel%20Filter.jsfx</source>
+      </version>
+    </reapack>
+    <reapack name="Notes to 12 channel.jsfx" type="effect" desc="Notes to 12 channel">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Splits incomming midi notes into 12 channels C -> Chn1, C# -> Chn2 and so on\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T09:49:30Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/Notes%20to%2012%20channel.jsfx</source>
+      </version>
+    </reapack>
+    <reapack name="Vel to CC.jsfx" type="effect" desc="Vel to CC">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Maps midi notes velocity to CC automation\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T09:49:30Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/Vel%20to%20CC.jsfx</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Delay">
+    <reapack name="QuickDelay.jsfx" type="effect" desc="QuickDelay">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 QuickDelay\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 A simple delay with ping-pong mode, tempo sync, feedback filters and pitch shift.\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel3 \b \fs24 Features\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Dual or single delay modes\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Normal and ping-pong modes\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Ping-pong stereo width control\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Tempo sync\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Low pass and high pass feedback filters with Q controls\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Feedback pitch shift\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Delay modulation\sa180\par}
+}
+]]></description>
+        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/qdelay.png</link>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T10:40:04Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qdelay/QuickDelay.jsfx</source>
+        <source file="qd.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qdelay/qd.delay.jsfx-inc</source>
+        <source file="qd.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qdelay/qd.rbj_filter.jsfx-inc</source>
+        <source file="qd.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qdelay/qd.saike_pitchlib.jsfx-inc</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Delay">
+    <reapack name="QuickDualDelay.jsfx" type="effect" desc="QuickDualDelay">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 QuickDualDelay\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 Dual delay with independent or linked times, ping-pong mode, tempo sync, feedback filters and pitch shift.\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel3 \b \fs24 Features\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Dual delay with independent or sync time and feedback\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Normal and ping-pong modes\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Ping-pong stereo width control\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Tempo sync\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Low pass and high pass feedback filters with Q controls\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Feedback pitch shift\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Delay modulation\sa180\par}
+}
+]]></description>
+        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/qddelay.png</link>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T10:45:17Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qddelay/QuickDualDelay.jsfx</source>
+        <source file="qdd.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qddelay/qdd.delay.jsfx-inc</source>
+        <source file="qdd.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qddelay/qdd.rbj_filter.jsfx-inc</source>
+        <source file="qdd.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qddelay/qdd.saike_pitchlib.jsfx-inc</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Delay">
+    <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 QuickDualDelay with a nicer interface\par}
+}
+]]></description>
+        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/qdelay2.png</link>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T10:45:17Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qdelay2/qdelay.jsfx</source>
+        <source file="qd2.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qdelay2/qd2.delay.jsfx-inc</source>
+        <source file="qd2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qdelay2/qd2.rbj_filter.jsfx-inc</source>
+        <source file="qd2.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qdelay2/qd2.saike_pitchlib.jsfx-inc</source>
+        <source file="qd2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/qdelay2/qd2.gfxlib.jsfx-inc</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Filter">
+    <reapack name="QuickFilter.jsfx" type="effect" desc="QuickFilter">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 QuickFilter\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 Simple filter with 9 modes and smooth interpolation.\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T10:40:04Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qfilter/QuickFilter.jsfx</source>
+        <source file="qf.svf_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/qfilter/qf.svf_filter.jsfx-inc</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Filter">
+    <reapack name="skfilter.jsfx" type="effect" desc="SKFilter">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 SKFilter\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 SKFilter (or Saikes filters) is a set of unique filters extracted from {\field{\*\fldinst{HYPERLINK "https://github.com/JoepVanlier/JSFX/tree/master/Yutani"}}{\fldrslt{\ul
+Yutani Bass
+}}}
+\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel3 \b \fs24 Features\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab 29 filter types\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Non-linear analog modelled filters\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Filter drive\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Filter modes and morphing\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Oversampling up to 8x\sa180\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T10:45:17Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/skfilter/skfilter.jsfx</source>
+        <source file="skf.Saike_Yutani_Filters.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/skfilter/skf.Saike_Yutani_Filters.jsfx-inc</source>
+        <source file="skf.Saike_Yutani_oversampling.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/skfilter/skf.Saike_Yutani_oversampling.jsfx-inc</source>
+        <source file="skf.Saike_Yutani_upsamplers.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/cadeb89926991b188d188723c059cd7495a5c9ad/skfilter/skf.Saike_Yutani_upsamplers.jsfx-inc</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Modulation">
+    <reapack name="time1.jsfx" type="effect" desc="TIME-1">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 TIME-1\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 TIME-1 is a playback/time and pitch editor similar to plugins like GrossBeat and TimeShaper.\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 Features:\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Time and pitch envelope editor\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab 12 patterns triggered by midi notes\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Paint mode - erase, line\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Point type - hold, curve, s-curve, stairs ..\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Anti clicking with 3 modes (Off, Low, High)\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Pre and post waveform display\sa180\par}
+}
+]]></description>
+        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/time1.png</link>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T10:40:04Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time1.jsfx</source>
+        <source file="time.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.array.jsfx-inc</source>
+        <source file="time.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.curvelib.jsfx-inc</source>
+        <source file="time.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.delay.jsfx-inc</source>
+        <source file="time.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.mouselib.jsfx-inc</source>
       </version>
     </reapack>
   </category>
