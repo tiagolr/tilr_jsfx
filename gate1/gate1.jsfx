@@ -526,7 +526,7 @@ function draw_button (x, y, w, label, toggled) (
 mouse.update_mouse_state();
 gfx_clear = color_bg;
 
-draw_wave && (!sync || play_state & 1) ? (
+draw_wave && (always_playing || play_state & 1) ? (
   gfx_set(.5,.5,.5);
   draw_wave(pre_samples);
   set_color(color_active);
