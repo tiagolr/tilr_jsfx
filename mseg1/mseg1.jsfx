@@ -18,7 +18,7 @@ about:
   * Paint mode - erase, line, saw up, saw down
   * Output smooth and attack-release smooth
 
-slider1:mode=0<0,2,1{Play,Free,MIDI}>Trigger
+slider1:mode=0<0,2,1{Sync,Free,MIDI}>Mode
 slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider3:ratehz=1<0.01,140,.01:log>Rate (Hz)
 slider4:phase=0<0,1,.01>Phase
@@ -47,6 +47,7 @@ file_mem(0, curve.segments.buf, curve.segments.num * curve.segments.size);
 file_var(0, dual_smooth);
 file_var(0, paint_mode);
 file_var(0, gridsegs);
+file_var(0, always_playing);
 
 on_slider(); // update sliders after loading vars
 
@@ -58,6 +59,7 @@ selected_point = -1;
 selected_midpoint = -1;
 midi_trigger = 0;
 dual_smooth = 0;
+always_playing = 0;
 paint_mode = 1; // 0 = Erase, 1 = Line
 point_mode = 1; // 0 = hold, 1 = line
 show_about = 0;
@@ -153,7 +155,7 @@ function on_slider() (
   : sync == 14 ? sync_qn = 1/2*1.5 // 1/8.
   : sync == 15 ? sync_qn = 1/1*1.5 // 1/4.
   : sync == 16 ? sync_qn = 2/1*1.5 // 1/2.
-  : sync == 17 ? sync_qn = 4/1*1.5; // 1/1.
+  : sync == 17 ? sync_qn = 4/1*1.5 // 1/1.
 );
 
 @slider
@@ -163,8 +165,12 @@ on_slider();
 @block
 
 beats_per_spl = tempo / (60 * srate);
-mode == 0 && (play_state & 1) ? (
+mode == 0 && sync && (play_state & 1) ? (
   beat_pos = beat_position;
+);
+// reset play position for Hz sync mode
+mode == 0 && !sync && (play_state & 1) && (!lplay_state & 1) ? (
+  beat_pos = 0;
 );
 
 while (midirecv(offset, msg1, note, vel)) (
@@ -172,7 +178,7 @@ while (midirecv(offset, msg1, note, vel)) (
   event == 0x90 && vel && mode == 2 ? (
     lmidi_trigger = 0;
     midi_trigger = 1;
-    xpos = 0;
+    xpos = phase;
   );
   midisend(offset, msg1, note, vel);
 );
@@ -181,7 +187,6 @@ while (midirecv(offset, msg1, note, vel)) (
 
 // when playback starts
 mode == 0 && (!lplay_state & 1) && (play_state & 1) ? (
-  xpos = phase;
   value.smooth = get_curve_y(beat_pos / sync_qn + phase);
 );
 // when midi trigger starts
@@ -192,12 +197,14 @@ mode == 2 && !lmidi_trigger && midi_trigger ? (
 lplay_state = play_state;
 lmidi_trigger = midi_trigger;
 
-mode == 0 ? (
+// sync mode
+mode == 0 && (always_playing || play_state & 1) ? (
   sync ? (
     beat_pos += beats_per_spl;
     xpos = beat_pos / sync_qn + phase;
   ) : (
-    xpos += 1 / srate * ratehz;
+    beat_pos += 1 / srate * ratehz;
+    xpos = beat_pos + phase;
   );
   xpos -= floor(xpos);
   nextv = get_curve_y(xpos);
@@ -205,12 +212,14 @@ mode == 0 ? (
   slider_automate(value);
 );
 
+// free mode
 mode == 1 ? (
   sync ? (
     beat_pos += beats_per_spl;
     xpos = beat_pos / sync_qn + phase;
   ) : (
-    xpos += 1 / srate * ratehz;
+    beat_pos += 1/srate*ratehz;
+    xpos = beat_pos + phase;
   );
   xpos -= floor(xpos);
   nextv = get_curve_y(xpos);
@@ -218,17 +227,32 @@ mode == 1 ? (
   slider_automate(value);
 );
 
-// Tempo sync midi trigger
-mode == 2 && midi_trigger ? (
+// midi trigger
+mode == 2 && midi_trigger && !always_playing ? (
   xpos += sync
     ? beats_per_spl / sync_qn
     : 1 / srate * ratehz;
-  xpos >= 1 ? (
+  xpos == 1 ? (
     midi_trigger = 0;
     xpos = 1;
   );
   nextv = get_curve_y(xpos);
-  value = value.smooth2 (nextv, nextv > value);
+  value = value.smooth2(nextv, nextv > value);
+  slider_automate(value);
+);
+
+// midi trigger reset phase
+mode == 2 && always_playing ? (
+  midi_trigger ? (
+    xpos = phase;
+    midi_trigger = 0;
+  );
+  xpos += sync
+    ? beats_per_spl / sync_qn
+    : 1 / srate * ratehz;
+  xpos -= floor(xpos);
+  nextv = get_curve_y(xpos);
+  value = value.smooth2(nextv, nextv > value);
   slider_automate(value);
 );
 
@@ -497,7 +521,7 @@ function draw_seek ()
 );
 
 // draw seek
-mode == 0 || mode == 1 || (mode == 2 && midi_trigger) ? (
+always_playing || play_state & 1 || mode == 1 || (mode == 2 && midi_trigger) ? (
   draw_seek();
 );
 
@@ -550,6 +574,26 @@ mouse.left_click && mouse_in_rect(drawx, 10-2, 60, 10+2) ? (
   gfx_x = drawx; gfx_y = 20;
   choice = gfx_showmenu("Hold|Curve|S-Curve|Pulse|Wave|Triangle|Stairs|Smooth Stairs");
   choice > 0 ? point_mode = choice - 1;
+);
+drawx += 70;
+gfx_line(drawx, 10-2, drawx, 20);
+drawx += 5;
+mode == 0 || mode == 2 ? (
+  mouse.left_click && mouse_in_rect(drawx, 10-4, 20, 17) ? (
+    always_playing = !always_playing;
+  );
+  always_playing ? (
+    gfx_rect(drawx+4, 10, 11, 9);
+  ) : (
+    gfx_triangle(drawx+5, 10-1, drawx+5, 10+10-1, drawx+5+10, 10-1+5);
+  );
+);
+mode == 1 ? (
+  drawx += 5;
+  draw_button(drawx, 10, 20, "R", 0);
+  mouse.left_click && mouse_in_rect(drawx, 10-2, 50, 10+2) ? (
+    beat_pos = 0;
+  );
 );
 
 mouse.left_click ? show_about = 0;
@@ -654,14 +698,6 @@ gfx_triangle(drawx, 15-2, drawx+10, 10-2, drawx+10, 20-2);
 mouse.left_click && mouse_in_rect(drawx, 10-2, 10, 20-2) ? (
   gridsegs -= 1;
   gridsegs < 2 ? gridsegs = 32;
-);
-
-!sync && (mode == 0 || mode == 1) ? (
-  drawx -= 60;
-  draw_button(drawx, 10, 50, "Rtrig", 0);
-  mouse.left_click && mouse_in_rect(drawx, 10-2, 50, 10+2) ? (
-    xpos = phase;
-  );
 );
 
 function get_point_at_mouse()
