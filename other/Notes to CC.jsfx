@@ -49,20 +49,20 @@ while
 
       sendNotes ? midisend(offset, msg1, note, vel); // send note
     ) :
-    
+
     status == statNoteOff && offNotes ? ( // Note off
       value = (slider6 + 256*ceil(offNotesValue))|0;
       midisend(offset, 11*16 + slider5, value);
       sendNotes ? midisend(offset, msg1, note, vel);
       slider20 = offNotesValue;
     ) :
-    
+
     msg1 == 0xB0 && note == 123 && offNotes ? ( // All notes off
       value = (slider6 + 256*ceil(offNotesValue))|0;
       midisend(offset, 11*16 + slider5, value);
       slider20 = offNotesValue;
     ) :
-    
+
     (
       midisend(offset,msg1,note,vel); // passthrough
     );
