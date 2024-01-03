@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="Tilr JSFX" commit="4ebf14b5ed0bdcf1d9b329989d2d08f5f172b5fb">
+<index version="1" commit="b4640725d91f5843d21431a22a77b5f29ccce69d">
   <category name="Modulation">
     <reapack name="adsr1.jsfx" type="effect" desc="ADSR-1">
       <metadata>
@@ -378,7 +378,7 @@ fix volume knob clicking]]></changelog>
 {\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
 \widowctrl\hyphauto
 
-{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 Notes to CC\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 Notes to CC s\par}
 {\pard \ql \f0 \sa180 \li0 \fi0 Sends CC events on midi notes, note pitch is mapped to CC value, useful for keytrack modulation.\par}
 {\pard \ql \f0 \sa180 \li0 \fi0 Includes controls for CC param, note min, note max and param range values.\par}
 }
