@@ -610,7 +610,7 @@ always_playing ? (
 ) : (
   gfx_triangle(drawx+5, drawy-2, drawx+5, drawy+10-2, drawx+5+10, drawy-2 +5);
 );
-!sync && always_playing ? (
+!sync && (always_playing || play_state & 1) ? (
   drawx += 25;
   draw_button(drawx, drawy, 20, "R", 0);
   mouse.left_click && mouse_in_rect(drawx, drawy-2, 20, 10+2) ? (
