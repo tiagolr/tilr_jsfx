@@ -1,2 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="Tilr JSFX" commit="16b20d6912a410c2b515ec5428cb999fa99f43d1"/>
+<index version="1" name="Tilr JSFX" commit="98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded">
+  <category name="other">
+    <reapack name="MIDI Keyvel Filter.jsfx" type="effect" desc="MIDI Keyvel Filter">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Key and velocity midi filter\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.1" author="tilr" time="2024-01-03T09:49:30Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/MIDI%20Keyvel%20Filter.jsfx</source>
+      </version>
+    </reapack>
+    <reapack name="Notes to 12 channel.jsfx" type="effect" desc="Notes to 12 channel">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Splits incomming midi notes into 12 channels C -> Chn1, C# -> Chn2 and so on\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T09:49:30Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/Notes%20to%2012%20channel.jsfx</source>
+      </version>
+    </reapack>
+    <reapack name="Notes to CC.jsfx" type="effect" desc="Notes to CC">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 Notes to CC\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 Sends CC events on midi notes, note pitch is mapped to CC value, useful to create keyboard param modulations or keytracking.\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 Includes controls for CC param, note min, note max and param range values.\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.1" author="tilr" time="2024-01-03T09:49:30Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/Notes%20to%20CC.jsfx</source>
+      </version>
+    </reapack>
+    <reapack name="Vel to CC.jsfx" type="effect" desc="Vel to CC">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Maps midi notes velocity to CC automation\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-03T09:49:30Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/Vel%20to%20CC.jsfx</source>
+      </version>
+    </reapack>
+  </category>
+</index>

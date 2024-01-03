@@ -1,4 +1,52 @@
 desc: JSWavesynth
+author: tilr
+version: 1.2
+changelog:
+  replace zdf with rbj filters
+  fix volume knob clicking
+provides:
+  ws.adsr.jsfx-inc
+  ws.array.jsfx-inc
+  ws.gfxlib.jsfx-inc
+  ws.mouselib.jsfx-inc
+  ws.wavetable.jsfx-inc
+  [data] tilr_JSWavesynth/Complex 1.wav
+  [data] tilr_JSWavesynth/Complex 2.wav
+  [data] tilr_JSWavesynth/Complex 3.wav
+  [data] tilr_JSWavesynth/Complex 4.wav
+  [data] tilr_JSWavesynth/Complex 5.wav
+  [data] tilr_JSWavesynth/Organ 1.wav
+  [data] tilr_JSWavesynth/Organ 2.wav
+  [data] tilr_JSWavesynth/Organ 3.wav
+  [data] tilr_JSWavesynth/Organ 4.wav
+  [data] tilr_JSWavesynth/Organ 5.wav
+  [data] tilr_JSWavesynth/Organ 6.wav
+  [data] tilr_JSWavesynth/Organ 7.wav
+  [data] tilr_JSWavesynth/Saw 1.wav
+  [data] tilr_JSWavesynth/Saw 2.wav
+  [data] tilr_JSWavesynth/Saw 3.wav
+  [data] tilr_JSWavesynth/Sine 1.wav
+  [data] tilr_JSWavesynth/Sine 2.wav
+  [data] tilr_JSWavesynth/Sine 3.wav
+  [data] tilr_JSWavesynth/Sine 4.wav
+  [data] tilr_JSWavesynth/Sine 5.wav
+  [data] tilr_JSWavesynth/Spectral.wav
+  [data] tilr_JSWavesynth/Square 1.wav
+  [data] tilr_JSWavesynth/Square 2.wav
+  [data] tilr_JSWavesynth/Stairs.wav
+  [data] tilr_JSWavesynth/Triangle.wav
+  tilr_JSWavesynth/ws.rbj_filter.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/jswavesynth/master/doc/ss.png
+about:
+  # JSWavesynth
+
+  JSFX polyphonic synth with a unison engine.
+
+  Features:
+  * Single cycle waveforms read from wav files
+  * Polyphonic voices with independent adsr
+  * 8 unison voices with detune and panning controls
+  * ADSR for volume pitch and filter
 tags: synth, instrument
 
 slider1:/tilr_JSWavesynth:none:Wave

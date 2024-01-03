@@ -1,4 +1,27 @@
-desc:JS3Osc
+desc: JS3Osc
+author: tilr
+version: 1.1
+changelog:
+  Normalize slider values
+  Remove clicking from vol and phase_offset knobs
+  Replace zdf with rbj filters
+provides:
+  3o.adsr.jsfx-inc
+  3o.array.jsfx-inc
+  3o.gfxlib.jsfx-inc
+  3o.mouselib.jsfx-inc
+  3o.rbj_filter.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/js3osc/master/doc/ss.png
+about:
+  # JS3Osc
+
+  Polyphonic synth based of IL 3xOsc.
+
+  Features:
+  * Polyphonic voicing
+  * Filter, pitch and amplitude envelopes per voice
+  * Three oscillators with 6 wave types
+  * Oscillator phase stereo detuning and offset
 tags: synth, instrument
 
 slider1:maxpoly=16<2, 32, 1>-Polyphony

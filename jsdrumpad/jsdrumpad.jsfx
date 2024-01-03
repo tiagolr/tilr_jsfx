@@ -1,6 +1,28 @@
-desc:JSDrumpad
+desc: JSDrumpad
+author: tilr
+version: 1.1
+changelog: Change rbj filters to svf for smooth interpolation
+provides:
+  jsdrumpad.jsfx.rpl
+  dp.envlib.jsfx-inc
+  dp.gfxlib.jsfx-inc
+  dp.mouselib.jsfx-inc
+  dp.svf_filter.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/JSDrumpad/master/doc/ss.png
+about:
+  # JSDrumpad
+
+  JSFX drumpad synth inspired by vsts like Microtonic and DSK Synthdrums.
+
+  Features:
+  * 1x OSC (Sine, Triangle, Saw, or Square wave)
+  * 1x Noise generator (Stereo or mono)
+  * 3x Envelopes (osc, pitch and noise)
+  * 2x Filter (Noise color/lp, LowPass, BandPass and HighPass)
+  * 1x Distortion (Tube)
+  * 1x Band EQ
+
 tags: drum synth, instrument
-author: TiagoLr
 
 import dp.envlib.jsfx-inc
 import dp.mouselib.jsfx-inc

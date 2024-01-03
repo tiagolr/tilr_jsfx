@@ -1,4 +1,59 @@
-desc:JSModulator
+desc: JSModulator
+author: tilr
+version: 1.1
+changelog:
+  replace zdf with rbj filters
+  fix read wave sample rate
+  fix volume knobs clicking
+  next and prev wave buttons
+provides:
+  tilr_JSModulator/mod.array.jsfx-inc
+  tilr_JSModulator/mod.envlib.jsfx-inc
+  tilr_JSModulator/mod.fft_real_synth.jsfx-inc
+  tilr_JSModulator/mod.gfxlib.jsfx-inc
+  tilr_JSModulator/mod.mouselib.jsfx-inc
+  tilr_JSModulator/mod.osc.jsfx-inc
+  tilr_JSModulator/mod.wavetable.jsfx-inc
+  [data] tilr_JSModulator/Complex 2.wav
+  [data] tilr_JSModulator/Complex 3.wav
+  [data] tilr_JSModulator/Complex 4.wav
+  [data] tilr_JSModulator/Complex 5.wav
+  [data] tilr_JSModulator/Complex.wav
+  [data] tilr_JSModulator/Organ 2.wav
+  [data] tilr_JSModulator/Organ 3.wav
+  [data] tilr_JSModulator/Organ 4.wav
+  [data] tilr_JSModulator/Organ 5.wav
+  [data] tilr_JSModulator/Organ 6.wav
+  [data] tilr_JSModulator/Organ 7.wav
+  [data] tilr_JSModulator/Organ.wav
+  [data] tilr_JSModulator/Saw 2.wav
+  [data] tilr_JSModulator/Saw 3.wav
+  [data] tilr_JSModulator/Saw.wav
+  [data] tilr_JSModulator/Sine 2.wav
+  [data] tilr_JSModulator/Sine 3.wav
+  [data] tilr_JSModulator/Sine 4.wav
+  [data] tilr_JSModulator/Sine 5.wav
+  [data] tilr_JSModulator/Sine.wav
+  [data] tilr_JSModulator/Spectral.wav
+  [data] tilr_JSModulator/Square 2.wav
+  [data] tilr_JSModulator/Square.wav
+  [data] tilr_JSModulator/Stairs.wav
+  [data] tilr_JSModulator/Triangle.wav
+  tilr_JSModulator/mod.rbj_filter.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/jsmodulator/master/doc/ss.png
+about:
+  # JSModulator
+
+  Polyphonic FM synth with 4 operators
+
+  Features:
+  * 4 wavetable operators with additive synthesis
+  * FM matrix 4x4
+  * Global envelope and envelope per operator
+  * Operator harmonics and phase editor
+  * Filter per voice with envelope ADSR
+  * Envelope curve/tension controls
+
 tags: synth, instrument
 
 slider1:_vol=80<0, 100, 0.1>-Master Volume

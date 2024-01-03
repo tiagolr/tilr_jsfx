@@ -1,6 +1,20 @@
-desc:JSDrumsynth
+desc: JSDrumsynth
+author: tilr
+version: 1.0
+provides:
+  jsdrumsynth.jsfx.RPL
+  ds.envlib.jsfx-inc
+  ds.gfxlib.jsfx-inc
+  ds.mouselib.jsfx-inc
+  ds.pad.jsfx-inc
+  ds.svf_filter.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/jsdrumsynth/master/doc/ss.png
+about:
+  # JSDrumsynth
+
+  Lightweight drum machine synth with seven drum pads.
+  Checkout JSDrumpad for a single pad synth.
 tags: drum synth instrument
-author: TiagoLr
 options:gfx_hz=60 no_meter gmem=jsdrumsynth
 
 import ds.envlib.jsfx-inc
