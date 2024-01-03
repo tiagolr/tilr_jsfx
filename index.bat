@@ -1,1 +1,0 @@
-node post-process.js -r & reapack-index & reapack-index --no-commit & node post-process.js

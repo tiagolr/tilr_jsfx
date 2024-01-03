@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="d73c618c72b1a59a1710d0f64973af977aa627f7" name="Tilr Scripts">
-  <category name="Modulation">
+<index version="1" commit="d73c618c72b1a59a1710d0f64973af977aa627f7">
+  <category name="adsr1">
     <reapack name="adsr1.jsfx" type="effect" desc="ADSR-1">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -24,7 +24,7 @@
       </version>
     </reapack>
   </category>
-  <category name="Modulation">
+  <category name="gate1">
     <reapack name="gate1.jsfx" type="effect" desc="GATE-1">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -54,7 +54,7 @@
       </version>
     </reapack>
   </category>
-  <category name="Synth">
+  <category name="js3osc">
     <reapack name="js3osc.jsfx" type="effect" desc="JS3Osc">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -85,7 +85,7 @@ Replace zdf with rbj filters]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Synth">
+  <category name="jsadditiv">
     <reapack name="jsadditiv.jsfx" type="effect" desc="JSAdditiv">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -144,7 +144,7 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Synth">
+  <category name="jsdrumpad">
     <reapack name="jsdrumpad.jsfx" type="effect" desc="JSDrumpad">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -175,7 +175,7 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Synth">
+  <category name="jsdrumsynth">
     <reapack name="jsdrumsynth.jsfx" type="effect" desc="JSDrumsynth">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -199,7 +199,7 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Synth">
+  <category name="jsmodulator">
     <reapack name="jsmodulator.jsfx" type="effect" desc="JSModulator">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -261,7 +261,7 @@ next and prev wave buttons]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Synth">
+  <category name="jswavesynth">
     <reapack name="jswavesynth.jsfx" type="effect" desc="JSWavesynth">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -317,7 +317,7 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Modulation">
+  <category name="mseg1">
     <reapack name="mseg1.jsfx" type="effect" desc="MSEG-1">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -343,7 +343,7 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Other">
+  <category name="other">
     <reapack name="MIDI Keyvel Filter.jsfx" type="effect" desc="MIDI Keyvel Filter">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -387,7 +387,7 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Delay">
+  <category name="qddelay">
     <reapack name="QuickDualDelay.jsfx" type="effect" desc="QuickDualDelay">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -416,7 +416,7 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Delay">
+  <category name="qdelay">
     <reapack name="QuickDelay.jsfx" type="effect" desc="QuickDelay">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -445,7 +445,7 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Delay">
+  <category name="qdelay2">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -466,7 +466,7 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Filter">
+  <category name="qfilter">
     <reapack name="QuickFilter.jsfx" type="effect" desc="QuickFilter">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -484,7 +484,7 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
-  <category name="Filter">
+  <category name="skfilter">
     <reapack name="skfilter.jsfx" type="effect" desc="SKFilter">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
@@ -513,7 +513,7 @@ Yutani Bass
       </version>
     </reapack>
   </category>
-  <category name="Modulation">
+  <category name="time1">
     <reapack name="time1.jsfx" type="effect" desc="TIME-1">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
