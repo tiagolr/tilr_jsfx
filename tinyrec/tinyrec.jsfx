@@ -22,9 +22,13 @@ recpos = 0;
 recmax = min((44100 / srate * 44100 * 120)|0, __memtop() / 2 - 1000);
 recsize = 0;
 playpos = 0;
+playloop = 1;
 
 is_recording = 0;
 is_playing = 0;
+
+zoom = 1;
+scrollx = 0;
 
 function record (append) (
   !append ? (
@@ -33,6 +37,7 @@ function record (append) (
   is_recording = 1;
   is_playing = 0;
   is_paused = 0;
+  zoom = 1;
 );
 
 function play () (
@@ -74,6 +79,9 @@ is_playing ? (
   playpos += 1;
   playpos > recsize ? (
     playpos = 0;
+    !playloop ? (
+      stop();
+    );
   );
 );
 
@@ -85,18 +93,31 @@ winw = gfx_w - 20;
 winh = gfx_h - winy - 10;
 gfx_clear = COLOR_BG;
 mouse.update_mouse_state();
-gfx_setfont(1, "Arial", 16, "1");
+gfx_setfont(1, "Arial", 16, 'b');
 
+drawx = 10;
+drawy = 10;
+set_color(playloop ? 0x00FFFF : 0xFFFFFF);
+gfx_roundrect(drawx,drawy, 35, 35, 5);
+mouse.left_click && mouse_in_rect(drawx, drawy, 35, 35) ? (
+  playloop = !playloop;
+);
+gfx_x = drawx;
+gfx_y = drawy;
+gfx_drawstr("L", 5, drawx+35, drawy+35);
+set_color(0xFFFFFF);
+
+drawx += 45;
 // draw playbutton
 set_color(is_playing ? 0x00FF00 : 0xFFFFFF);
-gfx_roundrect(10,10,35,35, 5);
+gfx_roundrect(drawx,drawy, 35, 35, 5);
 is_playing ? (
-  gfx_rect(10+10, 13+10, 5, 10);
-  gfx_rect(21+10, 13+10, 5, 10);
+  gfx_rect(drawx+10, drawy+13, 5, 10);
+  gfx_rect(drawx+21, drawy+13, 5, 10);
 ) : (
-  gfx_triangle(15+5, 12+5, 15+5, 12+5+20, 12+5+20, 12+5+10);
+  gfx_triangle(drawx+10, drawy+7, drawx+10, drawy+12+15, drawx+12+15, drawy+12+5);
 );
-mouse.left_click && mouse_in_rect(10,10,35,35) ? (
+mouse.left_click && mouse_in_rect(drawx,drawy,35,35) ? (
   is_playing ? (
     pause();
   ) : (
@@ -104,19 +125,21 @@ mouse.left_click && mouse_in_rect(10,10,35,35) ? (
   );
 );
 
+drawx += 45;
 // draw stop button
 set_color(0xFFFFFF);
-gfx_roundrect(55, 10, 35,35, 5);
-gfx_rect(55+10,10+10,15, 15,1);
-mouse.left_click && mouse_in_rect(55, 10, 35, 35) ? (
+gfx_roundrect(drawx, drawy, 35,35, 5);
+gfx_rect(drawx+10,drawy+10,15, 15,1);
+mouse.left_click && mouse_in_rect(drawx, drawy, 35, 35) ? (
   stop();
 );
 
 // draw rec button
+drawx += 60;
 set_color(is_recording ? 0xFF0000 : 0xFFFFFF);
-gfx_circle(70+45,10+35/2,35/2,0);
-gfx_circle(70+45,10+35/2,35/4,1);
-mouse.left_click && mouse_in_rect(70+45-35/2, 10, 35, 35) ? (
+gfx_circle(drawx,drawy+35/2,35/2,0);
+gfx_circle(drawx,drawy+35/2,35/4,1);
+mouse.left_click && mouse_in_rect(drawx-35/2, drawy, 35, 35) ? (
   is_recording ? (
     is_recording = 0;
   ) : (
@@ -124,12 +147,29 @@ mouse.left_click && mouse_in_rect(70+45-35/2, 10, 35, 35) ? (
   );
 );
 
+// RIGHT BUTTONS
+
+function export_wave() (
+  track = get_host_placement();
+  track < 0 ? track = 0;
+  export_buffer_to_project(recbuf, recsize, 2, srate, track);
+);
+
+drawx = gfx_w;
+drawx -= 70;
+drawy = 20;
+draw_button(drawx, drawy, 60, "Export", 0);
+mouse.left_click && mouse_in_rect(drawx, drawy, 60, 20) ? (
+  export_wave();
+);
+
+
 function draw_wave() 
 local(i, j, amp, pos, _max, _min)
 (
   loop(i=0; winw,
-    pos = (i / winw * recsize)|0;
-    nextpos = ((i+1) / winw * recsize)|0;
+    pos = (i / winw * recsize / zoom + scrollx * recsize / zoom * (zoom - 1))|0;
+    nextpos = ((i+1) / winw * recsize / zoom + scrollx * recsize / zoom * (zoom - 1))|0;
     _max = 0;
     _min = 0;
     loop(j=pos; max(1, nextpos-pos), 
@@ -146,17 +186,59 @@ local(i, j, amp, pos, _max, _min)
   );
 );
 
+set_color(is_recording ? 0xFF0000 : 0x666666);
 gfx_rect(winx, winy, winw, winh, 0);
+set_color(is_recording ? 0xFF0000 : 0xFFFFFFF);
 draw_wave();
+
+mouse.wheel && mouse_in_rect(winx,winy,winw,winh) && !is_recording ? (
+  zoom == 1 ? (
+    scrollx = (mouse.x - winx) / winw; // zoom on cursor does not work properly
+  );
+  zoom += mouse.wheel;
+  zoom > 30 ? zoom = 30;
+  zoom < 1 ? zoom = 1;
+);
+
+function draw_scrollbar ()
+local(x, scrollw)
+(
+  gfx_a = 0.3;
+  gfx_rect(winx, winy+winh-15, winw, 15);
+  gfx_a = 1;
+  scrollw = winw/zoom;
+  x = winx + winw * scrollx - scrollw * scrollx;
+  gfx_rect(x, winy+winh-15, scrollw, 15); 
+  mouse.left_click && mouse_in_rect(x, winy+winh-15, scrollw, 15) ? (
+    scroll_drag = 1;
+  );
+);
+
+scroll_drag && mouse.dx ? (
+  scrollx += mouse.dx / (gfx_w - winw/zoom);
+  scrollx < 0 ? scrollx = 0;
+  scrollx > 1 ? scrollx = 1;
+);
+
+zoom > 1 ? (
+  draw_scrollbar();
+);
 
 function draw_seek() 
 local (pos)
 (
   set_color(0xFF0000);
-  pos = playpos / recsize;
-  gfx_line(winx + winw * pos, winy, winx + winw * pos, winy+winh);
+  pos = playpos / recsize * zoom;
+  pos -= scrollx * (zoom - 1);
+  pos >= 0 && pos <= 1 ? (
+    gfx_line(winx + winw * pos, winy, winx + winw * pos, winy+winh);
+  );
 );
 
 is_playing  || is_paused ? (
   draw_seek();
+);
+
+!mouse.left ? (
+  scroll_drag = 0;
 );
