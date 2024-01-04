@@ -4,7 +4,7 @@ about:
   # TinyRec
 
   Audio recording tool, stores up to 2 minutes at 44100 sample rate.
-  
+
 // maxmem = 120seconds * 44100srate * 2chn + 1000prebuf
 options: maxmem=10585000
 
@@ -20,7 +20,7 @@ premax = 1000;
 
 recbuf = 1000;
 recpos = 0;
-recmax = min((44100 / srate * 44100 * 120)|0, __memtop() / 2 - 1000);
+recmax = min(44100 * 120, __memtop() / 2);
 recsize = 0;
 playpos = 0;
 play_loop = 1;
@@ -31,10 +31,13 @@ is_armed = 0;
 
 zoom = 1;
 scrollx = 0;
+sel_start = 0;
+sel_end = 0;
 
 function record (append) (
   !append ? (
     recpos = 0;
+    recsize = 0;
   );
   is_recording = 1;
   is_playing = 0;
@@ -46,6 +49,9 @@ function play () (
   is_recording = 0;
   is_playing = 1;
   is_paused = 0;
+  !playpos && sel_start != sel_end ? (
+    playpos = min(sel_start, sel_end);
+  );
 );
 
 function pause () (
@@ -79,10 +85,15 @@ is_playing ? (
   spl0 += recbuf[playpos*2];
   spl1 += recbuf[playpos*2+1];
   playpos += 1;
-  playpos > recsize ? (
-    playpos = 0;
-    !play_loop ? (
-      stop();
+  sel_start != sel_end ? (
+    playpos > max(sel_start, sel_end) ? (
+      playpos = min(sel_start, sel_end);
+      !play_loop ? stop();
+    );
+  ) : ( 
+    playpos > recsize ? (
+      playpos = 0;
+      !play_loop ? stop();
     );
   );
 );
@@ -145,16 +156,24 @@ mouse.left_click && mouse_in_rect(drawx-35/2, drawy, 35, 35) ? (
   is_recording ? (
     is_recording = 0;
   ) : (
-    record(1);
+    record(0);
   );
 );
 
 // RIGHT BUTTONS
 
-function export_wave() (
+function export_wave() 
+local(start, end)
+(
   track = get_host_placement();
   track < 0 ? track = 0;
-  export_buffer_to_project(recbuf, recsize, 2, srate, track);
+  sel_start != sel_end ? (
+    start = (min(sel_start,sel_end)|0);
+    end = (max(sel_start,sel_end)|0) - start;
+    export_buffer_to_project(recbuf + start * 2, end, 2, srate, track);
+  ) : (
+    export_buffer_to_project(recbuf, recsize, 2, srate, track);
+  );
 );
 
 drawx = gfx_w;
@@ -166,7 +185,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy, 60, 20) ? (
 );
 
 
-function draw_wave() 
+function draw_wave()
 local(i, j, amp, pos, _max, _min)
 (
   loop(i=0; winw,
@@ -174,7 +193,7 @@ local(i, j, amp, pos, _max, _min)
     nextpos = ((i+1) / winw * recsize / zoom + scrollx * recsize / zoom * (zoom - 1))|0;
     _max = 0;
     _min = 0;
-    loop(j=pos; max(1, nextpos-pos), 
+    loop(j=pos; max(1, nextpos-pos),
       amp = (recbuf[j*2] + recbuf[j*2 +1]) * 0.5 * (winh-winy) * 0.5;
       _max = max(_max, amp);
       _min = min(_min, amp);
@@ -188,19 +207,30 @@ local(i, j, amp, pos, _max, _min)
   );
 );
 
+// -------
+
+function draw_grid () 
+local (seconds, grids_second, grids, i, x)
+(
+  seconds = recsize / srate;
+  grids_second = tempo / 60 / 4 * zoom;
+  grids = seconds / grids_second;
+  loop(i = 1; grids*zoom, 
+    x = winx + i * winw / grids - scrollx * winw * (zoom - 1);
+    gfx_a = !(i % 4) ? 0.5 : 0.25;
+    gfx_line(x, winy, x, winy+winh);
+    i += 1;
+  );
+);
+
+set_color(0x666666);
+draw_grid();
+gfx_a = 1;
 set_color(is_recording ? 0xFF0000 : 0x666666);
 gfx_rect(winx, winy, winw, winh, 0);
 set_color(is_recording ? 0xFF0000 : 0xFFFFFFF);
 draw_wave();
 
-mouse.wheel && mouse_in_rect(winx,winy,winw,winh) && !is_recording ? (
-  zoom == 1 ? (
-    scrollx = (mouse.x - winx) / winw; // zoom on cursor does not work properly
-  );
-  zoom += mouse.wheel;
-  zoom > 30 ? zoom = 30;
-  zoom < 1 ? zoom = 1;
-);
 
 function draw_scrollbar ()
 local(x, scrollw)
@@ -210,23 +240,17 @@ local(x, scrollw)
   gfx_a = 1;
   scrollw = winw/zoom;
   x = winx + winw * scrollx - scrollw * scrollx;
-  gfx_rect(x, winy+winh-15, scrollw, 15); 
+  gfx_rect(x, winy+winh-15, scrollw, 15);
   mouse.left_click && mouse_in_rect(x, winy+winh-15, scrollw, 15) ? (
     scroll_drag = 1;
   );
-);
-
-scroll_drag && mouse.dx ? (
-  scrollx += mouse.dx / (gfx_w - winw/zoom);
-  scrollx < 0 ? scrollx = 0;
-  scrollx > 1 ? scrollx = 1;
 );
 
 zoom > 1 ? (
   draw_scrollbar();
 );
 
-function draw_seek() 
+function draw_seek()
 local (pos)
 (
   set_color(0xFF0000);
@@ -253,28 +277,55 @@ function buf_to_screen (x) (
 function draw_selection()
 local(start, end)
 (
-  start = buf_to_screen(min(selection_start, selection_end));
-  end = buf_to_screen(max(selection_start, selection_end));
+  start = buf_to_screen(min(sel_start, sel_end));
+  end = buf_to_screen(max(sel_start, sel_end));
   gfx_set(1,0,0,0.25);
-  gfx_rect(winx + start * winw, winy, (end-start)*winw, winh); 
+  gfx_rect(winx + start * winw, winy, (end-start)*winw, zoom > 1 ? winh - 15 : winh);
 );
 
-selection_end > -1 ? (
+sel_end > -1 ? (
   draw_selection();
 );
 
 !scroll_drag && mouse.left && mouse.dx && mouse_in_rect(0,winy,winw+winx*2,winh) ? (
-  selection_end = screen_to_buf((mouse.x - winx) / winw);
-  selection_end < 0 ? selection_end = 0;
-  selection_start < 0 ? selection_start = 0;
-  selection_end > recsize ? selection_end = recsize;
-  selection_start > recsize ? selection_start = recsize;
+  sel_end = screen_to_buf((mouse.x - winx) / winw);
+  sel_end < 0 ? sel_end = 0;
+  sel_start < 0 ? sel_start = 0;
+  sel_end > recsize ? sel_end = recsize;
+  sel_start > recsize ? sel_start = recsize;
 );
 
 !scroll_drag && mouse.left_click && mouse_in_rect(winx,winy,winw,winh) ? (
-  selection_start = screen_to_buf((mouse.x - winx) / winw);
-  selection_end = selection_start;
+  sel_start = screen_to_buf((mouse.x - winx) / winw);
+  sel_end = sel_start;
 );
+
+mouse.wheel && mouse_in_rect(winx,winy,winw,winh) && !is_recording ? (
+  zoom == 1 ? (
+    scrollx = (mouse.x - winx) / winw; // zoom on cursor does not work properly
+  );
+  zoom += mouse.wheel;
+  zoom > 30 ? zoom = 30;
+  zoom < 1 ? zoom = 1;
+);
+
+scroll_drag && mouse.dx ? (
+  scrollx += mouse.dx / (gfx_w - winw/zoom);
+  scrollx < 0 ? scrollx = 0;
+  scrollx > 1 ? scrollx = 1;
+);
+
+seconds = recsize / srate;
+is_recording && seconds > 7 ? (
+  zoom = seconds / 7 ;
+  scrollx = 1;
+);
+lis_recording && !is_recording ? (
+  count += 1;
+  zoom = 1;
+  scrollx = 0;
+);
+lis_recording = is_recording;
 
 !mouse.left ? (
   scroll_drag = 0;
