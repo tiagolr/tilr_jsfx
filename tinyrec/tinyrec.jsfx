@@ -1,0 +1,162 @@
+desc:TinyRec
+noindex: true
+about:
+  # TinyRec
+
+  Audio recording tool, stores up to 2 minutes at 44100 sample rate.
+// maxmem = 120seconds * 44100srate * 2chn + 1000prebuf
+options: maxmem=10585000
+
+import tr.gfxlib.jsfx-inc
+
+@init
+
+ext_noinit = 1;
+
+prebuf = 0;
+prepos = 0;
+premax = 1000;
+
+recbuf = 1000;
+recpos = 0;
+recmax = min((44100 / srate * 44100 * 120)|0, __memtop() / 2 - 1000);
+recsize = 0;
+playpos = 0;
+
+is_recording = 0;
+is_playing = 0;
+
+function record (append) (
+  !append ? (
+    recpos = 0;
+  );
+  is_recording = 1;
+  is_playing = 0;
+  is_paused = 0;
+);
+
+function play () (
+  is_recording = 0;
+  is_playing = 1;
+  is_paused = 0;
+);
+
+function pause () (
+  is_playing = 0;
+  is_paused = 1;
+);
+
+function stop () (
+  is_recording = 0;
+  is_playing = 0;
+  playpos = 0;
+  is_paused = 0;
+);
+
+@sample
+
+recpos > recmax ? (
+  is_recording = 0;
+);
+
+is_recording ? (
+  recbuf[recpos*2] = spl0;
+  recbuf[recpos*2+1] = spl1;
+  recpos += 1;
+  recpos > recsize ? (
+    recsize = recpos;
+  );
+);
+
+is_playing ? (
+  spl0 += recbuf[playpos*2];
+  spl1 += recbuf[playpos*2+1];
+  playpos += 1;
+  playpos > recsize ? (
+    playpos = 0;
+  );
+);
+
+@gfx 400 300
+
+winx = 10;
+winy = 55;
+winw = gfx_w - 20;
+winh = gfx_h - winy - 10;
+gfx_clear = COLOR_BG;
+mouse.update_mouse_state();
+gfx_setfont(1, "Arial", 16, "1");
+
+// draw playbutton
+set_color(is_playing ? 0x00FF00 : 0xFFFFFF);
+gfx_roundrect(10,10,35,35, 5);
+is_playing ? (
+  gfx_rect(10+10, 13+10, 5, 10);
+  gfx_rect(21+10, 13+10, 5, 10);
+) : (
+  gfx_triangle(15+5, 12+5, 15+5, 12+5+20, 12+5+20, 12+5+10);
+);
+mouse.left_click && mouse_in_rect(10,10,35,35) ? (
+  is_playing ? (
+    pause();
+  ) : (
+    play();
+  );
+);
+
+// draw stop button
+set_color(0xFFFFFF);
+gfx_roundrect(55, 10, 35,35, 5);
+gfx_rect(55+10,10+10,15, 15,1);
+mouse.left_click && mouse_in_rect(55, 10, 35, 35) ? (
+  stop();
+);
+
+// draw rec button
+set_color(is_recording ? 0xFF0000 : 0xFFFFFF);
+gfx_circle(70+45,10+35/2,35/2,0);
+gfx_circle(70+45,10+35/2,35/4,1);
+mouse.left_click && mouse_in_rect(70+45-35/2, 10, 35, 35) ? (
+  is_recording ? (
+    is_recording = 0;
+  ) : (
+    record(1);
+  );
+);
+
+function draw_wave() 
+local(i, j, amp, pos, _max, _min)
+(
+  loop(i=0; winw,
+    pos = (i / winw * recsize)|0;
+    nextpos = ((i+1) / winw * recsize)|0;
+    _max = 0;
+    _min = 0;
+    loop(j=pos; max(1, nextpos-pos), 
+      amp = (recbuf[j*2] + recbuf[j*2 +1]) * 0.5 * (winh-winy) * 0.5;
+      _max = max(_max, amp);
+      _min = min(_min, amp);
+      j += 1;
+    );
+    _max > 1 ? max = 1;
+    _min < -1 ? min = -1;
+    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+_min);
+    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+_max);
+    i += 1;
+  );
+);
+
+gfx_rect(winx, winy, winw, winh, 0);
+draw_wave();
+
+function draw_seek() 
+local (pos)
+(
+  set_color(0xFF0000);
+  pos = playpos / recsize;
+  gfx_line(winx + winw * pos, winy, winx + winw * pos, winy+winh);
+);
+
+is_playing  || is_paused ? (
+  draw_seek();
+);

@@ -1,0 +1,55 @@
+desc:tr.gfxlib.jsfx-inc
+
+@init
+
+COLOR_ACTIVE = 0x5de4b1;
+COLOR_BG = 0x141618;
+
+function update_mouse_state()
+instance(cap, x, y, lx, ly, dx, dy, right_click, left_click, lleft, lright, left, right, click_time, double_click, control, lwheel, wheel)
+global(mouse_cap, mouse_x, mouse_y, mouse_wheel)
+(
+  lleft = left;
+  lright = right;
+  lx = x;
+  ly = y;
+  cap = mouse_cap;
+  control = mouse_cap & 4;
+  x = mouse_x;
+  y = mouse_y;
+
+  left = cap & 1 > 0;
+  right = cap & 2 > 0;
+  left_click = left && lleft == 0;
+  right_click = right && lright == 0;
+  dx = x - lx;
+  dy = y - ly;
+
+  wheel = mouse_wheel > lwheel ? 1 : mouse_wheel < lwheel ? -1 : 0;
+  lwheel = mouse_wheel;
+
+  left_click ? (
+    time_precise() - click_time < .5 ? double_click = 1;
+    click_time = time_precise();
+  ) : (
+    double_click = 0;
+  );
+);
+
+function mouse_in_rect (x, y, w ,h) (
+  mouse.x >= x && mouse.x <= x + w && mouse.y >= y && mouse.y <= y + h;
+);
+
+function set_color(color) (
+  gfx_r = (color & 0xFF0000) / 0xFF0000;
+  gfx_g = (color & 0x00FF00) / 0x00FF00;
+  gfx_b = (color & 0x0000FF) / 0x0000FF;
+);
+
+function draw_button (x, y, w, label, toggled) (
+  set_color(COLOR_ACTIVE);
+  gfx_rect(x, y - 2, w, 17 + 2, toggled);
+  set_color(toggled ? COLOR_BG : COLOR_ACTIVE);
+  gfx_x = x; gfx_y = y - 1;
+  gfx_drawstr(label, 1, x+w, y+17);
+);
