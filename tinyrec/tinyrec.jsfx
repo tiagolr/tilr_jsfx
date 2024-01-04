@@ -184,27 +184,42 @@ mouse.left_click && mouse_in_rect(drawx, drawy, 60, 20) ? (
   export_wave();
 );
 
+function downsample_wave() 
+local(buf, i, j)
+(
+  buf = __memtop() - winw;
+  loop(i=0; winw, 
+    1;
+  );
+);
 
 function draw_wave()
-local(i, j, amp, pos, _max, _min)
+local(i, j, amp, pos, _max, _min, buf)
 (
+  buf = __memtop() - winw * 3 - 1;
   loop(i=0; winw,
     pos = (i / winw * recsize / zoom + scrollx * recsize / zoom * (zoom - 1))|0;
     nextpos = ((i+1) / winw * recsize / zoom + scrollx * recsize / zoom * (zoom - 1))|0;
-    _max = 0;
-    _min = 0;
-    loop(j=pos; max(1, nextpos-pos),
-      amp = (recbuf[j*2] + recbuf[j*2 +1]) * 0.5 * (winh-winy) * 0.5;
-      _max = max(_max, amp);
-      _min = min(_min, amp);
-      j += 1;
+    //buf[0] = 0;
+    !buf[0] ? (
+      _max = 0;
+      _min = 0;
+      loop(j=pos; max(1, nextpos-pos),
+        amp = (recbuf[j*2] + recbuf[j*2 +1]) * 0.5 * (winh-winy) * 0.5;
+        _max = max(_max, amp);
+        _min = min(_min, amp);
+        j += 1;
+      );
+      _max > winh/2 ? max = winh/2;
+      _min < -winh/2 ? min = -winh/2;
+      buf[1+i*2] = _min;
+      buf[1+i*2+1] = _max;
     );
-    _max > 1 ? max = 1;
-    _min < -1 ? min = -1;
-    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+_min);
-    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+_max);
+    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+buf[1+i*2]);
+    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+buf[1+i*2+1]);
     i += 1;
   );
+  buf[0] = 1;
 );
 
 // -------
@@ -230,7 +245,6 @@ set_color(is_recording ? 0xFF0000 : 0x666666);
 gfx_rect(winx, winy, winw, winh, 0);
 set_color(is_recording ? 0xFF0000 : 0xFFFFFFF);
 draw_wave();
-
 
 function draw_scrollbar ()
 local(x, scrollw)
@@ -304,8 +318,8 @@ mouse.wheel && mouse_in_rect(winx,winy,winw,winh) && !is_recording ? (
   zoom == 1 ? (
     scrollx = (mouse.x - winx) / winw; // zoom on cursor does not work properly
   );
-  zoom += mouse.wheel;
-  zoom > 30 ? zoom = 30;
+  zoom *= mouse.wheel > 0 ? 1.5 : 0.6666;
+  zoom > 200 ? zoom = 200;
   zoom < 1 ? zoom = 1;
 );
 
@@ -326,6 +340,14 @@ lis_recording && !is_recording ? (
   scrollx = 0;
 );
 lis_recording = is_recording;
+
+buf = __memtop() - winw * 3 - 1;
+lzoom != zoom || lscroll != scroll || lrecsize != recsize ? (
+  buf[0] = 0; // flag 0 causes downsample to recalculate
+);
+lzoom = zoom;
+lscroll = scroll;
+lrecsize = recsize;
 
 !mouse.left ? (
   scroll_drag = 0;
