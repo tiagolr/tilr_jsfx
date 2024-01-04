@@ -4,6 +4,7 @@ about:
   # TinyRec
 
   Audio recording tool, stores up to 2 minutes at 44100 sample rate.
+  
 // maxmem = 120seconds * 44100srate * 2chn + 1000prebuf
 options: maxmem=10585000
 
@@ -22,10 +23,11 @@ recpos = 0;
 recmax = min((44100 / srate * 44100 * 120)|0, __memtop() / 2 - 1000);
 recsize = 0;
 playpos = 0;
-playloop = 1;
+play_loop = 1;
 
 is_recording = 0;
 is_playing = 0;
+is_armed = 0;
 
 zoom = 1;
 scrollx = 0;
@@ -79,7 +81,7 @@ is_playing ? (
   playpos += 1;
   playpos > recsize ? (
     playpos = 0;
-    !playloop ? (
+    !play_loop ? (
       stop();
     );
   );
@@ -97,10 +99,10 @@ gfx_setfont(1, "Arial", 16, 'b');
 
 drawx = 10;
 drawy = 10;
-set_color(playloop ? 0x00FFFF : 0xFFFFFF);
+set_color(play_loop ? 0x00FFFF : 0xFFFFFF);
 gfx_roundrect(drawx,drawy, 35, 35, 5);
 mouse.left_click && mouse_in_rect(drawx, drawy, 35, 35) ? (
-  playloop = !playloop;
+  play_loop = !play_loop;
 );
 gfx_x = drawx;
 gfx_y = drawy;
@@ -237,6 +239,41 @@ local (pos)
 
 is_playing  || is_paused ? (
   draw_seek();
+);
+
+
+function screen_to_buf (x) (
+  x * recsize / zoom + scrollx * recsize / zoom * (zoom - 1);
+);
+
+function buf_to_screen (x) (
+  x / recsize * zoom - scrollx * (zoom-1);
+);
+
+function draw_selection()
+local(start, end)
+(
+  start = buf_to_screen(min(selection_start, selection_end));
+  end = buf_to_screen(max(selection_start, selection_end));
+  gfx_set(1,0,0,0.25);
+  gfx_rect(winx + start * winw, winy, (end-start)*winw, winh); 
+);
+
+selection_end > -1 ? (
+  draw_selection();
+);
+
+!scroll_drag && mouse.left && mouse.dx && mouse_in_rect(0,winy,winw+winx*2,winh) ? (
+  selection_end = screen_to_buf((mouse.x - winx) / winw);
+  selection_end < 0 ? selection_end = 0;
+  selection_start < 0 ? selection_start = 0;
+  selection_end > recsize ? selection_end = recsize;
+  selection_start > recsize ? selection_start = recsize;
+);
+
+!scroll_drag && mouse.left_click && mouse_in_rect(winx,winy,winw,winh) ? (
+  selection_start = screen_to_buf((mouse.x - winx) / winw);
+  selection_end = selection_start;
 );
 
 !mouse.left ? (
