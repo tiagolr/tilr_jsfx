@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="faf844d168458bba1e5521fb8f8a4ddda9db19a3">
+<index version="1" commit="fa79a2914e69babf9b4d3e9ddca172b49d6e9dc5">
   <category name="adsr1">
     <reapack name="adsr1.jsfx" type="effect" desc="ADSR-1">
       <metadata>
@@ -317,6 +317,50 @@ fix volume knob clicking]]></changelog>
       </version>
     </reapack>
   </category>
+  <category name="midi">
+    <reapack name="MIDI Keyvel Filter.jsfx" type="effect" desc="MIDI Keyvel Filter">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Key and velocity midi filter\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.1" author="tilr" time="2024-01-04T15:13:45Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/fa79a2914e69babf9b4d3e9ddca172b49d6e9dc5/midi/MIDI%20Keyvel%20Filter.jsfx</source>
+      </version>
+    </reapack>
+    <reapack name="Notes to 12 channel.jsfx" type="effect" desc="Notes to 12 channel">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Splits incomming midi notes into 12 channels C -> Chn1, C# -> Chn2 and so on\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-04T15:13:45Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/fa79a2914e69babf9b4d3e9ddca172b49d6e9dc5/midi/Notes%20to%2012%20channel.jsfx</source>
+      </version>
+    </reapack>
+    <reapack name="Vel to CC.jsfx" type="effect" desc="Vel to CC">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Maps midi notes velocity to CC automation\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-04T15:13:45Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/fa79a2914e69babf9b4d3e9ddca172b49d6e9dc5/midi/Vel%20to%20CC.jsfx</source>
+      </version>
+    </reapack>
+  </category>
   <category name="mseg1">
     <reapack name="mseg1.jsfx" type="effect" desc="MSEG-1">
       <metadata>
@@ -340,50 +384,6 @@ fix volume knob clicking]]></changelog>
         <source file="mseg.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg.array.jsfx-inc</source>
         <source file="mseg.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg.curvelib.jsfx-inc</source>
         <source file="mseg.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/mseg1/mseg.mouselib.jsfx-inc</source>
-      </version>
-    </reapack>
-  </category>
-  <category name="other">
-    <reapack name="MIDI Keyvel Filter.jsfx" type="effect" desc="MIDI Keyvel Filter">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 Key and velocity midi filter\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.1" author="tilr" time="2024-01-03T09:49:30Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/MIDI%20Keyvel%20Filter.jsfx</source>
-      </version>
-    </reapack>
-    <reapack name="Notes to 12 channel.jsfx" type="effect" desc="Notes to 12 channel">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 Splits incomming midi notes into 12 channels C -> Chn1, C# -> Chn2 and so on\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T09:49:30Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/Notes%20to%2012%20channel.jsfx</source>
-      </version>
-    </reapack>
-    <reapack name="Vel to CC.jsfx" type="effect" desc="Vel to CC">
-      <metadata>
-        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
-{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
-\widowctrl\hyphauto
-
-{\pard \ql \f0 \sa180 \li0 \fi0 Maps midi notes velocity to CC automation\par}
-}
-]]></description>
-      </metadata>
-      <version name="1.0" author="tilr" time="2024-01-03T09:49:30Z">
-        <source>https://github.com/tiagolr/tilr_jsfx/raw/98f45ddcc8ac4b3f8bccf87a86d81c1ced903ded/other/Vel%20to%20CC.jsfx</source>
       </version>
     </reapack>
   </category>
