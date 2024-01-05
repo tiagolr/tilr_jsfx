@@ -70,7 +70,7 @@ TIME-1 is a playback/time and pitch editor similar to plugins like GrossBeat and
 
 ## TinyRec
 
-Audio recording utility similar to Image-Line Edison, records incoming signal from a track and exports it to the same track at cursor position.
+Audio recording utility similar to Image-Line Edison, stores up to 4 minutes at 44100 sample rate.
 
 ![](doc/tinyrec.png)
 
