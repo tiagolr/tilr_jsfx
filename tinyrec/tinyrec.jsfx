@@ -46,11 +46,16 @@ is_playing = 0;
 is_armed = 0;
 got_input = 0;
 no_input = 0; // counter for no input samples
+noise_gate = 0.001;
 
 zoom = 1;
 scrollx = 0;
 sel_start = 0;
 sel_end = 0;
+
+function gain2dB (gain) (
+  20 * log10(gain);
+);
 
 function record () (
   !append ? (
@@ -96,6 +101,23 @@ function clear () (
   recsize = 0;
   sel_end = 0;
   sel_start = 0;
+  zoom = 0;
+  scrollx = 0;
+);
+
+function insert_pre_buffer() 
+(
+  prepos -= premax / 2;
+  prepos < 0 ? prepos = premax / 2 + prepos;
+  loop(premax/2,
+    recbuf[recpos*2] = prebuf[prepos*2];
+    recbuf[recpos*2+1] = prebuf[prepos*2+1];
+    recpos += 1;
+    prepos += 1;
+    prepos >= premax / 2 ? (
+      prepos = 0;
+    );
+  );
 );
 
 @sample
@@ -104,13 +126,25 @@ recpos > recmax ? (
   is_recording = 0;
 );
 
-(is_armed == 1 || is_armed == 2) && is_recording && (spl0 || spl1) ?
+is_armed == 1 || is_armed == 2 ? (
+  prebuf[prepos*2] = spl0;
+  prebuf[prepos*2+1] = spl1;
+  prepos += 1;
+  prepos >= premax / 2 ? (
+    prepos = 0;
+  );
+);
+
+(is_armed == 1 || is_armed == 2) && is_recording && !got_input &&
+(abs(spl0) > noise_gate || abs(spl1) > noise_gate) ?
 (
+  insert_pre_buffer();
   got_input = 1;
   no_input = 0;
 );
 
-is_armed == 2 && is_recording && got_input && !spl0 && !spl1 ?
+is_armed == 2 && is_recording && got_input && 
+abs(!spl0) <= noise_gate && abs(spl1) <= noise_gate ?
 (
   no_input += 1;
   no_input > srate ? (
@@ -219,6 +253,21 @@ mouse.left_click && mouse_in_rect(drawx, drawy+10, 60, 17) ? (
   choice ? is_armed = choice - 1;
 );
 
+drawx += 70;
+is_armed == 1 || is_armed == 2 ? (
+  gfx_x = drawx;
+  gfx_y = drawy + 12;
+  gfx_setfont(1, "Arial", 12);
+  set_color(0xcccccc);
+  gfx_drawstr("Noise:");
+  gfx_setfont(1, "Arial", 16, 'b');
+  drawx += 35;
+  draw_button(drawx, drawy+10, 60, sprintf(#, "%i dB", gain2dB(noise_gate)), 0);
+  mouse.left_click && mouse_in_rect(drawx, drawy+10, 60, 17) ? (
+    noise_gate_drag = 1;
+  );
+);
+
 function time_minutes (pos) ( 
   pos / srate / 60;
 );
@@ -316,7 +365,7 @@ sel_start != sel_end && !is_recording ? (
 );
 
 function draw_wave()
-local(i, j, amp, pos, _max, _min, buf)
+local(i, j, ampl, ampr, pos, _max, _min, buf)
 (
   loop(i=0; winw,
     pos = (i / winw * recsize / zoom + scrollx * recsize / zoom * (zoom - 1))|0;
@@ -326,9 +375,10 @@ local(i, j, amp, pos, _max, _min, buf)
       _max = 0;
       _min = 0;
       loop(j=pos; max(1, nextpos-pos),
-        amp = (recbuf[j*2] + recbuf[j*2 +1]) * 0.5 * (winh-winy) * 0.5;
-        _max = max(_max, amp);
-        _min = min(_min, amp);
+        ampl = (recbuf[j*2]) * (winh-winy);
+        ampr = (recbuf[j*2+1]) * (winh-winy);
+        _max = max(max(_max, ampl), ampr);
+        _min = min(min(_min, ampl), ampr);
         j += 1;
       );
       _max > winh/2 ? max = winh/2;
@@ -336,8 +386,13 @@ local(i, j, amp, pos, _max, _min, buf)
       dsbuf[1+i*2] = _min;
       dsbuf[1+i*2+1] = _max;
     );
-    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+dsbuf[1+i*2]);
-    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+dsbuf[1+i*2+1]);
+    recsize ? (
+      gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+dsbuf[1+i*2]);
+      gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+dsbuf[1+i*2+1]);
+    ) : (
+      // FIX bad display on empty waveform
+      gfx_line(winx, winy+winh/2, winx+winw-1, winy+winh/2); 
+    );
     i += 1;
   );
   dsbuf[0] = 1;
@@ -413,7 +468,8 @@ is_playing  || is_paused ? (
   draw_seek();
 );
 
-!scroll_drag && mouse.left && mouse.dx && mouse_in_rect(0,winy,winw+winx*2,winh) ? (
+// set selection
+!noise_gate_drag && !scroll_drag && mouse.left && mouse.dx && mouse_in_rect(0,winy,winw+winx*2,winh) ? (
   sel_end = screen_to_buf((mouse.x - winx) / winw);
   sel_end < 0 ? sel_end = 0;
   sel_start < 0 ? sel_start = 0;
@@ -421,6 +477,7 @@ is_playing  || is_paused ? (
   sel_start > recsize ? sel_start = recsize;
 );
 
+// start selection
 !scroll_drag && mouse.left_click && mouse_in_rect(winx,winy,winw,winh) ? (
   sel_start = screen_to_buf((mouse.x - winx) / winw);
   sel_end = sel_start;
@@ -453,6 +510,18 @@ lis_recording && !is_recording ? (
 );
 lis_recording = is_recording;
 
+noise_gate_drag && mouse.dy ? (
+  noisee += mouse.dy / 1000;
+  noise_gate -= mouse.dy / 1000;
+  noise_gate > 1 ? noise_gate = 1;
+  noise_gate < 0.001 ? noise_gate = 0.001;
+);
+
+// draw noise gate
+set_color(0x00FFFF);
+gfx_a = 0.15;
+gfx_rect(winx, winy+winh/2-winh/2*noise_gate, winw, winh*noise_gate);
+
 lzoom != zoom || lscrollx != scrollx || lrecsize != recsize 
 || lgfx_w != gfx_w || lgfx_h != gfx_h ? 
 (
@@ -466,4 +535,5 @@ lrecsize = recsize;
 
 !mouse.left ? (
   scroll_drag = 0;
+  noise_gate_drag = 0;
 );
