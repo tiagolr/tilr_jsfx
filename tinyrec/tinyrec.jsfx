@@ -477,6 +477,12 @@ local(x, scrollw)
   gfx_rect(x, winy+winh-15, scrollw, 15);
   mouse.left_click && mouse_in_rect(x, winy+winh-15, scrollw, 15) ? (
     scroll_drag = 1;
+  ) 
+  : mouse.left_click && mouse_in_rect(winx, winy+winh-15, winw, 15) ? (
+    scrollx = (mouse.x - winx - scrollw / 2) / (winw - scrollw);
+    scrollx < 0 ? scrollx = 0;
+    scrollx > 1 ? scrollx = 1;
+    scroll_drag = 1;
   );
 );
 
@@ -515,7 +521,7 @@ is_playing  || is_paused ? (
 );
 
 // set selection
-!noise_gate_drag && !scroll_drag && mouse.left && mouse.dx && mouse_in_rect(0,winy,winw+winx*2,winh) ? (
+!noise_gate_drag && !scroll_drag && mouse.left && mouse.dx && mouse_in_rect(0,winy,winw+winx*2,zoom > 1 ? winh -15 : winh) ? (
   sel_end = screen_to_buf((mouse.x - winx) / winw);
   sel_end < 0 ? sel_end = 0;
   sel_start < 0 ? sel_start = 0;
@@ -530,12 +536,13 @@ is_playing  || is_paused ? (
 );
 
 mouse.wheel && mouse_in_rect(winx,winy,winw,winh) && !is_recording ? (
-  zoom == 1 ? (
-    scrollx = (mouse.x - winx) / winw; // zoom on cursor does not work properly
+  zoom < 200 * 0.6666 && mouse.wheel > 0 ? (
+    scrollx = (mouse.x - winx) / winw / zoom + scrollx / zoom * (zoom - 1);
   );
   zoom *= mouse.wheel > 0 ? 1.5 : 0.6666;
   zoom > 200 ? zoom = 200;
   zoom < 1 ? zoom = 1;
+  zoom == 1 ? scrollx = 0; 
 );
 
 scroll_drag && mouse.dx ? (
