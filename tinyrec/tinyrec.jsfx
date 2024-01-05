@@ -117,21 +117,33 @@ function clear () (
   scrollx = 0;
 );
 
-function trim () (
-  memcpy(recbuf,recbuf+min(sel_start,sel_end)*2, abs(sel_end-sel_start) * 2);
-  recsize = abs(sel_end - sel_start);
+function trim () 
+local(start, end)
+(
+  start = min(sel_start, sel_end)|0;
+  end = max(sel_start, sel_end)|0;
+  start % 2 ? start -= 1;
+  end % 2 ? end -= 1;
+  memcpy(recbuf, recbuf + start*2, (end-start) * 2);
+  recsize = end - start;
   recpos ? recpos = recsize;
   sel_end = 0;
   sel_start = 0;
 );
 
-function delete () (
+function delete () 
+local(start, end)
+(
+  start = min(sel_start, sel_end)|0;
+  end = max(sel_start, sel_end)|0;
+  start % 2 ? start -= 1;
+  end % 2 ? end -= 1;
   memcpy(
-    recbuf+min(sel_start, sel_end)*2,
-    recbuf+(max(sel_start, sel_end))*2,
-    (recsize-max(sel_start, sel_end))*2
+    recbuf + start * 2,
+    recbuf + end * 2,
+    (recsize - end) * 2
   );
-  recsize = recsize - (max(sel_start, sel_end) - min(sel_start, sel_end));
+  recsize = recsize - (end - start);
   recpos ? recpos = recsize;
   sel_end = 0;
   sel_start = 0;
@@ -536,8 +548,9 @@ is_playing  || is_paused ? (
 );
 
 mouse.wheel && mouse_in_rect(winx,winy,winw,winh) && !is_recording ? (
-  zoom < 200 * 0.6666 && mouse.wheel > 0 ? (
-    scrollx = (mouse.x - winx) / winw / zoom + scrollx / zoom * (zoom - 1);
+  //scrollx = (mouse.x - winx) / winw / zoom + scrollx / zoom * (zoom - 1);
+  zoom == 1 ? (
+    scrollx = (mouse.x - winx) / winw; // zoom does not work properly
   );
   zoom *= mouse.wheel > 0 ? 1.5 : 0.6666;
   zoom > 200 ? zoom = 200;
