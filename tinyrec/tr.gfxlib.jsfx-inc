@@ -2,7 +2,7 @@ desc:tr.gfxlib.jsfx-inc
 
 @init
 
-COLOR_ACTIVE = 0x5de4b1;
+COLOR_ACTIVE = 0x00FFFF;
 COLOR_BG = 0x141618;
 
 function update_mouse_state()

@@ -6,35 +6,53 @@ about:
   Audio recording tool, stores up to 2 minutes at 44100 sample rate.
 
 // maxmem = 120seconds * 44100srate * 2chn + 1000prebuf
-options: maxmem=10585000
+options: maxmem=10589104
 
 import tr.gfxlib.jsfx-inc
+filename:0,img/loop.png
+filename:1,img/loop_active.png
+filename:2,img/play.png
+filename:3,img/pause.png
+filename:4,img/stop.png
+filename:5,img/rec.png
+filename:6,img/rec_active.png
+filename:7,img/tools.png
+filename:8,img/save.png
 
 @init
 
 ext_noinit = 1;
 
+// buffer for pre-recording
 prebuf = 0;
 prepos = 0;
 premax = 1000;
 
-recbuf = 1000;
+// buffer for downsampled waveform
+dsbuf = prebuf + premax + 4;
+dsmax = 4096 + 1;
+
+// recording buffer
+recbuf = dsbuf + dsmax + 4;
 recpos = 0;
 recmax = min(44100 * 120, __memtop() / 2);
 recsize = 0;
+append = 1;
 playpos = 0;
 play_loop = 1;
 
 is_recording = 0;
 is_playing = 0;
 is_armed = 0;
+got_input = 0;
+no_input = 0; // counter for no input samples
 
 zoom = 1;
 scrollx = 0;
 sel_start = 0;
 sel_end = 0;
 
-function record (append) (
+function record () (
   !append ? (
     recpos = 0;
     recsize = 0;
@@ -42,15 +60,20 @@ function record (append) (
   is_recording = 1;
   is_playing = 0;
   is_paused = 0;
+  got_input = 0;
   zoom = 1;
 );
 
-function play () (
+function play () 
+local(playstart)
+(
   is_recording = 0;
   is_playing = 1;
   is_paused = 0;
   !playpos && sel_start != sel_end ? (
-    playpos = min(sel_start, sel_end);
+    playstart = min(sel_start, sel_end)|0;
+    playstart % 2 ? playstart -= 1;
+    playpos = playstart;
   );
 );
 
@@ -62,8 +85,18 @@ function pause () (
 function stop () (
   is_recording = 0;
   is_playing = 0;
+  got_input = 0;
+  no_input = 0;
   playpos = 0;
   is_paused = 0;
+);
+
+function clear () (
+  stop();
+  recpos = 0;
+  recsize = 0;
+  sel_end = 0;
+  sel_start = 0;
 );
 
 @sample
@@ -72,7 +105,24 @@ recpos > recmax ? (
   is_recording = 0;
 );
 
-is_recording ? (
+(is_armed == 1 || is_armed == 2) && is_recording && (spl0 || spl1) ?
+(
+  got_input = 1;
+  no_input = 0;
+);
+
+is_armed == 2 && is_recording && got_input && !spl0 && !spl1 ?
+(
+  no_input += 1;
+  no_input > srate ? (
+    got_input = 0;
+  );
+);
+
+(is_recording && is_armed == 0) || 
+(is_recording && is_armed == 3 && play_state & 1) || 
+(is_recording && (is_armed == 1 || is_armed == 2) && got_input) ? 
+(
   recbuf[recpos*2] = spl0;
   recbuf[recpos*2+1] = spl1;
   recpos += 1;
@@ -98,12 +148,13 @@ is_playing ? (
   );
 );
 
-@gfx 400 300
+@gfx 400 350
 
+COLOR_ACTIVE = 0x0080FF;
 winx = 10;
-winy = 55;
+winy = 75;
 winw = gfx_w - 20;
-winh = gfx_h - winy - 10;
+winh = min(gfx_h - winy - 10, 4096);
 gfx_clear = COLOR_BG;
 mouse.update_mouse_state();
 gfx_setfont(1, "Arial", 16, 'b');
@@ -111,25 +162,19 @@ gfx_setfont(1, "Arial", 16, 'b');
 drawx = 10;
 drawy = 10;
 set_color(play_loop ? 0x00FFFF : 0xFFFFFF);
-gfx_roundrect(drawx,drawy, 35, 35, 5);
+gfx_x = drawx;
+gfx_y = drawy;
+gfx_blit(play_loop ? 1 : 0, 1, 0);
+
 mouse.left_click && mouse_in_rect(drawx, drawy, 35, 35) ? (
   play_loop = !play_loop;
 );
-gfx_x = drawx;
-gfx_y = drawy;
-gfx_drawstr("L", 5, drawx+35, drawy+35);
 set_color(0xFFFFFF);
 
-drawx += 45;
+drawx += 44;
 // draw playbutton
-set_color(is_playing ? 0x00FF00 : 0xFFFFFF);
-gfx_roundrect(drawx,drawy, 35, 35, 5);
-is_playing ? (
-  gfx_rect(drawx+10, drawy+13, 5, 10);
-  gfx_rect(drawx+21, drawy+13, 5, 10);
-) : (
-  gfx_triangle(drawx+10, drawy+7, drawx+10, drawy+12+15, drawx+12+15, drawy+12+5);
-);
+gfx_x = drawx;
+gfx_blit(is_playing ? 3 : 2, 1, 0);
 mouse.left_click && mouse_in_rect(drawx,drawy,35,35) ? (
   is_playing ? (
     pause();
@@ -138,26 +183,84 @@ mouse.left_click && mouse_in_rect(drawx,drawy,35,35) ? (
   );
 );
 
-drawx += 45;
+drawx += 44;
+gfx_x = drawx;
 // draw stop button
+gfx_blit(4,1,0);
 set_color(0xFFFFFF);
-gfx_roundrect(drawx, drawy, 35,35, 5);
-gfx_rect(drawx+10,drawy+10,15, 15,1);
 mouse.left_click && mouse_in_rect(drawx, drawy, 35, 35) ? (
   stop();
 );
 
 // draw rec button
-drawx += 60;
-set_color(is_recording ? 0xFF0000 : 0xFFFFFF);
-gfx_circle(drawx,drawy+35/2,35/2,0);
-gfx_circle(drawx,drawy+35/2,35/4,1);
-mouse.left_click && mouse_in_rect(drawx-35/2, drawy, 35, 35) ? (
+drawx += 43;
+gfx_x = drawx;
+gfx_blit(is_recording ? 6 : 5, 1, 0);
+mouse.left_click && mouse_in_rect(drawx, drawy, 35, 35) ? (
   is_recording ? (
-    is_recording = 0;
+    stop();
   ) : (
-    record(0);
+    record();
   );
+);
+
+// draw rec options
+drawx += 44;
+label = is_armed == 1 ? "On Input" : is_armed == 2 ? "Input" : is_armed == 3 ? "On Play" : "Now";
+draw_button(drawx, drawy+10, 60, label, 0);
+mouse.left_click && mouse_in_rect(drawx, drawy+10, 60, 17) ? (
+  gfx_x = drawx; gfx_y = drawy + 10 + 17;
+  menu = #;
+  strcpy(menu, is_armed == 0 ? "!Now|" : "Now|");
+  strcat(menu, is_armed == 1 ? "!On Input|" : "On Input|");
+  strcat(menu, is_armed == 2 ? "!Input|" : "Input|");
+  strcat(menu, is_armed == 3 ? "!On Play" : "Play");
+  choice = gfx_showmenu(menu);
+  choice ? is_armed = choice - 1;
+);
+
+function time_minutes (pos) ( 
+  pos / srate / 60;
+);
+
+function time_seconds (pos) (
+  (pos / srate) - (time_minutes(pos)|0) * 60;
+);
+
+function time_millis (pos) (
+  (pos / srate - (time_seconds(pos)|0) - (time_minutes(pos)|0) * 60) * 1000;
+);
+
+function screen_to_buf (x) (
+  x * recsize / zoom + scrollx * recsize / zoom * (zoom - 1);
+);
+
+function buf_to_screen (x) (
+  x / recsize * zoom - scrollx * (zoom-1);
+);
+
+drawx = 10;
+drawy = 58;
+draw_button(drawx,drawy,60, "Append", append);
+mouse.left_click && mouse_in_rect(drawx,drawy,60,18) ? (
+  append = !append;
+);
+drawx += 70;
+gfx_x = drawx;
+
+!is_recording && recsize && mouse_in_rect(winx,winy,winw,winh) ? (
+  set_color(0xcccccc);
+  pos = screen_to_buf((mouse.x - winx) / winw);
+  gfx_drawstr(sprintf(#, "%02d:%02d:%03d", time_minutes(pos),time_seconds(pos), time_millis(pos)));
+) : is_armed == 3 && is_recording ? (
+  set_color(0xFF5555);
+  gfx_drawstr("Waiting for play");
+) : is_armed && is_recording ? (
+  set_color(0xFF5555);
+  gfx_drawstr("Waiting for input..");
+) : is_recording ? (
+  set_color(0xFF5555);
+  gfx_drawstr("RECORDING");
 );
 
 // RIGHT BUTTONS
@@ -176,32 +279,50 @@ local(start, end)
   );
 );
 
-drawx = gfx_w;
-drawx -= 70;
-drawy = 20;
-draw_button(drawx, drawy, 60, "Export", 0);
-mouse.left_click && mouse_in_rect(drawx, drawy, 60, 20) ? (
+drawx = gfx_w - 35;
+drawy = 15;
+gfx_x = drawx; gfx_y = drawy;
+gfx_blit(8,1,0);
+mouse.left_click && mouse_in_rect(drawx, drawy, 25, 25) ? (
   export_wave();
 );
 
-function downsample_wave() 
-local(buf, i, j)
+drawx -= 35;
+gfx_x = drawx;
+gfx_blit(7, 1,0);
+(mouse.left_click && mouse_in_rect(drawx,drawy, 25,25)) || 
+(mouse.right_click && mouse_in_rect(winx,winy,winw,winh)) ? 
 (
-  buf = __memtop() - winw;
-  loop(i=0; winw, 
-    1;
+  gfx_x = mouse.x; gfx_y = mouse.y;
+  choice = gfx_showmenu("Clear");
+  choice == 1 ? (
+    clear();
   );
+);
+
+drawx = gfx_w - 10 - 60;
+drawy = 58;
+gfx_x = drawx; gfx_y = drawy;
+set_color(0xcccccc);
+gfx_drawstr(sprintf(#, "%02d:%02d:%03d", time_minutes(recsize),time_seconds(recsize), time_millis(recsize)));
+
+sel_start != sel_end && !is_recording ? (
+  drawx -= 150;
+  gfx_x = drawx;
+  set_color(COLOR_ACTIVE);
+  gfx_drawstr(sprintf(#, "%02d:%02d:%03d", time_minutes(min(sel_start, sel_end)),time_seconds(min(sel_start, sel_end)), time_millis(min(sel_start, sel_end))));
+  gfx_drawstr(" - ");
+  gfx_drawstr(sprintf(#, "%02d:%02d:%03d", time_minutes(max(sel_start, sel_end)),time_seconds(max(sel_start, sel_end)), time_millis(max(sel_start, sel_end))));
 );
 
 function draw_wave()
 local(i, j, amp, pos, _max, _min, buf)
 (
-  buf = __memtop() - winw * 3 - 1;
   loop(i=0; winw,
     pos = (i / winw * recsize / zoom + scrollx * recsize / zoom * (zoom - 1))|0;
     nextpos = ((i+1) / winw * recsize / zoom + scrollx * recsize / zoom * (zoom - 1))|0;
-    //buf[0] = 0;
-    !buf[0] ? (
+    // buffer downsample is marked dirty, downsample waveform
+    !dsbuf[0] ? (
       _max = 0;
       _min = 0;
       loop(j=pos; max(1, nextpos-pos),
@@ -212,17 +333,15 @@ local(i, j, amp, pos, _max, _min, buf)
       );
       _max > winh/2 ? max = winh/2;
       _min < -winh/2 ? min = -winh/2;
-      buf[1+i*2] = _min;
-      buf[1+i*2+1] = _max;
+      dsbuf[1+i*2] = _min;
+      dsbuf[1+i*2+1] = _max;
     );
-    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+buf[1+i*2]);
-    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+buf[1+i*2+1]);
+    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+dsbuf[1+i*2]);
+    gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+dsbuf[1+i*2+1]);
     i += 1;
   );
-  buf[0] = 1;
+  dsbuf[0] = 1;
 );
-
-// -------
 
 function draw_grid () 
 local (seconds, grids_second, grids, i, x)
@@ -241,9 +360,9 @@ local (seconds, grids_second, grids, i, x)
 set_color(0x666666);
 draw_grid();
 gfx_a = 1;
-set_color(is_recording ? 0xFF0000 : 0x666666);
+set_color(is_recording ? 0xFF5555 : 0xcccccc);
 gfx_rect(winx, winy, winw, winh, 0);
-set_color(is_recording ? 0xFF0000 : 0xFFFFFFF);
+set_color(is_recording ? 0xFF5555 : 0xcccccc);
 draw_wave();
 
 function draw_scrollbar ()
@@ -260,14 +379,29 @@ local(x, scrollw)
   );
 );
 
-zoom > 1 ? (
+zoom > 1 && !is_recording ? (
   draw_scrollbar();
+);
+
+function draw_selection()
+local(start, end)
+(
+  start = buf_to_screen(min(sel_start, sel_end));
+  end = buf_to_screen(max(sel_start, sel_end));
+  set_color(COLOR_ACTIVE);
+  gfx_a = 0.35;
+  gfx_rect(winx + start * winw, winy, (end-start)*winw, zoom > 1 ? winh - 15 : winh);
+  gfx_a = 1;
+);
+
+sel_end > -1 && !is_recording ? (
+  draw_selection();
 );
 
 function draw_seek()
 local (pos)
 (
-  set_color(0xFF0000);
+  set_color(0xff5555);
   pos = playpos / recsize * zoom;
   pos -= scrollx * (zoom - 1);
   pos >= 0 && pos <= 1 ? (
@@ -277,28 +411,6 @@ local (pos)
 
 is_playing  || is_paused ? (
   draw_seek();
-);
-
-
-function screen_to_buf (x) (
-  x * recsize / zoom + scrollx * recsize / zoom * (zoom - 1);
-);
-
-function buf_to_screen (x) (
-  x / recsize * zoom - scrollx * (zoom-1);
-);
-
-function draw_selection()
-local(start, end)
-(
-  start = buf_to_screen(min(sel_start, sel_end));
-  end = buf_to_screen(max(sel_start, sel_end));
-  gfx_set(1,0,0,0.25);
-  gfx_rect(winx + start * winw, winy, (end-start)*winw, zoom > 1 ? winh - 15 : winh);
-);
-
-sel_end > -1 ? (
-  draw_selection();
 );
 
 !scroll_drag && mouse.left && mouse.dx && mouse_in_rect(0,winy,winw+winx*2,winh) ? (
@@ -334,19 +446,22 @@ is_recording && seconds > 7 ? (
   zoom = seconds / 7 ;
   scrollx = 1;
 );
+// on finish recording reset scrollszoom
 lis_recording && !is_recording ? (
-  count += 1;
   zoom = 1;
   scrollx = 0;
 );
 lis_recording = is_recording;
 
-buf = __memtop() - winw * 3 - 1;
-lzoom != zoom || lscroll != scroll || lrecsize != recsize ? (
-  buf[0] = 0; // flag 0 causes downsample to recalculate
+lzoom != zoom || lscrollx != scrollx || lrecsize != recsize 
+|| lgfx_w != gfx_w || lgfx_h != gfx_h ? 
+(
+  dsbuf[0] = 0; // flag 0 causes downsample to recalculate
 );
+lgfx_w = gfx_w;
+lgfx_h = gfx_h;
 lzoom = zoom;
-lscroll = scroll;
+lscrollx = scrollx;
 lrecsize = recsize;
 
 !mouse.left ? (
