@@ -5,12 +5,12 @@ changelog:
   replace zdf with rbj filters
   fix volume knob clicking
 provides:
-  ws.adsr.jsfx-inc
-  ws.array.jsfx-inc
-  ws.gfxlib.jsfx-inc
-  ws.mouselib.jsfx-inc
-  ws.wavetable.jsfx-inc
-  ws.rbj_filter.jsfx-inc
+  jswavesynth/ws.adsr.jsfx-inc
+  jswavesynth/ws.array.jsfx-inc
+  jswavesynth/ws.gfxlib.jsfx-inc
+  jswavesynth/ws.mouselib.jsfx-inc
+  jswavesynth/ws.wavetable.jsfx-inc
+  jswavesynth/ws.rbj_filter.jsfx-inc
   [data] tilr_JSWavesynth/Complex 1.wav
   [data] tilr_JSWavesynth/Complex 2.wav
   [data] tilr_JSWavesynth/Complex 3.wav

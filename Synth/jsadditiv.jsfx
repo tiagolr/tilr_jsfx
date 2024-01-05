@@ -6,12 +6,13 @@ changelog:
   fix note clicking
   fix volume knob clicking
 provides:
-  jsadditiv/dd.adsr.jsfx-inc
-  jsadditiv/dd.array.jsfx-inc
-  jsadditiv/dd.fft_real_synth.jsfx-inc
-  jsadditiv/dd.gfxlib.jsfx-inc
-  jsadditiv/dd.mouselib.jsfx-inc
-  jsadditiv/dd.wavetable.jsfx-inc
+  jsadditiv/add.adsr.jsfx-inc
+  jsadditiv/add.array.jsfx-inc
+  jsadditiv/add.fft_real_synth.jsfx-inc
+  jsadditiv/add.gfxlib.jsfx-inc
+  jsadditiv/add.mouselib.jsfx-inc
+  jsadditiv/add.wavetable.jsfx-inc
+  jsadditiv/add.rbj_filter.jsfx-inc
   [data] tilr_JSAdditiv/Complex 1.wav
   [data] tilr_JSAdditiv/Complex 2.wav
   [data] tilr_JSAdditiv/Complex 3.wav
@@ -37,7 +38,6 @@ provides:
   [data] tilr_JSAdditiv/Square 2.wav
   [data] tilr_JSAdditiv/Stairs.wav
   [data] tilr_JSAdditiv/Triangle.wav
-  add.rbj_filter.jsfx-inc
 screenshot: https://raw.githubusercontent.com/tiagolr/JSAdditiv/master/doc/ss.png
 about:
   # JSAdditiv
