@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="788d2413fbccb673c25fff7f64837f1a3fd398d3" name="Tilr JSFX">
+<index version="1" commit="8c88a2f7a69bc1f5bd38aa807d93d31678110f1e" name="Tilr JSFX">
   <category name="adsr1">
     <reapack name="adsr1.jsfx" type="effect" desc="ADSR-1">
       <metadata>
@@ -566,6 +566,19 @@ Yutani Bass
         <source file="img/save.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/save.png</source>
         <source file="img/stop.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/stop.png</source>
         <source file="img/tools.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/tools.png</source>
+      </version>
+      <version name="1.0.1" author="tilr" time="2024-01-05T23:18:16Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/tinyrec.jsfx</source>
+        <source file="tr.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/tr.gfxlib.jsfx-inc</source>
+        <source file="img/loop_active.png">https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/img/loop_active.png</source>
+        <source file="img/loop.png">https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/img/loop.png</source>
+        <source file="img/pause.png">https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/img/pause.png</source>
+        <source file="img/play.png">https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/img/play.png</source>
+        <source file="img/rec_active.png">https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/img/rec_active.png</source>
+        <source file="img/rec.png">https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/img/rec.png</source>
+        <source file="img/save.png">https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/img/save.png</source>
+        <source file="img/stop.png">https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/img/stop.png</source>
+        <source file="img/tools.png">https://github.com/tiagolr/tilr_jsfx/raw/8c88a2f7a69bc1f5bd38aa807d93d31678110f1e/tinyrec/img/tools.png</source>
       </version>
     </reapack>
   </category>
