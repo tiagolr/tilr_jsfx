@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="788d2413fbccb673c25fff7f64837f1a3fd398d3">
+<index version="1" commit="788d2413fbccb673c25fff7f64837f1a3fd398d3" name="Tilr JSFX">
   <category name="adsr1">
     <reapack name="adsr1.jsfx" type="effect" desc="ADSR-1">
       <metadata>
