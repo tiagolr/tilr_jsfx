@@ -135,16 +135,18 @@ is_armed == 1 || is_armed == 2 ? (
   );
 );
 
-(is_armed == 1 || is_armed == 2) && is_recording && !got_input &&
+(is_armed == 1 || is_armed == 2) && is_recording &&
 (abs(spl0) > noise_gate || abs(spl1) > noise_gate) ?
 (
-  insert_pre_buffer();
+  !got_input ? (
+    insert_pre_buffer();
+  );
   got_input = 1;
   no_input = 0;
 );
 
 is_armed == 2 && is_recording && got_input && 
-abs(!spl0) <= noise_gate && abs(spl1) <= noise_gate ?
+abs(spl0) <= noise_gate && abs(spl1) <= noise_gate ?
 (
   no_input += 1;
   no_input > srate ? (
