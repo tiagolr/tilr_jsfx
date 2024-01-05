@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="fa79a2914e69babf9b4d3e9ddca172b49d6e9dc5">
+<index version="1" commit="788d2413fbccb673c25fff7f64837f1a3fd398d3">
   <category name="adsr1">
     <reapack name="adsr1.jsfx" type="effect" desc="ADSR-1">
       <metadata>
@@ -539,6 +539,33 @@ Yutani Bass
         <source file="time.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.curvelib.jsfx-inc</source>
         <source file="time.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.delay.jsfx-inc</source>
         <source file="time.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/fd02dcec08af595af3bd0544304aac415cfc158e/time1/time.mouselib.jsfx-inc</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="tinyrec">
+    <reapack name="tinyrec.jsfx" type="effect" desc="TinyRec">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 TinyRec\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 Audio recording utility, stores up to 4 minutes at 44100 sample rate.\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-05T15:39:28Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/tinyrec.jsfx</source>
+        <source file="tr.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/tr.gfxlib.jsfx-inc</source>
+        <source file="img/loop_active.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/loop_active.png</source>
+        <source file="img/loop.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/loop.png</source>
+        <source file="img/pause.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/pause.png</source>
+        <source file="img/play.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/play.png</source>
+        <source file="img/rec_active.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/rec_active.png</source>
+        <source file="img/rec.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/rec.png</source>
+        <source file="img/save.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/save.png</source>
+        <source file="img/stop.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/stop.png</source>
+        <source file="img/tools.png">https://github.com/tiagolr/tilr_jsfx/raw/788d2413fbccb673c25fff7f64837f1a3fd398d3/tinyrec/img/tools.png</source>
       </version>
     </reapack>
   </category>
