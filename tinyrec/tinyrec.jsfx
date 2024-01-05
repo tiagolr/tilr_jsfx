@@ -105,6 +105,26 @@ function clear () (
   scrollx = 0;
 );
 
+function trim () (
+  memcpy(recbuf,recbuf+min(sel_start,sel_end)*2, abs(sel_end-sel_start) * 2); 
+  recsize = abs(sel_end - sel_start);
+  recpos ? recpos = recsize;
+  sel_end = 0;
+  sel_start = 0;
+);
+
+function delete () (
+  memcpy(
+    recbuf+min(sel_start, sel_end)*2,
+    recbuf+(max(sel_start, sel_end))*2,
+    (recsize-max(sel_start, sel_end))*2
+  );
+  recsize = recsize - (max(sel_start, sel_end) - min(sel_start, sel_end));
+  recpos ? recpos = recsize;
+  sel_end = 0;
+  sel_start = 0;
+);
+
 function insert_pre_buffer() 
 (
   prepos -= premax / 2;
@@ -186,7 +206,7 @@ is_playing ? (
 
 @gfx 450 300
 
-COLOR_ACTIVE = 0x0080FF;
+COLOR_ACTIVE = 0x00ccff;
 winx = 10;
 winy = 75;
 winw = gfx_w - 20;
@@ -345,9 +365,20 @@ gfx_blit(7, 1,0);
 (mouse.right_click && mouse_in_rect(winx,winy,winw,winh)) ? 
 (
   gfx_x = mouse.x; gfx_y = mouse.y;
-  choice = gfx_showmenu("Clear");
+  menu = #;
+  candel = sel_end != sel_start && !is_recording;
+  strcpy(menu, "Clear||");
+  strcat(menu, candel ? "Trim|" : "#Trim|");
+  strcat(menu, candel ? "Delete|": "#Delete|");
+  choice = gfx_showmenu(menu);
   choice == 1 ? (
     clear();
+  );
+  choice == 2 ? (
+    trim();
+  );
+  choice == 3 ? (
+    delete();
   );
 );
 
@@ -521,9 +552,11 @@ noise_gate_drag && mouse.dy ? (
 );
 
 // draw noise gate
-set_color(0x00FFFF);
+set_color(0x00FF00);
 gfx_a = 0.15;
-gfx_rect(winx, winy+winh/2-winh/2*noise_gate, winw, winh*noise_gate);
+is_armed == 1 || is_armed == 2 ? (
+  gfx_rect(winx, winy+winh/2-winh/2*noise_gate, winw, winh*noise_gate);
+);
 
 lzoom != zoom || lscrollx != scrollx || lrecsize != recsize 
 || lgfx_w != gfx_w || lgfx_h != gfx_h ? 
