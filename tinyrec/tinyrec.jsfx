@@ -468,7 +468,7 @@ local(x, scrollw)
   );
 );
 
-zoom > 1 && !is_recording ? (
+zoom > 1 && !is_recording && !lis_recording ? ( // lis_recording prevents glitch when finishing recording
   draw_scrollbar();
 );
 
