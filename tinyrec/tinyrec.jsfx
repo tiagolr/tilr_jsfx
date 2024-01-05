@@ -155,7 +155,7 @@ abs(spl0) <= noise_gate && abs(spl1) <= noise_gate ?
 );
 
 (is_recording && is_armed == 0) || 
-(is_recording && is_armed == 3 && play_state & 1) || 
+(is_recording && is_armed == 3 && play_state == 1) || 
 (is_recording && (is_armed == 1 || is_armed == 2) && got_input) ? 
 (
   recbuf[recpos*2] = spl0;
@@ -184,7 +184,7 @@ is_playing ? (
   );
 );
 
-@gfx 400 350
+@gfx 450 300
 
 COLOR_ACTIVE = 0x0080FF;
 winx = 10;
@@ -303,10 +303,10 @@ gfx_x = drawx;
   set_color(0xcccccc);
   pos = screen_to_buf((mouse.x - winx) / winw);
   gfx_drawstr(sprintf(#, "%02d:%02d:%03d", time_minutes(pos),time_seconds(pos), time_millis(pos)));
-) : is_armed == 3 && is_recording ? (
+) : is_armed == 3 && is_recording && play_state != 1 ? (
   set_color(0xFF5555);
   gfx_drawstr("Waiting for play");
-) : is_armed && is_recording ? (
+) : is_armed && is_recording && !got_input ? (
   set_color(0xFF5555);
   gfx_drawstr("Waiting for input..");
 ) : is_recording ? (
