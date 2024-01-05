@@ -68,6 +68,28 @@ TIME-1 is a playback/time and pitch editor similar to plugins like GrossBeat and
 * Anti clicking with 3 modes (Off, Low, High)
 * Pre and post waveform display
 
+## TinyRec
+
+Audio recording utility similar to Image-Line Edison, records incoming signal from a track and exports it to the same track at cursor position.
+
+![](doc/tinyrec.png)
+
+#### Features:
+
+* Record audio up to 4 minutes at 44100 sample-rate
+* Can be placed on any track including master and monitor
+* Record modes (Now, On Input, Input and On Play)
+* Record pre-buffer so transients are not not lost on Input record modes
+* Noise gate for input record modes
+* Basic wave editing (non-reversible)
+
+#### Record modes: 
+
+* **Now** records audio immediately
+* **On Input** records audio when signal exceeds noise gate
+* **Input** records audio when signal exceeds noise gate, pauses when there is no signal for one second
+* **On Play** records audio on host playback
+
 ## SKFilter
 
 SKFilter (or Saikes filters) is a set of unique filters extracted from [Yutani Bass](https://github.com/JoepVanlier/JSFX/tree/master/Yutani)
