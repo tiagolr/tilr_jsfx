@@ -6,7 +6,7 @@ about:
   Audio recording tool, stores up to 2 minutes at 44100 sample rate.
 
 // maxmem = 120seconds * 44100srate * 2chn + 1000prebuf
-options: maxmem=10589104
+options: maxmem=21173104
 
 import tr.gfxlib.jsfx-inc
 filename:0,img/loop.png
@@ -35,11 +35,11 @@ dsmax = 4096 + 1;
 // recording buffer
 recbuf = dsbuf + dsmax + 4;
 recpos = 0;
-recmax = min(44100 * 120, __memtop() / 2);
+recmax = min(44100 * 240, __memtop() / 2 - 4096 - 1008);
 recsize = 0;
 append = 1;
 playpos = 0;
-play_loop = 1;
+play_loop = 0;
 
 is_recording = 0;
 is_playing = 0;
@@ -377,20 +377,21 @@ local(i, j, ampl, ampr, pos, _max, _min, buf)
       _max = 0;
       _min = 0;
       loop(j=pos; max(1, nextpos-pos),
-        ampl = (recbuf[j*2]) * (winh-winy);
-        ampr = (recbuf[j*2+1]) * (winh-winy);
+        ampl = recbuf[j*2];
+        ampr = recbuf[j*2+1];
         _max = max(max(_max, ampl), ampr);
         _min = min(min(_min, ampl), ampr);
         j += 1;
       );
-      _max > winh/2 ? max = winh/2;
-      _min < -winh/2 ? min = -winh/2;
+      _max > 1 ? _max = 1;
+      _min < -1 ? _min = -1;
       dsbuf[1+i*2] = _min;
       dsbuf[1+i*2+1] = _max;
     );
     recsize ? (
-      gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+dsbuf[1+i*2]);
-      gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2+dsbuf[1+i*2+1]);
+      maxamp = max(max(maxamp,(dsbuf[1+i*2])), dsbuf[1+i*2+1]);
+      gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2 + dsbuf[1+i*2] * winh / 2);
+      gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2 + dsbuf[1+i*2+1] * winh / 2);
     ) : (
       // FIX bad display on empty waveform
       gfx_line(winx, winy+winh/2, winx+winw-1, winy+winh/2); 
