@@ -71,9 +71,8 @@ local(playstart)
   is_playing = 1;
   is_paused = 0;
   !playpos && sel_start != sel_end ? (
-    playstart = min(sel_start, sel_end)|0;
-    playstart % 2 ? playstart -= 1;
-    playpos = playstart;
+    playpos = min(sel_start, sel_end)|0;
+    playpos % 2 ? playpos -= 1;
   );
 );
 
@@ -137,7 +136,8 @@ is_playing ? (
   playpos += 1;
   sel_start != sel_end ? (
     playpos > max(sel_start, sel_end) ? (
-      playpos = min(sel_start, sel_end);
+      playpos = min(sel_start, sel_end)|0;
+      playpos % 2 ? playpos -= 1;
       !play_loop ? stop();
     );
   ) : ( 
