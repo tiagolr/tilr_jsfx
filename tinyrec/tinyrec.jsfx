@@ -1,6 +1,6 @@
 desc:TinyRec
 author: tilr
-version: 1.0
+version: 1.0.1
 provides:
   tr.gfxlib.jsfx-inc
   img/loop_active.png
