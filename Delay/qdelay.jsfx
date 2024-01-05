@@ -1,0 +1,431 @@
+desc:QDelay
+author: tilr
+version: 1.0
+provides:
+  qdelay2/qd2.delay.jsfx-inc
+  qdelay2/qd2.rbj_filter.jsfx-inc
+  qdelay2/qd2.saike_pitchlib.jsfx-inc
+  qdelay2/qd2.gfxlib.jsfx-inc
+screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/qdelay2.png
+about: QuickDualDelay with a nicer interface
+
+slider1:delay_sync=1<0,1,1{No,Yes}>-Sync Delays
+
+slider3:delayms=250<1,1000>-Delay Time 1 (ms)
+slider4:sync=3<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>-Tempo Sync 1
+slider5:_feedback=0<0,100>-Feedback 1
+
+slider7:delayms2=250<1,1000>-Delay Time 2 (ms)
+slider8:sync2=0<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>-Tempo Sync 2
+slider9:_feedback2=0<0,100>-Feedback 2
+
+slider11:mode=0<0,1,1{Normal,Ping-Pong}>-Mode
+slider12:spread=0<-100,100,1>-Ping-Pong Spread
+
+slider14:lp_freq=20000<20,20000,1:log>-Low Pass
+slider15:lp_q=0.707<0.707,4.0,0.01:log>-Low Pass Q
+slider16:hp_freq=20<20,20000,1:log>-High Pass
+slider17:hp_q=0.707<0.707,4.0,0.01:log>-High Pass Q
+
+slider19:mod_amp=0<0,100>-Modulation amp
+slider20:mod_freq=1<1,8>-Modulation freq (Hz)
+slider21:_semitones=0<-12,12,1>-Transpose Semis
+slider22:_semitones_free=0<-12,12,.01>-Transpose Free
+
+slider24:_dry=100<0,100>-Dry signal
+slider25:_wet=100<0,100>-Wet signal
+
+import qd2.delay.jsfx-inc
+import qd2.rbj_filter.jsfx-inc
+import qd2.saike_pitchlib.jsfx-inc
+import qd2.gfxlib.jsfx-inc
+
+@init
+
+// 10 second stereo delay line
+d0.delay(2000000, srate * 10);
+d1.delay(3000000, srate * 10);
+
+pref_sync1 = 4;
+pref_sync2 = 4;
+pref_sync_type = 0; // 0 normal, 1 tripplet, 2 dotted
+pref_sync_type2 = 0;
+snap_pitch = 1;
+
+function sine_wave(cycle) (
+  sin(cycle * 2 * $pi);
+);
+
+function rc_set(rc)
+  instance(a) (
+    a = 1 / (rc * srate + 1);
+);
+function rc_lp(sample)
+  instance(lp, a) (
+    lp += a * (sample - lp);
+);
+function smooth()
+  instance (lp, smooth) (
+    lp = smooth;
+    smooth = this.rc_lp(this);
+);
+
+function init_pitchlib ()
+(
+  transition_region = 1024;
+  bufferSize = 4 * transition_region;
+  shifter.pitchShifter(1, transition_region, bufferSize, 2*65536, 3*65536, transition_region, 1);
+);
+
+init_pitchlib();
+
+samps1.rc_set(0.5);
+samps2.rc_set(0.5);
+
+function round(in) (floor(in + 0.5 * sign(in)););
+
+function on_slider()
+(
+  feedback = _feedback / 100;
+  feedback2 = delay_sync ? feedback : _feedback2 / 100;
+  lfactor = spread > 0 ? 1 - spread / 100 : 1;
+  rfactor = spread < 0 ? 1 + spread / 100 : 1;
+  rhaas = !mode && -spread > 0 ? srate / 100 * -spread / 100 : 0; // 10 ms max haas
+  lhaas = !mode && spread > 0 ? srate / 100 * spread / 100 : 0; // 10 ms max haas
+
+  sync ? pref_sync1 = sync;
+  sync2 ? pref_sync2 = sync;
+
+  lp_l.rbj_lp(lp_freq, lp_q);
+  lp_r.rbj_lp(lp_freq, lp_q);
+  hp_l.rbj_hp(hp_freq, hp_q);
+  hp_r.rbj_hp(hp_freq, hp_q);
+
+  semitones = 2*((2^((_semitones|0)/12))-1.0);
+  semitones_free = 2*(pow(2, _semitones_free / 12)-1);
+  dry = _dry / 100;
+  wet = _wet / 100;
+);
+
+@slider
+
+on_slider();
+
+@block
+while (midirecv(offset, msg1, note, vel)) (
+  event = msg1 & 0xF0;
+  event == 0xB0 && note == 123 ? ( // All notes off
+    memset(d0.buf, 0, d0.size);
+    memset(d1.buf, 0, d1.size);
+  );
+);
+
+function get_time_sync (sync) (
+  sync == 1 ? 60000 / 4 / tempo:        // 1/16
+  sync == 2 ? 60000 / 2 / tempo:        // 1/8
+  sync == 3 ? 60000 / tempo:            // 1/4
+  sync == 4 ? 60000 * 2 / tempo:        // 1/2
+  sync == 5 ? 60000 * 4 / tempo:        // 1/1
+  sync == 6 ? 60000 / 6 / tempo:        // 1/16t
+  sync == 7 ? 60000 / 3 / tempo:        // 1/8t
+  sync == 8 ? 60000 / 3 * 2 / tempo:    // 1/4t
+  sync == 9 ? 60000 / 3 * 4 / tempo:    // 1/2t
+  sync == 10 ? 60000 / 3 * 8 / tempo:   // 1/1t
+  sync == 11 ? 60000 / 4 * 1.5 / tempo: // 1/16.
+  sync == 12 ? 60000 / 2 * 1.5 / tempo: // 1/8.
+  sync == 13 ? 60000 * 1.5 / tempo:     // 1/4.
+  sync == 14 ? 60000 * 2 * 1.5 / tempo: // 1/2.
+  sync == 15 ? 60000 * 4 * 1.5 / tempo: // 1/1.
+  1;
+);
+
+pref_sync_type == 0 && sync && sync > 10 ? sync -= 10
+: pref_sync_type == 0 && sync && sync > 5 ? sync -= 5
+: pref_sync_type == 1 && sync && sync > 10 ? sync -= 5
+: pref_sync_type == 1 && sync && sync <= 5 ? sync += 5
+: pref_sync_type == 2 && sync && sync <= 5 ? sync += 10
+: pref_sync_type == 2 && sync && sync <= 10 ? sync += 5;
+
+pref_sync_type2 == 0 && sync2 && sync2 > 10 ? sync2 -= 10
+: pref_sync_type2 == 0 && sync2 && sync2 > 5 ? sync2 -= 5
+: pref_sync_type2 == 1 && sync2 && sync2 > 10 ? sync2 -= 5
+: pref_sync_type2 == 1 && sync2 && sync2 <= 5 ? sync2 += 5
+: pref_sync_type2 == 2 && sync2 && sync2 <= 5 ? sync2 += 10
+: pref_sync_type2 == 2 && sync2 && sync2 <= 10 ? sync2 += 5;
+
+sync > 0 ? (
+  delayms = get_time_sync(sync|0);
+);
+delayms > 10000 ? delayms = 10000;
+
+delay_sync ? (
+  sync2 = sync;
+  delayms2 = delayms;
+  _feedback2 = _feedback;
+) : (
+  sync2 > 0 ? (
+    delayms2 = get_time_sync(sync2|0);
+  );
+);
+delayms2 > 10000 ? delayms2 = 10000;
+
+samps1 = delayms * 0.001 * srate; // delay time in samples
+samps2 = delayms2 * 0.001 * srate;
+
+@sample
+
+play_state & 1 && !lplay_state & 1 ? (
+  samps1.smooth = samps1;
+  samps2.smooth = samps2;
+);
+lplay_state = play_state;
+
+samps1.smooth();
+samps2.smooth();
+
+// modulation sinewave
+mod_amp ? (
+  cycle += mod_freq / srate;
+  cycle > 1 ? cycle -= 1;
+  wave = sine_wave(cycle);
+) : (
+  wave = 0;
+);
+
+// read with cubic interpolation
+val0 = d0.delay_read3(samps1.smooth + wave * mod_amp + lhaas);
+val1 = d1.delay_read3(samps2.smooth + wave * mod_amp + rhaas);
+
+// apply filters on delay signal
+lp_freq < 20000 ? (
+  val0 = lp_l.rbj_df1(val0);
+  val1 = lp_r.rbj_df1(val1);
+);
+hp_freq > 20 ? (
+  val0 = hp_l.rbj_df1(val0);
+  val1 = hp_r.rbj_df1(val1);
+);
+
+mode == 0 ? ( // normal
+  left = spl0 + val0 * feedback;
+  right = spl1 + val1 * feedback2;
+) : ( // ping-pong
+  left = spl0 * lfactor + val1 * feedback;
+  right = spl1 * rfactor + val0 * feedback2;
+);
+
+_semitones || _semitones_free ? (
+  shifter.pitchShifterUpdate(left, right);
+  shifter.setPitchShifterSpeed(semitones + semitones_free);
+  left = shifter.outL;
+  right = shifter.outR;
+);
+
+// write values in delay lines
+d0.delay_write(left);
+d1.delay_write(right);
+
+// sum and output
+spl0 = spl0*dry + val0*wet;
+spl1 = spl1*dry + val1*wet;
+
+@gfx 565 240
+
+gfx_clear = COLOR_BG;
+mouse.update_mouse_state();
+gfx_setfont(1, "Arial", 16, 'b');
+
+function get_time_str (t) (
+  t <= 5 ? "n"
+  : t <= 10 ? "t"
+  : "."
+);
+
+function get_tempo_str(t) (
+  t == 1 ? "1/16"
+  : t == 2 ? "1/8"
+  : t == 3 ? "1/4"
+  : t == 4 ? "1/2"
+  : t == 5 ? "1/1"
+  : t == 6 ? "1/16t"
+  : t == 7 ? "1/8t"
+  : t == 8 ? "1/4t"
+  : t == 9 ? "1/2t"
+  : t == 10 ? "1/1t"
+  : t == 11 ? "1/16."
+  : t == 12 ? "1/8."
+  : t == 13 ? "1/4."
+  : t == 14 ? "1/2."
+  : "1/1.";
+);
+
+gfx_x = 20;
+gfx_y = 20;
+set_color(0x666666);
+gfx_drawstr("Delay L");
+
+draw_button(75, 20, 50, "Sync", sync);
+mouse.left_click && mouse_in_rect(75, 20, 50, 17) ? (
+  sync = sync ? 0 : pref_sync1;
+);
+sync && draw_button(75+50+5, 20, 20, get_time_str(sync), 0);
+sync && mouse.left_click && mouse_in_rect(75+50+5, 20, 20,20) ? (
+  gfx_x = 75+50+5; gfx_y = 40;
+  choice = gfx_showmenu("Normal|Tripplet|Dotted");
+  choice ? pref_sync_type = choice - 1;
+);
+
+drawx = 20;
+drawy = 50;
+sync ? (
+  sync <= 5 ? (
+    draw_knob(drawx, drawy, 4, get_tempo_str(sync|0), 3, 1, 5, 0, 0, get_tempo_str(sync|0), 1);
+  ) : sync <= 10 ? (
+    draw_knob(drawx, drawy, 4, get_tempo_str(sync|0), 8, 6, 10, 0, 0, get_tempo_str(sync|0), 1);
+  ) : (
+    draw_knob(drawx, drawy, 4, get_tempo_str(sync|0), 13, 11, 15, 0, 0, get_tempo_str(sync|0), 1);
+  );
+) : (
+  draw_knob(drawx, drawy, 3, sprintf(#, "%i ms", slider(3)), 250, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(3)),0);
+);
+drawx += 60;
+draw_knob(drawx, drawy, 5, "Feedbk", 0, 0, 100, 0, 0, sprintf(#, "%i %%", slider(5)),0);
+drawx += 60;
+draw_button(drawx, drawy + 15, 50, "Link", delay_sync);
+mouse.left_click && mouse_in_rect(drawx, drawy + 15, 50,17) ? (
+  delay_sync = !delay_sync;
+  on_slider();
+);
+drawx += 65;
+draw_button(drawx-5, drawy-30, 50, "Pong", mode);
+mouse.left_click && mouse_in_rect(drawx-5, drawy -30, 50,20) ? (
+  mode = !mode;
+  on_slider();
+);
+draw_knob(drawx, drawy, 12, "Spread", 0, -100,100, 0, 1, mode ? sprintf(#, "%i %%", slider(12)) : sprintf(#, "%i ms", slider(12)),0);
+drawx += 80;
+gfx_x = drawx; gfx_y = drawy - 30;
+set_color(0x666666);
+gfx_drawstr("Low Cut");
+draw_knob(drawx, drawy, 14, "Freq", 0, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(14)),0);
+drawx += 60;
+draw_knob(drawx, drawy, 15, "Res", 0.707, 0.707, 4, 1, 0, sprintf(#, "%.2f", slider(15)), 0);
+drawx += 80;
+gfx_x = drawx; gfx_y = drawy - 30;
+set_color(0x666666);
+gfx_drawstr("Modulation");
+draw_knob(drawx, drawy, 19, "Amp", 0, 0, 100, 0, 0, sprintf(#, "%i %%", slider(19)), 0);
+drawx += 60;
+draw_knob(drawx, drawy, 20, "Freq", 1, 1, 8, 0, 0, sprintf(#, "%.2f Hz", slider(20)), 0);
+
+// Lower part of GFX ---------------
+
+drawx = 20;
+drawy = 50+80;
+gfx_x = drawx; gfx_y = drawy;
+set_color(0x666666);
+gfx_setfont(1, "Arial", 16, 'b');
+gfx_drawstr("Delay R");
+
+delay_sync ? (
+  gfx_a = 0.25;
+);
+draw_button(drawx+55, drawy, 50, "Sync", sync2);
+mouse.left_click && mouse_in_rect(drawx+55, drawy, 50, 17) ? (
+  sync2 = sync2 ? 0 : pref_sync2;
+);
+sync2 && draw_button(drawx+55+55, drawy, 20, get_time_str(sync2), 0);
+sync2 && mouse.left_click && mouse_in_rect(drawx+55+55, drawy, 20,20) ? (
+  gfx_x = drawx+55+55; gfx_y = drawy+20;
+  choice = gfx_showmenu("Normal|Tripplet|Dotted");
+  choice ? pref_sync_type2 = choice - 1;
+);
+
+drawy += 30;
+sync2 ? (
+  sync2 <= 5 ? (
+    draw_knob(drawx, drawy, 8, get_tempo_str(sync2|0), 3, 1, 5, 0, 0, get_tempo_str(sync2|0), 1);
+  ) : sync2 <= 10 ? (
+    draw_knob(drawx, drawy, 8, get_tempo_str(sync2|0), 8, 6, 10, 0, 0, get_tempo_str(sync2|0), 1);
+  ) : (
+    draw_knob(drawx, drawy, 8, get_tempo_str(sync2|0), 13, 11, 15, 0, 0, get_tempo_str(sync2|0), 1);
+  );
+) : (
+  draw_knob(drawx, drawy, 7, sprintf(#, "%i ms", slider(7)), 250, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(7)),0);
+);
+drawx += 60;
+draw_knob(drawx, drawy, 9, "Feedbk", 0, 0, 100, 0, 0, sprintf(#, "%i %%", slider(9)),0);
+gfx_a = 1;
+
+drawx += 125;
+gfx_x = drawx; gfx_y = drawy - 30;
+set_color(0x666666);
+gfx_drawstr("Pitch");
+draw_button(drawx+40, drawy-30, 20, "S", snap_pitch);
+mouse.left_click && mouse_in_rect(drawx+40, drawy-30, 20, 20) ? (
+  snap_pitch = !snap_pitch;
+  snap_pitch ? (
+    _semitones_free = 0;
+  ) : (
+    _semitones = 0;
+  );
+  on_slider();
+);
+snap_pitch ? (
+  draw_knob(drawx, drawy, 21, "Semi", 0, -12, 12, 0, 1, sprintf(#, "%i", slider(21)),1);
+) : (
+  draw_knob(drawx, drawy, 22, "Free", 0, -12, 12, 0, 1, sprintf(#, "%.2f", slider(22)),0);
+);
+drawx += 80;
+
+gfx_x = drawx; gfx_y = drawy - 30;
+set_color(0x666666);
+gfx_drawstr("High Cut");
+draw_knob(drawx, drawy, 16, "Freq", 0, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(16)),0);
+drawx += 60;
+draw_knob(drawx, drawy, 17, "Res", 0.707, 0.707, 4, 1, 0, sprintf(#, "%.2f", slider(17)), 0);
+drawx += 80;
+gfx_x = drawx; gfx_y = drawy - 30;
+set_color(0x666666);
+gfx_drawstr("Signal");
+draw_knob(drawx, drawy, 24, "Dry", 100, 0, 100, 0, 0, sprintf(#, "%i %%", slider(24)),0);
+drawx += 60;
+draw_knob(drawx, drawy, 25, "Wet", 100, 0, 100, 0, 0, sprintf(#, "%i %%", slider(25)),0);
+
+
+// ------------------
+
+function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
+  factor *= mouse.control ? 0.05 : 1;
+  slider_is_log ? (
+    slider(nslider) = slider(nslider) * pow(100, -factor * 0.01);
+  ) : (
+    inc = (slider_max - slider_min) / 100 * -factor;
+    slider(nslider) += inc;
+  );
+
+  slider(nslider) > slider_max ? slider(nslider) = slider_max;
+  slider(nslider) < slider_min ? slider(nslider) = slider_min;
+  on_slider();
+  sliderchange(slider(nslider));
+  slider_automate(slider(nslider));
+);
+
+wheelknob_nslider ? (
+  on_knob_move(wheelknob_nslider, wheelknob_min, wheelknob_max, wheelknob_is_log, mouse.wheel * -7);
+);
+
+selknob_nslider && mouse.left && mouse.dy != 0 ? (
+  on_knob_move(selknob_nslider, selknob_min, selknob_max, selknob_is_log, mouse.dy);
+);
+
+doubleclk_nslider ? (
+  on_slider();
+  sliderchange(slider(doubleclk_nslider));
+  slider_automate(slider(doubleclk_nslider));
+  doubleclk_nslider = 0;
+);
+
+gfx_setcursor(selknob_nslider ? 32511 : 0);
+!mouse.wheel ? wheelknob_nslider = 0;
+!mouse.left ? selknob_nslider = 0;
