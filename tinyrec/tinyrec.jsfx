@@ -1,11 +1,23 @@
 desc:TinyRec
-noindex: true
+author: tilr
+version: 1.0
+provides:
+  tr.gfxlib.jsfx-inc
+  img/loop_active.png
+  img/loop.png
+  img/pause.png
+  img/play.png
+  img/rec_active.png
+  img/rec.png
+  img/save.png
+  img/stop.png
+  img/tools.png
 about:
   # TinyRec
 
-  Audio recording tool, stores up to 2 minutes at 44100 sample rate.
+  Audio recording utility, stores up to 4 minutes at 44100 sample rate.
 
-// maxmem = 120seconds * 44100srate * 2chn + 1000prebuf
+// maxmem = 120seconds * 44100srate * 2chn + 1000prebuf _ dsbuf + 8
 options: maxmem=21173104
 
 import tr.gfxlib.jsfx-inc
@@ -69,7 +81,7 @@ function record () (
   zoom = 1;
 );
 
-function play () 
+function play ()
 local(playstart)
 (
   is_recording = 0;
@@ -106,7 +118,7 @@ function clear () (
 );
 
 function trim () (
-  memcpy(recbuf,recbuf+min(sel_start,sel_end)*2, abs(sel_end-sel_start) * 2); 
+  memcpy(recbuf,recbuf+min(sel_start,sel_end)*2, abs(sel_end-sel_start) * 2);
   recsize = abs(sel_end - sel_start);
   recpos ? recpos = recsize;
   sel_end = 0;
@@ -125,7 +137,7 @@ function delete () (
   sel_start = 0;
 );
 
-function insert_pre_buffer() 
+function insert_pre_buffer()
 (
   prepos -= premax / 2;
   prepos < 0 ? prepos = premax / 2 + prepos;
@@ -165,7 +177,7 @@ is_armed == 1 || is_armed == 2 ? (
   no_input = 0;
 );
 
-is_armed == 2 && is_recording && got_input && 
+is_armed == 2 && is_recording && got_input &&
 abs(spl0) <= noise_gate && abs(spl1) <= noise_gate ?
 (
   no_input += 1;
@@ -174,9 +186,9 @@ abs(spl0) <= noise_gate && abs(spl1) <= noise_gate ?
   );
 );
 
-(is_recording && is_armed == 0) || 
-(is_recording && is_armed == 3 && play_state == 1) || 
-(is_recording && (is_armed == 1 || is_armed == 2) && got_input) ? 
+(is_recording && is_armed == 0) ||
+(is_recording && is_armed == 3 && play_state == 1) ||
+(is_recording && (is_armed == 1 || is_armed == 2) && got_input) ?
 (
   recbuf[recpos*2] = spl0;
   recbuf[recpos*2+1] = spl1;
@@ -196,7 +208,7 @@ is_playing ? (
       playpos % 2 ? playpos -= 1;
       !play_loop ? stop();
     );
-  ) : ( 
+  ) : (
     playpos > recsize ? (
       playpos = 0;
       !play_loop ? stop();
@@ -290,7 +302,7 @@ is_armed == 1 || is_armed == 2 ? (
   );
 );
 
-function time_minutes (pos) ( 
+function time_minutes (pos) (
   pos / srate / 60;
 );
 
@@ -336,7 +348,7 @@ gfx_x = drawx;
 
 // RIGHT BUTTONS
 
-function export_wave() 
+function export_wave()
 local(start, end)
 (
   track = get_host_placement();
@@ -361,8 +373,8 @@ mouse.left_click && mouse_in_rect(drawx, drawy, 25, 25) ? (
 drawx -= 35;
 gfx_x = drawx;
 gfx_blit(7, 1,0);
-(mouse.left_click && mouse_in_rect(drawx,drawy, 25,25)) || 
-(mouse.right_click && mouse_in_rect(winx,winy,winw,winh)) ? 
+(mouse.left_click && mouse_in_rect(drawx,drawy, 25,25)) ||
+(mouse.right_click && mouse_in_rect(winx,winy,winw,winh)) ?
 (
   gfx_x = mouse.x; gfx_y = mouse.y;
   menu = #;
@@ -425,20 +437,20 @@ local(i, j, ampl, ampr, pos, _max, _min, buf)
       gfx_line(winx+i, winy + winh/2, winx+i, winy+winh/2 + dsbuf[1+i*2+1] * winh / 2);
     ) : (
       // FIX bad display on empty waveform
-      gfx_line(winx, winy+winh/2, winx+winw-1, winy+winh/2); 
+      gfx_line(winx, winy+winh/2, winx+winw-1, winy+winh/2);
     );
     i += 1;
   );
   dsbuf[0] = 1;
 );
 
-function draw_grid () 
+function draw_grid ()
 local (seconds, grids_second, grids, i, x)
 (
   seconds = recsize / srate;
   grids_second = tempo / 60 / 4 * zoom;
   grids = seconds / grids_second;
-  loop(i = 1; grids*zoom, 
+  loop(i = 1; grids*zoom,
     x = winx + i * winw / grids - scrollx * winw * (zoom - 1);
     gfx_a = !(i % 4) ? 0.5 : 0.25;
     gfx_line(x, winy, x, winy+winh);
@@ -558,8 +570,8 @@ is_armed == 1 || is_armed == 2 ? (
   gfx_rect(winx, winy+winh/2-winh/2*noise_gate, winw, winh*noise_gate);
 );
 
-lzoom != zoom || lscrollx != scrollx || lrecsize != recsize 
-|| lgfx_w != gfx_w || lgfx_h != gfx_h ? 
+lzoom != zoom || lscrollx != scrollx || lrecsize != recsize
+|| lgfx_w != gfx_w || lgfx_h != gfx_h ?
 (
   dsbuf[0] = 0; // flag 0 causes downsample to recalculate
 );
