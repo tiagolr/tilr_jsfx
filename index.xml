@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="a66946387a179ff4652dba9d5f07a8e5d1d8da34" name="Tilr">
+<index version="1" commit="deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -18,6 +18,13 @@
         <source file="qdelay2/qd2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Delay/qdelay2/qd2.rbj_filter.jsfx-inc</source>
         <source file="qdelay2/qd2.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Delay/qdelay2/qd2.saike_pitchlib.jsfx-inc</source>
         <source file="qdelay2/qd2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Delay/qdelay2/qd2.gfxlib.jsfx-inc</source>
+      </version>
+      <version name="1.0.1" author="tilr" time="2024-01-06T01:24:46Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Delay/qdelay.jsfx</source>
+        <source file="qdelay2/qd2.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Delay/qdelay2/qd2.delay.jsfx-inc</source>
+        <source file="qdelay2/qd2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Delay/qdelay2/qd2.rbj_filter.jsfx-inc</source>
+        <source file="qdelay2/qd2.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Delay/qdelay2/qd2.saike_pitchlib.jsfx-inc</source>
+        <source file="qdelay2/qd2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Delay/qdelay2/qd2.gfxlib.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="QuickDelay.jsfx" type="effect" desc="QuickDelay">
@@ -544,6 +551,19 @@ fix volume knob clicking]]></changelog>
         <source file="tinyrec/img/save.png">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Utility/tinyrec/img/save.png</source>
         <source file="tinyrec/img/stop.png">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Utility/tinyrec/img/stop.png</source>
         <source file="tinyrec/img/tools.png">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Utility/tinyrec/img/tools.png</source>
+      </version>
+      <version name="1.0.2" author="tilr" time="2024-01-06T01:24:46Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec.jsfx</source>
+        <source file="tinyrec/tr.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec/tr.gfxlib.jsfx-inc</source>
+        <source file="tinyrec/img/loop_active.png">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec/img/loop_active.png</source>
+        <source file="tinyrec/img/loop.png">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec/img/loop.png</source>
+        <source file="tinyrec/img/pause.png">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec/img/pause.png</source>
+        <source file="tinyrec/img/play.png">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec/img/play.png</source>
+        <source file="tinyrec/img/rec_active.png">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec/img/rec_active.png</source>
+        <source file="tinyrec/img/rec.png">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec/img/rec.png</source>
+        <source file="tinyrec/img/save.png">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec/img/save.png</source>
+        <source file="tinyrec/img/stop.png">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec/img/stop.png</source>
+        <source file="tinyrec/img/tools.png">https://github.com/tiagolr/tilr_jsfx/raw/deb1317351df5a8ad98fdb6dbd001ff9d09e1e9f/Utility/tinyrec/img/tools.png</source>
       </version>
     </reapack>
   </category>
