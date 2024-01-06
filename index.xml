@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="a66946387a179ff4652dba9d5f07a8e5d1d8da34" name="Tilr JSFX">
+<index version="1" commit="a66946387a179ff4652dba9d5f07a8e5d1d8da34" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
