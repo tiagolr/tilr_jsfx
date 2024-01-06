@@ -1,6 +1,6 @@
 desc:TinyRec
 author: tilr
-version: 1.0.2
+version: 1.0.3
 provides:
   tinyrec/tr.gfxlib.jsfx-inc
   tinyrec/img/loop_active.png
@@ -117,7 +117,7 @@ function clear () (
   scrollx = 0;
 );
 
-function trim () 
+function trim ()
 local(start, end)
 (
   start = min(sel_start, sel_end)|0;
@@ -131,7 +131,7 @@ local(start, end)
   sel_start = 0;
 );
 
-function delete () 
+function delete ()
 local(start, end)
 (
   start = min(sel_start, sel_end)|0;
@@ -237,6 +237,10 @@ winw = gfx_w - 20;
 winh = min(gfx_h - winy - 10, 4096);
 gfx_clear = COLOR_BG;
 mouse.update_mouse_state();
+gfx_setfont(1, "Arial", 16, 'b');
+gfx_measurestr("0123456789", font_scaling, fonth);
+font_scaling = 70 / font_scaling;
+gfx_setfont(1, "Arial", floor(16 * font_scaling), 'b');
 
 drawx = 10;
 drawy = 10;
@@ -301,10 +305,12 @@ mouse.left_click && mouse_in_rect(drawx, drawy+10, 60, 17) ? (
 drawx += 70;
 is_armed == 1 || is_armed == 2 ? (
   gfx_x = drawx;
-  gfx_y = drawy + 14;
+  gfx_y = drawy + 12;
+  gfx_setfont(1, "Arial", floor(12*font_scaling));
   set_color(0xcccccc);
   gfx_drawstr("Noise:");
-  drawx += 55;
+  gfx_setfont(1, "Arial", floor(16*font_scaling), 'b');
+  drawx += 35;
   draw_button(drawx, drawy+10, 60, sprintf(#, "%i dB", gain2dB(noise_gate)), 0);
   mouse.left_click && mouse_in_rect(drawx, drawy+10, 60, 17) ? (
     noise_gate_drag = 1;
@@ -339,7 +345,6 @@ mouse.left_click && mouse_in_rect(drawx,drawy,60,18) ? (
 );
 drawx += 70;
 gfx_x = drawx;
-gfx_y = drawy+3;
 
 !is_recording && recsize && mouse_in_rect(winx,winy,winw,winh) ? (
   set_color(0xcccccc);
@@ -404,14 +409,14 @@ gfx_blit(7, 1,0);
   );
 );
 
-drawx = gfx_w - 10 - 72;
-drawy = 61;
+drawx = gfx_w - 10 - 60;
+drawy = 58;
 gfx_x = drawx; gfx_y = drawy;
 set_color(0xcccccc);
 gfx_drawstr(sprintf(#, "%02d:%02d:%03d", time_minutes(recsize),time_seconds(recsize), time_millis(recsize)));
 
 sel_start != sel_end && !is_recording ? (
-  drawx -= 180;
+  drawx -= 150;
   gfx_x = drawx;
   set_color(COLOR_ACTIVE);
   gfx_drawstr(sprintf(#, "%02d:%02d:%03d", time_minutes(min(sel_start, sel_end)),time_seconds(min(sel_start, sel_end)), time_millis(min(sel_start, sel_end))));
@@ -487,7 +492,7 @@ local(x, scrollw)
   gfx_rect(x, winy+winh-15, scrollw, 15);
   mouse.left_click && mouse_in_rect(x, winy+winh-15, scrollw, 15) ? (
     scroll_drag = 1;
-  ) 
+  )
   : mouse.left_click && mouse_in_rect(winx, winy+winh-15, winw, 15) ? (
     scrollx = (mouse.x - winx - scrollw / 2) / (winw - scrollw);
     scrollx < 0 ? scrollx = 0;
@@ -553,7 +558,7 @@ mouse.wheel && mouse_in_rect(winx,winy,winw,winh) && !is_recording ? (
   zoom *= mouse.wheel > 0 ? 1.5 : 0.6666;
   zoom > 200 ? zoom = 200;
   zoom < 1 ? zoom = 1;
-  zoom == 1 ? scrollx = 0; 
+  zoom == 1 ? scrollx = 0;
 );
 
 scroll_drag && mouse.dx ? (
