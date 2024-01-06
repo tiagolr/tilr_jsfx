@@ -1,7 +1,6 @@
 desc: SKFilter
 author: tilr
 version: 1.0
-noindex: true
 provides:
   skfilter/skf.Saike_Yutani_Filters.jsfx-inc
   skfilter/skf.Saike_Yutani_oversampling.jsfx-inc
