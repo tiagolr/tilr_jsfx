@@ -1,6 +1,6 @@
 desc:QDelay
 author: tilr
-version: 1.0.2
+version: 1.0.3
 provides:
   qdelay2/qd2.delay.jsfx-inc
   qdelay2/qd2.rbj_filter.jsfx-inc
@@ -81,6 +81,7 @@ init_pitchlib();
 
 samps1.rc_set(0.5);
 samps2.rc_set(0.5);
+spread.rc_set(0.0066);
 
 function round(in) (floor(in + 0.5 * sign(in)););
 
@@ -90,8 +91,6 @@ function on_slider()
   feedback2 = delay_sync ? feedback : _feedback2 / 100;
   lfactor = spread > 0 ? 1 - spread / 100 : 1;
   rfactor = spread < 0 ? 1 + spread / 100 : 1;
-  rhaas = !mode && -spread > 0 ? srate / 100 * -spread / 100 : 0; // 10 ms max haas
-  lhaas = !mode && spread > 0 ? srate / 100 * spread / 100 : 0; // 10 ms max haas
 
   sync ? pref_sync1 = sync;
   sync2 ? pref_sync2 = sync;
@@ -173,6 +172,10 @@ samps1 = delayms * 0.001 * srate; // delay time in samples
 samps2 = delayms2 * 0.001 * srate;
 
 @sample
+
+spread.smooth();
+rhaas = !mode && -spread.smooth > 0 ? srate / 100 * -spread.smooth / 100 : 0; // 10 ms max haas
+lhaas = !mode && spread.smooth > 0 ? srate / 100 * spread.smooth / 100 : 0; // 10 ms max haas
 
 play_state & 1 && !lplay_state & 1 ? (
   samps1.smooth = samps1;
@@ -305,7 +308,7 @@ mouse.left_click && mouse_in_rect(drawx-5, drawy -30, 50,20) ? (
   mode = !mode;
   on_slider();
 );
-draw_knob(drawx, drawy, 12, "Spread", 0, -100,100, 0, 1, mode ? sprintf(#, "%i %%", slider(12)) : sprintf(#, "%i ms", slider(12)),0);
+draw_knob(drawx, drawy, 12, "Spread", 0, -100,100, 0, 1, mode ? sprintf(#, "%i %%", slider(12)) : sprintf(#, "%i ms", slider(12)/10),0);
 drawx += 80;
 gfx_x = drawx; gfx_y = drawy - 30;
 set_color(0x666666);
