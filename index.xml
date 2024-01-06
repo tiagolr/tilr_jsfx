@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="d7eae45a924490be1911fd067111fa93de602ad5" name="tilr">
+<index version="1" commit="a877f72c75c549f7a8620d7a7c24fc02b3e6833c" name="tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -32,6 +32,13 @@
         <source file="qdelay2/qd2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9f965d532fb1b55711f98f211fa2a65ed49eea7a/Delay/qdelay2/qd2.rbj_filter.jsfx-inc</source>
         <source file="qdelay2/qd2.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9f965d532fb1b55711f98f211fa2a65ed49eea7a/Delay/qdelay2/qd2.saike_pitchlib.jsfx-inc</source>
         <source file="qdelay2/qd2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9f965d532fb1b55711f98f211fa2a65ed49eea7a/Delay/qdelay2/qd2.gfxlib.jsfx-inc</source>
+      </version>
+      <version name="1.0.3" author="tilr" time="2024-01-06T14:45:22Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/a877f72c75c549f7a8620d7a7c24fc02b3e6833c/Delay/qdelay.jsfx</source>
+        <source file="qdelay2/qd2.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a877f72c75c549f7a8620d7a7c24fc02b3e6833c/Delay/qdelay2/qd2.delay.jsfx-inc</source>
+        <source file="qdelay2/qd2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a877f72c75c549f7a8620d7a7c24fc02b3e6833c/Delay/qdelay2/qd2.rbj_filter.jsfx-inc</source>
+        <source file="qdelay2/qd2.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a877f72c75c549f7a8620d7a7c24fc02b3e6833c/Delay/qdelay2/qd2.saike_pitchlib.jsfx-inc</source>
+        <source file="qdelay2/qd2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a877f72c75c549f7a8620d7a7c24fc02b3e6833c/Delay/qdelay2/qd2.gfxlib.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="QuickDelay.jsfx" type="effect" desc="QuickDelay">
