@@ -1,6 +1,6 @@
 desc:QDelay
 author: tilr
-version: 1.0
+version: 1.0.1
 provides:
   qdelay2/qd2.delay.jsfx-inc
   qdelay2/qd2.rbj_filter.jsfx-inc
@@ -233,7 +233,6 @@ spl1 = spl1*dry + val1*wet;
 
 gfx_clear = COLOR_BG;
 mouse.update_mouse_state();
-gfx_setfont(1, "Arial", 16, 'b');
 
 function get_time_str (t) (
   t <= 5 ? "n"
@@ -260,17 +259,17 @@ function get_tempo_str(t) (
 );
 
 gfx_x = 20;
-gfx_y = 20;
+gfx_y = 25;
 set_color(0x666666);
 gfx_drawstr("Delay L");
 
-draw_button(75, 20, 50, "Sync", sync);
-mouse.left_click && mouse_in_rect(75, 20, 50, 17) ? (
+draw_button(85, 20, 50, "Sync", sync);
+mouse.left_click && mouse_in_rect(85, 20, 50, 17) ? (
   sync = sync ? 0 : pref_sync1;
 );
-sync && draw_button(75+50+5, 20, 20, get_time_str(sync), 0);
+sync && draw_button(85+50+5, 20, 20, get_time_str(sync), 0);
 sync && mouse.left_click && mouse_in_rect(75+50+5, 20, 20,20) ? (
-  gfx_x = 75+50+5; gfx_y = 40;
+  gfx_x = 85+50+5; gfx_y = 40;
   choice = gfx_showmenu("Normal|Tripplet|Dotted");
   choice ? pref_sync_type = choice - 1;
 );
@@ -304,14 +303,14 @@ mouse.left_click && mouse_in_rect(drawx-5, drawy -30, 50,20) ? (
 );
 draw_knob(drawx, drawy, 12, "Spread", 0, -100,100, 0, 1, mode ? sprintf(#, "%i %%", slider(12)) : sprintf(#, "%i ms", slider(12)),0);
 drawx += 80;
-gfx_x = drawx; gfx_y = drawy - 30;
+gfx_x = drawx; gfx_y = drawy - 25;
 set_color(0x666666);
 gfx_drawstr("Low Cut");
 draw_knob(drawx, drawy, 14, "Freq", 0, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(14)),0);
 drawx += 60;
 draw_knob(drawx, drawy, 15, "Res", 0.707, 0.707, 4, 1, 0, sprintf(#, "%.2f", slider(15)), 0);
 drawx += 80;
-gfx_x = drawx; gfx_y = drawy - 30;
+gfx_x = drawx; gfx_y = drawy - 25;
 set_color(0x666666);
 gfx_drawstr("Modulation");
 draw_knob(drawx, drawy, 19, "Amp", 0, 0, 100, 0, 0, sprintf(#, "%i %%", slider(19)), 0);
@@ -322,21 +321,20 @@ draw_knob(drawx, drawy, 20, "Freq", 1, 1, 8, 0, 0, sprintf(#, "%.2f Hz", slider(
 
 drawx = 20;
 drawy = 50+80;
-gfx_x = drawx; gfx_y = drawy;
+gfx_x = drawx; gfx_y = drawy + 5;
 set_color(0x666666);
-gfx_setfont(1, "Arial", 16, 'b');
 gfx_drawstr("Delay R");
 
 delay_sync ? (
   gfx_a = 0.25;
 );
-draw_button(drawx+55, drawy, 50, "Sync", sync2);
-mouse.left_click && mouse_in_rect(drawx+55, drawy, 50, 17) ? (
+draw_button(drawx+65, drawy, 50, "Sync", sync2);
+mouse.left_click && mouse_in_rect(drawx+65, drawy, 50, 17) ? (
   sync2 = sync2 ? 0 : pref_sync2;
 );
-sync2 && draw_button(drawx+55+55, drawy, 20, get_time_str(sync2), 0);
-sync2 && mouse.left_click && mouse_in_rect(drawx+55+55, drawy, 20,20) ? (
-  gfx_x = drawx+55+55; gfx_y = drawy+20;
+sync2 && draw_button(drawx+55+65, drawy, 20, get_time_str(sync2), 0);
+sync2 && mouse.left_click && mouse_in_rect(drawx+65+55, drawy, 20,20) ? (
+  gfx_x = drawx+65+55; gfx_y = drawy+20;
   choice = gfx_showmenu("Normal|Tripplet|Dotted");
   choice ? pref_sync_type2 = choice - 1;
 );
@@ -358,10 +356,10 @@ draw_knob(drawx, drawy, 9, "Feedbk", 0, 0, 100, 0, 0, sprintf(#, "%i %%", slider
 gfx_a = 1;
 
 drawx += 125;
-gfx_x = drawx; gfx_y = drawy - 30;
+gfx_x = drawx; gfx_y = drawy - 25;
 set_color(0x666666);
 gfx_drawstr("Pitch");
-draw_button(drawx+40, drawy-30, 20, "S", snap_pitch);
+draw_button(drawx+45, drawy-30, 20, "S", snap_pitch);
 mouse.left_click && mouse_in_rect(drawx+40, drawy-30, 20, 20) ? (
   snap_pitch = !snap_pitch;
   snap_pitch ? (
@@ -378,14 +376,14 @@ snap_pitch ? (
 );
 drawx += 80;
 
-gfx_x = drawx; gfx_y = drawy - 30;
+gfx_x = drawx; gfx_y = drawy - 25;
 set_color(0x666666);
 gfx_drawstr("High Cut");
 draw_knob(drawx, drawy, 16, "Freq", 0, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(16)),0);
 drawx += 60;
 draw_knob(drawx, drawy, 17, "Res", 0.707, 0.707, 4, 1, 0, sprintf(#, "%.2f", slider(17)), 0);
 drawx += 80;
-gfx_x = drawx; gfx_y = drawy - 30;
+gfx_x = drawx; gfx_y = drawy - 25;
 set_color(0x666666);
 gfx_drawstr("Signal");
 draw_knob(drawx, drawy, 24, "Dry", 100, 0, 100, 0, 0, sprintf(#, "%i %%", slider(24)),0);

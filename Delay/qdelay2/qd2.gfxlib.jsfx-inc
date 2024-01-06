@@ -181,5 +181,5 @@ function draw_button (x, y, w, label, toggled) (
   gfx_rect(x, y - 2, w, 17 + 2, toggled);
   set_color(toggled ? COLOR_BG : COLOR_ACTIVE);
   gfx_x = x; gfx_y = y - 1;
-  gfx_drawstr(label, 1, x+w, y+17);
+  gfx_drawstr(label, 5, x+w, y+17);
 );

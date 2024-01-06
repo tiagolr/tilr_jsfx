@@ -1,6 +1,6 @@
 desc:TinyRec
 author: tilr
-version: 1.0.1
+version: 1.0.2
 provides:
   tinyrec/tr.gfxlib.jsfx-inc
   tinyrec/img/loop_active.png
@@ -237,7 +237,6 @@ winw = gfx_w - 20;
 winh = min(gfx_h - winy - 10, 4096);
 gfx_clear = COLOR_BG;
 mouse.update_mouse_state();
-gfx_setfont(1, "Arial", 16, 'b');
 
 drawx = 10;
 drawy = 10;
@@ -302,12 +301,10 @@ mouse.left_click && mouse_in_rect(drawx, drawy+10, 60, 17) ? (
 drawx += 70;
 is_armed == 1 || is_armed == 2 ? (
   gfx_x = drawx;
-  gfx_y = drawy + 12;
-  gfx_setfont(1, "Arial", 12);
+  gfx_y = drawy + 14;
   set_color(0xcccccc);
   gfx_drawstr("Noise:");
-  gfx_setfont(1, "Arial", 16, 'b');
-  drawx += 35;
+  drawx += 55;
   draw_button(drawx, drawy+10, 60, sprintf(#, "%i dB", gain2dB(noise_gate)), 0);
   mouse.left_click && mouse_in_rect(drawx, drawy+10, 60, 17) ? (
     noise_gate_drag = 1;
@@ -342,6 +339,7 @@ mouse.left_click && mouse_in_rect(drawx,drawy,60,18) ? (
 );
 drawx += 70;
 gfx_x = drawx;
+gfx_y = drawy+3;
 
 !is_recording && recsize && mouse_in_rect(winx,winy,winw,winh) ? (
   set_color(0xcccccc);
@@ -406,14 +404,14 @@ gfx_blit(7, 1,0);
   );
 );
 
-drawx = gfx_w - 10 - 60;
-drawy = 58;
+drawx = gfx_w - 10 - 72;
+drawy = 61;
 gfx_x = drawx; gfx_y = drawy;
 set_color(0xcccccc);
 gfx_drawstr(sprintf(#, "%02d:%02d:%03d", time_minutes(recsize),time_seconds(recsize), time_millis(recsize)));
 
 sel_start != sel_end && !is_recording ? (
-  drawx -= 150;
+  drawx -= 180;
   gfx_x = drawx;
   set_color(COLOR_ACTIVE);
   gfx_drawstr(sprintf(#, "%02d:%02d:%03d", time_minutes(min(sel_start, sel_end)),time_seconds(min(sel_start, sel_end)), time_millis(min(sel_start, sel_end))));
