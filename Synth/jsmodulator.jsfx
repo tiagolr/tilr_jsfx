@@ -1,6 +1,7 @@
 desc: JSModulator
 author: tilr
 version: 1.1
+noindex: true
 changelog:
   replace zdf with rbj filters
   fix read wave sample rate

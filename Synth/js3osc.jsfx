@@ -1,6 +1,7 @@
 desc: JS3Osc
 author: tilr
 version: 1.1
+noindex: true
 changelog:
   Normalize slider values
   Remove clicking from vol and phase_offset knobs

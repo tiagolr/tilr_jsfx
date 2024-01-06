@@ -1,7 +1,8 @@
 desc: QuickFilter
 author: tilr
 version: 1.0
-provides: 
+noindex: true
+provides:
 	qfilter/qf.svf_filter.jsfx-inc
 about:
   # QuickFilter

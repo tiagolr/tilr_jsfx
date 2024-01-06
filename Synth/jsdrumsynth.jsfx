@@ -1,6 +1,7 @@
 desc: JSDrumsynth
 author: tilr
 version: 1.0
+noindex: true
 provides:
   jsdrumsynth.jsfx.RPL
   jsdrumsynth/ds.envlib.jsfx-inc

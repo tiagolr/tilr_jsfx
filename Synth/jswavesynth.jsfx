@@ -1,6 +1,7 @@
 desc: JSWavesynth
 author: tilr
 version: 1.2
+noindex: true
 changelog:
   replace zdf with rbj filters
   fix volume knob clicking
