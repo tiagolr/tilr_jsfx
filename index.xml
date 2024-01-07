@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="46d993c8731b9d543c3867a848d9b128aead19f1" name="Tilr">
+<index version="1" commit="0f54845e29f85d7e13c89867ba3b10410aed93fe" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -39,6 +39,13 @@
         <source file="qdelay2/qd2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a877f72c75c549f7a8620d7a7c24fc02b3e6833c/Delay/qdelay2/qd2.rbj_filter.jsfx-inc</source>
         <source file="qdelay2/qd2.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a877f72c75c549f7a8620d7a7c24fc02b3e6833c/Delay/qdelay2/qd2.saike_pitchlib.jsfx-inc</source>
         <source file="qdelay2/qd2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a877f72c75c549f7a8620d7a7c24fc02b3e6833c/Delay/qdelay2/qd2.gfxlib.jsfx-inc</source>
+      </version>
+      <version name="1.0.4" author="tilr" time="2024-01-07T13:52:29Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/c5695e50487896f235dc57834da0295a6dcdb200/Delay/qdelay.jsfx</source>
+        <source file="qdelay2/qd2.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/c5695e50487896f235dc57834da0295a6dcdb200/Delay/qdelay2/qd2.delay.jsfx-inc</source>
+        <source file="qdelay2/qd2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/c5695e50487896f235dc57834da0295a6dcdb200/Delay/qdelay2/qd2.rbj_filter.jsfx-inc</source>
+        <source file="qdelay2/qd2.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/c5695e50487896f235dc57834da0295a6dcdb200/Delay/qdelay2/qd2.saike_pitchlib.jsfx-inc</source>
+        <source file="qdelay2/qd2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/c5695e50487896f235dc57834da0295a6dcdb200/Delay/qdelay2/qd2.gfxlib.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="QuickDelay.jsfx" type="effect" desc="QuickDelay">
@@ -207,6 +214,13 @@ Yutani Bass
         <source file="adsr1/adsr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Modulation/adsr1/adsr.curvelib.jsfx-inc</source>
         <source file="adsr1/adsr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Modulation/adsr1/adsr.mouselib.jsfx-inc</source>
       </version>
+      <version name="1.0.1" author="tilr" time="2024-01-07T19:04:40Z">
+        <changelog><![CDATA[Remove slider automate]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/adsr1.jsfx</source>
+        <source file="adsr1/adsr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/adsr1/adsr.array.jsfx-inc</source>
+        <source file="adsr1/adsr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/adsr1/adsr.curvelib.jsfx-inc</source>
+        <source file="adsr1/adsr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/adsr1/adsr.mouselib.jsfx-inc</source>
+      </version>
     </reapack>
     <reapack name="gate1.jsfx" type="effect" desc="GATE-1">
       <metadata>
@@ -235,6 +249,15 @@ Yutani Bass
         <source file="gate1/gate.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Modulation/gate1/gate.curvelib.jsfx-inc</source>
         <source file="gate1/gate.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Modulation/gate1/gate.mouselib.jsfx-inc</source>
       </version>
+      <version name="1.0.1" author="tilr" time="2024-01-07T19:04:40Z">
+        <changelog><![CDATA[Remove slider automate
+Add retrigger slider
+Add link edge points option]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/gate1.jsfx</source>
+        <source file="gate1/gate.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/gate1/gate.array.jsfx-inc</source>
+        <source file="gate1/gate.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/gate1/gate.curvelib.jsfx-inc</source>
+        <source file="gate1/gate.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/gate1/gate.mouselib.jsfx-inc</source>
+      </version>
     </reapack>
     <reapack name="mseg1.jsfx" type="effect" desc="MSEG-1">
       <metadata>
@@ -258,6 +281,18 @@ Yutani Bass
         <source file="mseg1/mseg.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Modulation/mseg1/mseg.array.jsfx-inc</source>
         <source file="mseg1/mseg.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Modulation/mseg1/mseg.curvelib.jsfx-inc</source>
         <source file="mseg1/mseg.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Modulation/mseg1/mseg.mouselib.jsfx-inc</source>
+      </version>
+      <version name="1.0.1" author="tilr" time="2024-01-07T19:04:40Z">
+        <changelog><![CDATA[Improve retrigger conditions
+Add retrigger slider
+Add CC output
+Link edge points option
+Remove slider automate
+Add patterns selector]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/mseg1.jsfx</source>
+        <source file="mseg1/mseg.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/mseg1/mseg.array.jsfx-inc</source>
+        <source file="mseg1/mseg.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/mseg1/mseg.curvelib.jsfx-inc</source>
+        <source file="mseg1/mseg.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/mseg1/mseg.mouselib.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="time1.jsfx" type="effect" desc="TIME-1">
@@ -285,6 +320,15 @@ Yutani Bass
         <source file="time1/time.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Modulation/time1/time.curvelib.jsfx-inc</source>
         <source file="time1/time.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Modulation/time1/time.delay.jsfx-inc</source>
         <source file="time1/time.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Modulation/time1/time.mouselib.jsfx-inc</source>
+      </version>
+      <version name="1.0.1" author="tilr" time="2024-01-07T19:04:40Z">
+        <changelog><![CDATA[Add retrigger
+Add retrigger slider]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/time1.jsfx</source>
+        <source file="time1/time.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/time1/time.array.jsfx-inc</source>
+        <source file="time1/time.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/time1/time.curvelib.jsfx-inc</source>
+        <source file="time1/time.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/time1/time.delay.jsfx-inc</source>
+        <source file="time1/time.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0f54845e29f85d7e13c89867ba3b10410aed93fe/Modulation/time1/time.mouselib.jsfx-inc</source>
       </version>
     </reapack>
   </category>
