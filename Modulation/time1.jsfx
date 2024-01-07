@@ -43,6 +43,7 @@ file_var(0, gridsegs);
 file_var(0, draw_wave);
 file_var(0, always_playing);
 file_var(0, show_retrigger_slider);
+file_var(0, trigger_channel);
 file_mem(0, patterns, npatterns * (1 + 4 * 1000));
 
 file_avail(0) >= 0 ? (
@@ -68,8 +69,8 @@ always_playing = 0;
 show_retrigger_slider = 0;
 anoise = 1; // anti-noise/clicks 0 = no anti-noise, 1 = low, 2 - strong
 patterns = 100000; // buffer to store patterns 12 * (1 + 3 * 1000)
-pre_samples = 200000; // buffer with pre volume samples - winx size
-post_samples = 300000; // buffer with post volume samples - winx size
+pre_samples = 200000; // buffer with pre volume samples - winw size
+post_samples = 300000; // buffer with post volume samples - winw size
 delay0 = 1000000; // buffer for delay left samples
 delay1 = 3000000; // buffer for delay right samples
 

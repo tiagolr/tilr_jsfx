@@ -24,15 +24,19 @@ about:
   * Paint mode - erase, line, saw up, saw down
   * Output smooth and attack-release smooth
 
-slider1:mode=0<0,2,1{Sync,Free,MIDI}>Trigger
-slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
-slider3:ratehz=1<0.01,140,.01:log>Rate (Hz)
-slider4:phase=0<0,1,.01>Phase
-slider6:_lfomin=0<0,100,1>Min
-slider7:_lfomax=100<0,100,1>Max
-slider8:lfosmooth=0<0,100>Smooth
-slider9:attsmooth=0<0,100>-Attack Smooth
-slider10:relsmooth=0<0,100>-Release Smooth
+
+slider1:pattern=1<1,12,1>Pattern
+slider2:mode=0<0,2,1{Sync,Free,MIDI}>Trigger
+slider3:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
+slider4:ratehz=1<0.01,140,.01:log>Rate (Hz)
+slider5:phase=0<0,1,.01>Phase
+
+slider7:_lfomin=0<0,100,1>Min
+slider8:_lfomax=100<0,100,1>Max
+slider9:lfosmooth=0<0,100>Smooth
+slider10:attsmooth=0<0,100>-Attack Smooth
+slider11:relsmooth=0<0,100>-Release Smooth
+
 slider20:value=0.5<0,1,0.01>Value
 slider21:cc=-1<-1,120,1>-CC Output
 slider22:retrigger=0<0,1,1>-Retrigger
@@ -46,12 +50,8 @@ out_pin:none
 options:gfx_hz=60 gmem=mseg1
 
 @serialize
-file_var(0, curve.points.size);
-file_var(0, curve.segments.size);
-file_var(0, curve.points.num);
-file_var(0, curve.segments.num);
-file_mem(0, curve.points.buf, curve.points.num * curve.points.size);
-file_mem(0, curve.segments.buf, curve.segments.num * curve.segments.size);
+store_pattern(pattern - 1);
+file_mem(0, patterns, npatterns * (1 + 4 * 1000));
 file_var(0, dual_smooth);
 file_var(0, paint_mode);
 file_var(0, gridsegs);
@@ -60,8 +60,12 @@ file_var(0, show_value_slider);
 file_var(0, show_cc_slider);
 file_var(0, show_retrigger_slider);
 file_var(0, link_edge_points);
+file_var(0, trigger_channel);
 
-on_slider(); // update sliders after loading vars
+file_avail(0) >= 0 ? (
+  lpattern = -1; // force load current pattern
+  on_slider(); // update sliders after loading vars
+);
 
 @init
 
@@ -75,16 +79,42 @@ always_playing = 0;
 paint_mode = 1; // 0 = Erase, 1 = Line
 point_mode = 1; // 0 = hold, 1 = line
 show_about = 0;
+trigger_channel = 9;
+npatterns = 12;
+lpattern = -1;
 show_value_slider = 1;
 show_cc_slider = 0;
 show_retrigger_slider = 0;
 link_edge_points = 1;
+patterns = 1000000; // buffer to store patterns 12 * (1 + 4 * 1000)
+
+function store_pattern(pattern)
+local(buf)
+(
+  buf = patterns + pattern * (1 + 4 * 1000);
+  buf[0] = curve.points.size;
+  memcpy(buf + 1, curve.buf, 4 * 1000);
+);
+
+function load_pattern(pattern)
+local(buf)
+(
+  buf = patterns + pattern * (1 + 4 * 1000);
+  curve.points.size = buf[0];
+  memcpy(curve.buf, buf + 1, 4 * 1000);
+  curve.build_segments();
+);
 
 curve.curve_init(0, 1000);
 curve.insert_point(0,1,0,1);
 curve.insert_point(0.5,0,0,1);
 curve.insert_point(1,1,0,1);
 curve.build_segments();
+
+loop(i=0; npatterns, // init all memory patterns with same curve
+  store_pattern(i);
+  i += 1;
+);
 
 function copy_curve()
 local(i)
@@ -158,6 +188,13 @@ function on_slider() (
   lfomin = _lfomin / 100;
   lfomax = _lfomax / 100;
 
+  pattern = min(max(1, pattern),12)|0;
+  lpattern != pattern ? (
+    lpattern >= 0 ? store_pattern(lpattern - 1);
+    load_pattern(pattern - 1);
+  );
+  lpattern = pattern;
+
   sync == 0 ? sync_qn = 0
   : sync == 1 ? sync_qn = 1/4 // 1/16
   : sync == 2 ? sync_qn = 1/2 // 1/8
@@ -205,7 +242,12 @@ mode == 0 && !sync && (play_state & 1) && (!lplay_state & 1) ? (
 
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
-  event == 0x90 && vel && mode == 2 ? (
+  channel = msg1 & 0x0F;
+  event == 0x90 && vel && (channel == trigger_channel - 1) ? (
+    pattern = note % 12 + 1;
+    on_slider();
+  )
+  : event == 0x90 && vel && mode == 2 ? (
     lmidi_trigger = 0;
     midi_trigger = 1;
     xpos = phase;
@@ -568,10 +610,10 @@ function draw_seek ()
 );
 
 // draw seek
-always_playing || 
-(play_state & 1 && mode == 0) || 
-mode == 1 || 
-(mode == 2 && midi_trigger) ? 
+always_playing ||
+(play_state & 1 && mode == 0) ||
+mode == 1 ||
+(mode == 2 && midi_trigger) ?
 (
   draw_seek();
 );
@@ -662,6 +704,15 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   gfx_y = drawy+10;
   menu = #;
   strcpy(menu, ">Options|");
+  strcat(menu, ">Trigger Chn");
+  loop(i=0; 17,
+    i == 0 ? strcat(menu, trigger_channel == 0 ? "|!Off" : "|Off")
+    : i == 16 ? strcat(menu, trigger_channel == i ? "|<!16|": "|<16|")
+    : strcat(menu, trigger_channel == i
+      ? sprintf(#, "|!%i", i)
+      : sprintf(#, "|%i", i));
+    i += 1;
+  );
   strcat(menu, ">Smooth|");
   strcat(menu, dual_smooth ? "Single smooth|" : "!Single smooth|");
   strcat(menu, dual_smooth ? "<!Dual smooth|" : "<Dual smooth|");
@@ -674,60 +725,63 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   strcat(menu, "|Sine|Triangle|<Random");
   strcat(menu, "|About");
   choice = gfx_showmenu(menu);
-  choice == 1 ? (
+  choice > 0 && choice <= 17 ? (
+    trigger_channel = choice - 1;
+  );
+  choice == 1+17 ? (
     dual_smooth = 0;
     set_smooth();
   );
-  choice == 2 ? (
+  choice == 2+17 ? (
     dual_smooth = 1;
     set_smooth();
   );
-  choice == 3 ? (
+  choice == 3+17 ? (
     link_edge_points = !link_edge_points;
   );
-  choice == 4 ? (
+  choice == 4+17 ? (
     show_value_slider = !show_value_slider;
     on_slider();
   );
-  choice == 5 ? (
+  choice == 5+17 ? (
     show_cc_slider = !show_cc_slider;
     on_slider();
   );
-  choice == 6 ? (
+  choice == 6+17 ? (
     show_retrigger_slider = !show_retrigger_slider;
     on_slider();
   );
-  choice == 7 ? (
+  choice == 7+17 ? (
     curve.invert();
     curve.build_segments();
   );
-  choice == 8 ? (
+  choice == 8+17 ? (
     curve.reverse();
     curve.build_segments();
   );
-  choice == 9 ? (
+  choice == 9+17 ? (
     curve.clear();
     curve.build_segments();
   );
-  choice == 10 ? (
+  choice == 10+17 ? (
     copy_curve();
   );
-  choice == 11 ? (
+  choice == 11+17 ? (
     paste_curve();
   );
-  choice == 12 ? (
+  choice == 12+17 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 13 ? (
+  choice == 13+17 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 14 ? (
+  choice == 14+17 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );
-  choice == 15 ? (
+  choice == 15+17 ? (
     show_about = 1;
   );
 );

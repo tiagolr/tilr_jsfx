@@ -53,7 +53,8 @@ file_var(0, draw_wave);
 file_var(0, always_playing);
 file_var(0, link_edge_points);
 file_var(0, show_retrigger_slider);
-file_mem(0, patterns, npatterns * (1 + 3 * 1000));
+file_var(0, trigger_channel);
+file_mem(0, patterns, npatterns * (1 + 4 * 1000));
 
 file_avail(0) >= 0 ? (
   lpattern = -1; // force load current pattern
@@ -260,7 +261,7 @@ lplay_state = play_state;
     beat_pos += 1 / srate * ratehz;
     xpos = beat_pos + phase;
   );
-  
+
   xpos -= floor(xpos);
   nextv = get_curve_y(xpos);
   value = value.smooth2(nextv, nextv > value);
