@@ -5,6 +5,8 @@ provides:
   adsr1/adsr.array.jsfx-inc
   adsr1/adsr.curvelib.jsfx-inc
   adsr1/adsr.mouselib.jsfx-inc
+changelog:
+  Remove slider automate
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/adsr1.png
 about:
   # ADSR-1
@@ -215,7 +217,6 @@ midi_trigger ? (
   value = release
     ? value.smooth(get_curve_y(rcurve, xpos))
     : value.smooth(get_curve_y(curve, xpos));
-  slider_automate(value);
 );
 
 @gfx 600 350

@@ -6,6 +6,9 @@ provides:
   time1/time.curvelib.jsfx-inc
   time1/time.delay.jsfx-inc
   time1/time.mouselib.jsfx-inc
+changelog:
+  Add retrigger
+  Add retrigger slider
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/time1.png
 about:
   # TIME-1
@@ -24,6 +27,7 @@ about:
 slider1:pattern=1<1,12,1>Pattern
 slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider3:ratehz=1<0.1,10,.01:log>Rate (Hz)
+slider22:retrigger=0<0,1,1>-Retrigger
 
 import time.curvelib.jsfx-inc
 import time.mouselib.jsfx-inc
@@ -38,6 +42,7 @@ file_var(0, paint_mode);
 file_var(0, gridsegs);
 file_var(0, draw_wave);
 file_var(0, always_playing);
+file_var(0, show_retrigger_slider);
 file_mem(0, patterns, npatterns * (1 + 4 * 1000));
 
 file_avail(0) >= 0 ? (
@@ -60,6 +65,7 @@ trigger_channel = 11;
 draw_wave = 0;
 show_about = 0;
 always_playing = 0;
+show_retrigger_slider = 0;
 anoise = 1; // anti-noise/clicks 0 = no anti-noise, 1 = low, 2 - strong
 patterns = 100000; // buffer to store patterns 12 * (1 + 3 * 1000)
 pre_samples = 200000; // buffer with pre volume samples - winx size
@@ -129,6 +135,7 @@ local(size)
 
 function on_slider() (
   slider_show(ratehz, !sync);
+  slider_show(retrigger, show_retrigger_slider);
 
   pattern = min(max(1, pattern),12)|0;
   lpattern != pattern ? (
@@ -161,6 +168,12 @@ function on_slider() (
   lsync = sync;
 );
 
+function retrigger_lfo() (
+  sync 
+    ? beat_pos = 0
+    : xpos = 0;
+);
+
 @slider
 
 on_slider();
@@ -184,6 +197,11 @@ while (midirecv(offset, msg1, note, vel)) (
   );
   midisend(offset, msg1, note, vel);
 );
+
+always_playing && !(play_state & 1) && retrigger && !lretrigger ? (
+  retrigger_lfo();
+);
+lretrigger = retrigger;
 
 @sample
 
@@ -608,6 +626,13 @@ always_playing ? (
 ) : (
   gfx_triangle(drawx+5, drawy-2, drawx+5, drawy+10-2, drawx+5+10, drawy-2+5);
 );
+(always_playing && !(play_state & 1)) ? (
+  drawx += 25;
+  draw_button(drawx, drawy, 20, "R", 0);
+  mouse.left_click && mouse_in_rect(drawx, drawy-2, 20, 10+2) ? (
+    retrigger_lfo();
+  );
+);
 
 mouse.left_click ? show_about = 0;
 
@@ -621,7 +646,8 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   gfx_x = drawx;
   gfx_y = drawy+10;
   menu = #;
-  strcpy(menu, ">Trigger Chn");
+  strcpy(menu, ">Options|");
+  strcat(menu, ">Trigger Chn");
   loop(i=0; 18,
     i == 0 ? strcat(menu, trigger_channel == 0 ? "|!Off" : "|Off")
     : i == 17 ? strcat(menu, trigger_channel == 17 ? "|<!Omni" : "|<Omni")
@@ -634,6 +660,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   strcat(menu, anoise == 0 ? "|!Off" : "|Off");
   strcat(menu, anoise == 1 ? "|!Low" : "|Low");
   strcat(menu, anoise == 2 ? "|<!High" : "|<High");
+  strcat(menu, show_retrigger_slider ? "|<!Show retrigger slider" : "|<Show retrigger slider");
   strcat(menu, draw_wave ? "|!Draw wave" : "|Draw wave");
   strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
   strcat(menu, "||>Load");
@@ -652,40 +679,44 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   choice == 3 + 18 ? (
     anoise = 2;
   );
-  choice == 4+18 ? (
-    draw_wave = !draw_wave;
+  choice == 4 + 18 ? (
+    show_retrigger_slider = !show_retrigger_slider;
+    on_slider();
   );
   choice == 5+18 ? (
+    draw_wave = !draw_wave;
+  );
+  choice == 6+18 ? (
     curve.invert();
     curve.build_segments();
   );
-  choice == 6+18 ? (
+  choice == 7+18 ? (
     curve.reverse();
     curve.build_segments();
   );
-  choice == 7+18 ? (
+  choice == 8+18 ? (
     curve.clear();
     curve.build_segments();
   );
-  choice == 8+18 ? (
+  choice == 9+18 ? (
     copy_curve();
   );
-  choice == 9+18 ? (
+  choice == 10+18 ? (
     paste_curve();
   );
-  choice == 10+18 ? (
+  choice == 11+18 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 11+18 ? (
+  choice == 12+18 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 12+18 ? (
+  choice == 13+18 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );
-  choice == 13+18 ? (
+  choice == 14+18 ? (
     show_about = 1;
   );
 );

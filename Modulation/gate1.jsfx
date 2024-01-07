@@ -5,6 +5,10 @@ provides:
   gate1/gate.array.jsfx-inc
   gate1/gate.curvelib.jsfx-inc
   gate1/gate.mouselib.jsfx-inc
+changelog:
+  Remove slider automate
+  Add retrigger slider
+  Add link edge points option
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/gate1.png
 about:
   # GATE-1
@@ -33,6 +37,7 @@ slider9:attsmooth=0<0,100>Attack Smooth
 slider10:relsmooth=0<0,100>Release Smooth
 slider11:tension_mult=0<-100,100>Tension
 slider20:value=0.5<0,1,0.01>Value
+slider21:retrigger=0<0,1,1>-Retrigger
 
 import gate.curvelib.jsfx-inc
 import gate.mouselib.jsfx-inc
@@ -46,6 +51,8 @@ file_var(0, paint_mode);
 file_var(0, gridsegs);
 file_var(0, draw_wave);
 file_var(0, always_playing);
+file_var(0, link_edge_points);
+file_var(0, show_retrigger_slider);
 file_mem(0, patterns, npatterns * (1 + 3 * 1000));
 
 file_avail(0) >= 0 ? (
@@ -69,6 +76,8 @@ trigger_channel = 10;
 draw_wave = 1;
 show_about = 0;
 always_playing = 0;
+link_edge_points = 0;
+show_retrigger_slider = 0;
 patterns = 100000; // buffer to store patterns 12 * (1 + 4 * 1000)
 pre_samples = 200000; // buffer with pre volume samples - winx size
 post_samples = 300000; // buffer with post volume samples - winx size
@@ -164,6 +173,7 @@ function set_smooth() (
 function on_slider() (
   set_smooth();
   slider_show(ratehz, !sync);
+  slider_show(retrigger, show_retrigger_slider);
   _lfomin > _lfomax ? _lfomin = _lfomax;
   lfomin = _lfomin / 100;
   lfomax = _lfomax / 100;
@@ -195,6 +205,14 @@ function on_slider() (
   : sync == 17 ? sync_qn = 4/1*1.5; // 1/1.
 );
 
+function retrigger_lfo() (
+  sync ? (
+    beat_pos = -phase * sync_qn;
+  ) : (
+    beat_pos = -phase;
+  );
+);
+
 @slider
 
 on_slider();
@@ -215,6 +233,11 @@ while (midirecv(offset, msg1, note, vel)) (
   );
   midisend(offset, msg1, note, vel);
 );
+
+always_playing && !(play_state & 1) && retrigger && !lretrigger ? (
+  retrigger_lfo();
+);
+lretrigger = retrigger;
 
 @sample
 
@@ -241,7 +264,6 @@ lplay_state = play_state;
   xpos -= floor(xpos);
   nextv = get_curve_y(xpos);
   value = value.smooth2(nextv, nextv > value);
-  slider_automate(value);
 
   winpos = floor(xpos * winw);
   lwinpos != winpos ? (
@@ -368,15 +390,19 @@ local(point, prev, next, xx, yy)
     point[1] = yy;
     point[1] < 0 ? point[1] = 0;
     point[1] > 1 ? point[1] = 1;
-    next = curve.points.array_get(curve.points.size - 1);
-    next[1] = point[1];
+    link_edge_points ? (
+      next = curve.points.array_get(curve.points.size - 1);
+      next[1] = point[1];
+    );
   ) :
   selected_point == curve.points.size - 1 ? (
     point[1] = yy;
     point[1] < 0 ? point[1] = 0;
     point[1] > 1 ? point[1] = 1;
-    prev = curve.points.array_get(0);
-    prev[1] = point[1];
+    link_edge_points ? (
+      prev = curve.points.array_get(0);
+      prev[1] = point[1];
+    );
   ) : (
     point[0] = xx;
     point[1] = yy;
@@ -610,11 +636,11 @@ always_playing ? (
 ) : (
   gfx_triangle(drawx+5, drawy-2, drawx+5, drawy+10-2, drawx+5+10, drawy-2 +5);
 );
-!sync && (always_playing || play_state & 1) ? (
+(always_playing && !(play_state & 1)) ? (
   drawx += 25;
   draw_button(drawx, drawy, 20, "R", 0);
   mouse.left_click && mouse_in_rect(drawx, drawy-2, 20, 10+2) ? (
-    beat_pos = -phase;
+    retrigger_lfo();
   );
 );
 
@@ -631,7 +657,8 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   gfx_x = drawx;
   gfx_y = drawy+10;
   menu = #;
-  strcpy(menu, ">Trigger Chn");
+  strcpy(menu, ">Options|");
+  strcat(menu, ">Trigger Chn");
   loop(i=0; 18,
     i == 0 ? strcat(menu, trigger_channel == 0 ? "|!Off" : "|Off")
     : i == 17 ? strcat(menu, trigger_channel == 17 ? "|<!Omni" : "|<Omni")
@@ -643,6 +670,8 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   strcat(menu, "|>Smooth|");
   strcat(menu, dual_smooth ? "Single smooth|" : "!Single smooth|");
   strcat(menu, dual_smooth ? "<!Dual smooth" : "<Dual smooth");
+  strcat(menu, link_edge_points ? "|!Link edge points" : "|Link edge points");
+  strcat(menu, show_retrigger_slider ? "|<!Show retrigger slider" : "|<Show retrigger slider");
   strcat(menu, draw_wave ? "|!Draw wave" : "|Draw wave");
   strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
   strcat(menu, "||>Load");
@@ -660,40 +689,47 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
     dual_smooth = 1;
     set_smooth();
   );
-  choice == 3+18 ? (
+  choice == 3 + 18 ? (
+    link_edge_points = !link_edge_points;
+  );
+  choice == 4 + 18 ? (
+    show_retrigger_slider = !show_retrigger_slider;
+    on_slider();
+  );
+  choice == 5+18 ? (
     draw_wave = !draw_wave;
   );
-  choice == 4+18 ? (
+  choice == 6+18 ? (
     curve.invert();
     curve.build_segments();
   );
-  choice == 5+18 ? (
+  choice == 7+18 ? (
     curve.reverse();
     curve.build_segments();
   );
-  choice == 6+18 ? (
+  choice == 8+18 ? (
     curve.clear();
     curve.build_segments();
   );
-  choice == 7+18 ? (
+  choice == 9+18 ? (
     copy_curve();
   );
-  choice == 8+18 ? (
+  choice == 10+18 ? (
     paste_curve();
   );
-  choice == 9+18 ? (
+  choice == 11+18 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 10+18 ? (
+  choice == 12+18 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 11+18 ? (
+  choice == 13+18 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );
-  choice == 12+18 ? (
+  choice == 14+18 ? (
     show_about = 1;
   );
 );

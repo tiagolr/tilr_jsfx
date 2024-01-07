@@ -1,6 +1,6 @@
 desc:QDelay
 author: tilr
-version: 1.0.3
+version: 1.0.4
 provides:
   qdelay2/qd2.delay.jsfx-inc
   qdelay2/qd2.rbj_filter.jsfx-inc
@@ -312,7 +312,7 @@ draw_knob(drawx, drawy, 12, "Spread", 0, -100,100, 0, 1, mode ? sprintf(#, "%i %
 drawx += 80;
 gfx_x = drawx; gfx_y = drawy - 30;
 set_color(0x666666);
-gfx_drawstr("Low Cut");
+gfx_drawstr("High Cut");
 draw_knob(drawx, drawy, 14, "Freq", 0, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(14)),0);
 drawx += 60;
 draw_knob(drawx, drawy, 15, "Res", 0.707, 0.707, 4, 1, 0, sprintf(#, "%.2f", slider(15)), 0);
@@ -386,7 +386,7 @@ drawx += 80;
 
 gfx_x = drawx; gfx_y = drawy - 30;
 set_color(0x666666);
-gfx_drawstr("High Cut");
+gfx_drawstr("Low Cut");
 draw_knob(drawx, drawy, 16, "Freq", 0, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(16)),0);
 drawx += 60;
 draw_knob(drawx, drawy, 17, "Res", 0.707, 0.707, 4, 1, 0, sprintf(#, "%.2f", slider(17)), 0);
