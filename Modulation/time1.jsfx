@@ -1,6 +1,6 @@
 desc: TIME-1
 author: tilr
-version: 1.0
+version: 1.0.1
 provides:
   time1/time.array.jsfx-inc
   time1/time.curvelib.jsfx-inc

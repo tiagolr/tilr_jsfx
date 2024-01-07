@@ -1,6 +1,6 @@
 desc: GATE-1
 author: tilr
-version: 1.0
+version: 1.0.1
 provides:
   gate1/gate.array.jsfx-inc
   gate1/gate.curvelib.jsfx-inc

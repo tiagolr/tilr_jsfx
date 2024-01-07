@@ -1,6 +1,6 @@
 desc: ADSR-1
 author: tilr
-version: 1.0
+version: 1.0.1
 provides:
   adsr1/adsr.array.jsfx-inc
   adsr1/adsr.curvelib.jsfx-inc

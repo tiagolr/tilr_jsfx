@@ -1,6 +1,6 @@
 desc: MSEG-1
 author: tilr
-version: 1.0
+version: 1.0.1
 provides:
   mseg1/mseg.array.jsfx-inc
   mseg1/mseg.curvelib.jsfx-inc
@@ -12,6 +12,7 @@ changelog:
   Add CC output
   Link edge points option
   Remove slider automate
+  Add patterns selector
 about:
   # MSEG-1
 
