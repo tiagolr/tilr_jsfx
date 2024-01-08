@@ -1,6 +1,6 @@
 desc: MSEG-1
 author: tilr
-version: 1.0.2
+version: 1.0.3
 provides:
   mseg1/mseg.array.jsfx-inc
   mseg1/mseg.curvelib.jsfx-inc
