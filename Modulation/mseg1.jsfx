@@ -1,6 +1,6 @@
 desc: MSEG-1
 author: tilr
-version: 1.0.1
+version: 1.0.2
 provides:
   mseg1/mseg.array.jsfx-inc
   mseg1/mseg.curvelib.jsfx-inc
@@ -13,6 +13,7 @@ changelog:
   Link edge points option
   Remove slider automate
   Add patterns selector
+  Add output audio / CV
 about:
   # MSEG-1
 
@@ -45,10 +46,7 @@ slider22:retrigger=0<0,1,1>-Retrigger
 import mseg.curvelib.jsfx-inc
 import mseg.mouselib.jsfx-inc
 
-in_pin:none
-out_pin:none
-
-options:gfx_hz=60 gmem=mseg1
+options:gfx_hz=60 gmem=mseg1 no_meter
 
 @serialize
 store_pattern(pattern - 1);
@@ -62,6 +60,7 @@ file_var(0, show_cc_slider);
 file_var(0, show_retrigger_slider);
 file_var(0, link_edge_points);
 file_var(0, trigger_channel);
+file_var(0, output_audio);
 
 file_avail(0) >= 0 ? (
   lpattern = -1; // force load current pattern
@@ -83,6 +82,7 @@ show_about = 0;
 trigger_channel = 9;
 npatterns = 12;
 lpattern = -1;
+output_audio = 0;
 show_value_slider = 1;
 show_cc_slider = 0;
 show_retrigger_slider = 0;
@@ -287,6 +287,10 @@ mode == 0 && (always_playing || play_state & 1) ? (
   cc > -1 ? (
     midisend(samples_offset, 0xB0, cc, (value * 127)|0);
   );
+  output_audio ? ( // output audio for CV racks/plugins
+    spl0 += value * 2 - 1;
+    spl1 += value * 2 - 1;
+  );
 );
 
 // free mode
@@ -304,6 +308,10 @@ mode == 1 ? (
   cc > -1 ? (
     midisend(samples_offset, 0xB0, cc, (value * 127)|0);
   );
+  output_audio ? ( // output audio for CV racks/plugins
+    spl0 += value * 2 - 1;
+    spl1 += value * 2 - 1;
+  );
 );
 
 // midi trigger
@@ -319,6 +327,10 @@ mode == 2 && midi_trigger && !always_playing ? (
   value = value.smooth2(nextv, nextv > value);
   cc > -1 ? (
     midisend(samples_offset, 0xB0, cc, (value * 127)|0);
+  );
+  output_audio ? ( // output audio for CV racks/plugins
+    spl0 += value * 2 - 1;
+    spl1 += value * 2 - 1;
   );
 );
 
@@ -720,7 +732,8 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   strcat(menu, link_edge_points ? "!Link edge points|" : "Link edge points|");
   strcat(menu, show_value_slider ? "!Show value slider|" : "Show value slider|");
   strcat(menu, show_cc_slider ? "!Show CC slider|" : "Show CC slider|");
-  strcat(menu, show_retrigger_slider ? "<!Show retrigger slider" : "<Show retrigger slider");
+  strcat(menu, show_retrigger_slider ? "!Show retrigger slider|" : "Show retrigger slider|");
+  strcat(menu, output_audio ? "<!Output audio / CV" : "<Output audio / CV");
   strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
   strcat(menu, "||>Load");
   strcat(menu, "|Sine|Triangle|<Random");
@@ -753,36 +766,39 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
     on_slider();
   );
   choice == 7+17 ? (
+    output_audio = !output_audio;
+  );
+  choice == 8+17 ? (
     curve.invert();
     curve.build_segments();
   );
-  choice == 8+17 ? (
+  choice == 9+17 ? (
     curve.reverse();
     curve.build_segments();
   );
-  choice == 9+17 ? (
+  choice == 10+17 ? (
     curve.clear();
     curve.build_segments();
   );
-  choice == 10+17 ? (
+  choice == 11+17 ? (
     copy_curve();
   );
-  choice == 11+17 ? (
+  choice == 12+17 ? (
     paste_curve();
   );
-  choice == 12+17 ? (
+  choice == 13+17 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 13+17 ? (
+  choice == 14+17 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 14+17 ? (
+  choice == 15+17 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );
-  choice == 15+17 ? (
+  choice == 16+17 ? (
     show_about = 1;
   );
 );
