@@ -1,6 +1,6 @@
 desc: ADSR-1
 author: tilr
-version: 1.1.2
+version: 1.2.0
 provides:
   adsr1/adsr.array.jsfx-inc
   adsr1/adsr.curvelib.jsfx-inc
@@ -27,6 +27,10 @@ slider8:_lfomin=0<0,100,1>Min
 slider9:_lfomax=100<0,100,1>Max
 slider10:lfosmooth=0<0,100>Smooth
 
+slider12:att_t=0<-1,1,0.01>-Attack Tension
+slider13:dec_t=0<-1,1,0.01>-Decay Tension
+slider14:rel_t=0<-1,1,0.01>-Release Tension
+
 slider20:value=0.5<0,1,0.01>Value
 
 import adsr.curvelib.jsfx-inc
@@ -43,6 +47,7 @@ file_mem(0, curve.points.buf, curve.points.num * curve.points.size);
 file_mem(0, curve.segments.buf, curve.segments.num * curve.segments.size);
 file_var(0, sus_loop);
 file_var(0, modulate_volume);
+file_var(0, show_tension_sliders);
 
 @init
 
@@ -53,6 +58,11 @@ selected_midpoint = -1;
 midi_trigger = 0;
 modulate_volume = 0;
 sus_loop = 0;
+show_tension_sliders = 0;
+
+latt_t = att_t;
+ldec_t = dec_t;
+lrel_t = rel_t;
 
 freemem = curve.curve_init(0, 1000);
 curve.insert_point(0,1,.25,0); // att
@@ -148,6 +158,52 @@ local (duration, i, point, attpoint, decpoint, suspoint, relpoint, dp0, sp0, dp1
   );
 );
 
+function set_attack_tension () 
+local (dec_pt, pt, i, next_pt, is_rising)
+(
+  dec_pt = get_dec_point(curve);
+  loop(i = 0; curve.points.size,
+    pt = curve.points.array_get(i);
+    pt[0] <= dec_pt[0] && pt[3] !== 1 ? (
+      next_pt = curve.points.array_get(i+1);
+      is_rising = next_pt[1] > pt[1] ? 1 : -1;
+      pt[2] = att_t * is_rising;
+    );
+    i += 1;
+  );
+);
+
+function set_decay_tension() 
+local (dec_pt, sus_pt, pt, i, next_pt, is_rising)
+(
+  dec_pt = get_dec_point(curve);
+  sus_pt = get_sus_point(curve);
+  loop(i = 0; curve.points.size,
+    pt = curve.points.array_get(i);
+    pt[0] >= dec_pt[0] && pt[0] <= sus_pt[0] && pt[3] !== 2 ? (
+      next_pt = curve.points.array_get(i+1);
+      is_rising = next_pt[1] > pt[1] ? 1 : -1;
+      pt[2] = dec_t * is_rising;
+    );
+    i += 1;
+  );
+);
+
+function set_release_tension()
+local (sus_pt, pt, i, next_pt, is_rising)
+(
+  sus_pt = get_sus_point(curve);
+  loop(i = 0; curve.points.size,
+    pt = curve.points.array_get(i);
+    pt[0] >= sus_pt[0] && i !== curve.points.size - 1 ? (
+      next_pt = curve.points.array_get(i+1);
+      is_rising = next_pt[1] > pt[1] ? 1 : -1;
+      pt[2] = rel_t * is_rising;
+    );
+    i += 1;
+  );
+);
+
 function get_curve_y(curve*, x)
 local(val)
 (
@@ -155,18 +211,34 @@ local(val)
   lfomin + (lfomax - lfomin) * val;
 );
 
+function on_slider() (
+  spoint = get_sus_point(curve);
+  spoint[1] = 1 - (sus / 100);
+  build_curve();
+  
+  slider_show(att_t, show_tension_sliders);
+  slider_show(dec_t, show_tension_sliders);
+  slider_show(rel_t, show_tension_sliders);
+  
+  _lfomin > _lfomax ? _lfomin = _lfomax;
+  lfomin = _lfomin / 100;
+  lfomax = _lfomax / 100;
+  
+  latt_t != att_t ? set_attack_tension();
+  ldec_t != dec_t ? set_decay_tension();
+  lrel_t != rel_t ? set_release_tension();
+  
+  latt_t = att_t;
+  ldec_t = dec_t;
+  lrel_t = rel_t;
+  
+  curve.build_segments();
+  value.rc_set(lfosmooth / 100 / 10);
+);
+
 @slider
 
-spoint = get_sus_point(curve);
-spoint[1] = 1 - (sus / 100);
-build_curve();
-curve.build_segments();
-
-_lfomin > _lfomax ? _lfomin = _lfomax;
-lfomin = _lfomin / 100;
-lfomax = _lfomax / 100;
-
-value.rc_set(lfosmooth / 100 / 10);
+on_slider();
 
 @block
 suspoint = get_sus_point(curve);
@@ -495,7 +567,25 @@ mouse.left_click && mouse_in_rect(drawx, drawy, 70, 10+2) ? (
 
 
 // draw right buttons
-drawx = gfx_w - 60;
+drawx = gfx_w - 40;
+drawy = 10;
+gfx_x = drawx; gfx_y = drawy;
+set_color(color_active);
+gfx_drawstr("...", 1, drawx+30, drawy+12);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
+  gfx_x = drawx;
+  gfx_y = drawy+10;
+  menu = #;
+  strcpy(menu, show_tension_sliders ? "!Show tension sliders" : "Show tension sliders");
+  choice = gfx_showmenu(menu);
+  choice == 1 ? (
+    show_tension_sliders = !show_tension_sliders;
+    on_slider();
+  );
+  
+);
+
+drawx -= 60;
 draw_button(drawx, 10, 50, "Snap", snap || mouse.control);
 mouse.left_click && mouse_in_rect(drawx, 10-2, 50, 10+2) ? (
   snap = !snap;
