@@ -80,8 +80,6 @@ Envelope based filter modulator with 28 filter types.
 * Filter drive
 * MSEGs for cutoff and resonance
 * 12 patterns triggered by midi notes
-* Paint mode - erase, line, saw up, saw down ..
-* Point type - hold, curve, s-curve, stairs ..
 * Tempo sync or lfo rate (Hz)
 * Envelope smoothing
 * Pre and post waveform display
