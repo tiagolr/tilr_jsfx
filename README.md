@@ -68,6 +68,24 @@ TIME-1 is a playback/time and pitch editor similar to plugins like GrossBeat and
 * Anti clicking with 3 modes (Off, Low, High)
 * Pre and post waveform display
 
+## FLTR-1
+
+![](doc/fltr1.png)
+
+Envelope based filter modulator with 28 filter types.
+
+#### Features:
+
+* 28 filter types from Saikes filters
+* Filter drive
+* MSEGs for cutoff and resonance
+* 12 patterns triggered by midi notes
+* Paint mode - erase, line, saw up, saw down ..
+* Point type - hold, curve, s-curve, stairs ..
+* Tempo sync or lfo rate (Hz)
+* Envelope smoothing
+* Pre and post waveform display
+
 ## TinyRec
 
 Audio recording utility similar to Image-Line Edison, stores up to 4 minutes at 44100 sample rate.
@@ -83,7 +101,7 @@ Audio recording utility similar to Image-Line Edison, stores up to 4 minutes at 
 * Noise gate for input record modes
 * Basic wave editing (non-reversible)
 
-#### Record modes: 
+#### Record modes:
 
 * **Now** records audio immediately
 * **On Input** records audio when signal exceeds noise gate
