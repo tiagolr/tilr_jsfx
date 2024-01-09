@@ -170,7 +170,7 @@ function on_slider() (
 );
 
 function retrigger_lfo() (
-  sync 
+  sync
     ? beat_pos = 0
     : xpos = 0;
 );
@@ -585,7 +585,7 @@ loop(i = 0; curve.segments.size,
 // draw left buttons
 drawx = winx;
 drawy = gfx_w < 450 ? 30 : 10;
-gfx_x = drawx; 
+gfx_x = drawx;
 gfx_y = drawy;
 gfx_set(1,1,1);
 gfx_drawstr("Paint:");
@@ -601,7 +601,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 60, 10+2) ? (
 );
 
 drawx += 70;
-gfx_x = drawx; 
+gfx_x = drawx;
 gfx_y = drawy;
 gfx_set(1,1,1);
 gfx_drawstr("Pt:");
@@ -848,7 +848,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "TIME-1 1.0\nTilr 2024\n\n");
+  strcpy(txt, "TIME-1 1.0.2\nTilr 2024\n\n");
   strcat(txt, "TIME-1 is a playback/time and pitch editor.\n");
   strcat(txt, "X axis is time, Y axis controls the delay position.\n\n");
   strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 11 (default)\n");

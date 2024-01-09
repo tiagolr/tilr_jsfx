@@ -1,6 +1,6 @@
 desc: ADSR-1
 author: tilr
-version: 1.0.1
+version: 1.1.0
 provides:
   adsr1/adsr.array.jsfx-inc
   adsr1/adsr.curvelib.jsfx-inc
@@ -32,10 +32,7 @@ slider20:value=0.5<0,1,0.01>Value
 import adsr.curvelib.jsfx-inc
 import adsr.mouselib.jsfx-inc
 
-in_pin:none
-out_pin:none
-
-options:gfx_hz=60
+options:gfx_hz=60 no_meter
 
 @serialize
 file_var(0, curve.points.size);
@@ -45,6 +42,7 @@ file_var(0, curve.segments.num);
 file_mem(0, curve.points.buf, curve.points.num * curve.points.size);
 file_mem(0, curve.segments.buf, curve.segments.num * curve.segments.size);
 file_var(0, sus_loop);
+file_var(0, modulate_volume);
 
 @init
 
@@ -53,6 +51,7 @@ snap = 0;
 selected_point = -1;
 selected_midpoint = -1;
 midi_trigger = 0;
+modulate_volume = 0;
 sus_loop = 0;
 
 freemem = curve.curve_init(0, 1000);
@@ -217,6 +216,11 @@ midi_trigger ? (
   value = release
     ? value.smooth(get_curve_y(rcurve, xpos))
     : value.smooth(get_curve_y(curve, xpos));
+);
+
+modulate_volume ? (
+  spl0 = spl0 * value;
+  spl1 = spl1 * value;
 );
 
 @gfx 600 350
@@ -456,6 +460,14 @@ loop(i = 0; curve.segments.size,
     draw_midpoint(seg, i);
   );
   i += 1;
+);
+
+// draw left buttons;
+drawx = winx;
+drawy = 10;
+draw_button(drawx, drawy, 70, "Volume", modulate_volume);
+mouse.left_click && mouse_in_rect(drawx, drawy, 70, 10+2) ? (
+  modulate_volume = !modulate_volume;
 );
 
 

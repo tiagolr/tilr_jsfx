@@ -1,6 +1,6 @@
 desc: FLTR-1
 author: tilr
-noindex: true
+version: 1.0
 provides:
   fltr1/fltr.Saike_Yutani_Filters.jsfx-inc
   fltr1/fltr.Saike_Yutani_oversampling.jsfx-inc
@@ -9,9 +9,21 @@ provides:
   fltr1/fltr.curvelib.jsfx-inc
   fltr1/fltr.mouselib.jsfx-inc
 about:
-  # SKFilter
+  # FLTR-1
 
-  Filter modulator
+  Envelope based filter modulator.
+
+  Features:
+
+  * 28 filter types
+  * Filter drive
+  * MSEGs for cutoff and resonance
+  * 12 patterns triggered by midi notes
+  * Paint mode - erase, line, saw up, saw down ..
+  * Point type - hold, curve, s-curve, stairs ..
+  * Tempo sync or lfo rate (Hz)
+  * Envelope smoothing
+  * Pre and post waveform display
 
 slider1:pattern_cut=1<1,12,1>Pattern Cut
 slider2:pattern_res=1<1,12,1>Pattern Res
@@ -35,6 +47,7 @@ slider26:morph=0<0,1,.0001>-Morph
 slider30:value_cut=0.5<0,1,0.01>-Value Cutoff
 slider31:value_res=0.5<0,1,0.01>-Value Resonance
 slider32:_oversampling=0<0,7,1{Off,2x,3x,4x,5x,6x,7x,8x}>-Oversampling
+slider33:retrigger=0<0,1,1>-Retrigger
 
 import fltr.Saike_Yutani_Filters.jsfx-inc
 import fltr.Saike_Yutani_oversampling.jsfx-inc
@@ -55,7 +68,9 @@ file_var(0, draw_wave);
 file_var(0, always_playing);
 file_var(0, link_edge_points);
 file_var(0, show_retrigger_slider);
-file_var(0, trigger_channel);
+file_var(0, trigger_channel_cut);
+file_var(0, trigger_channel_res);
+file_var(0, link_patterns);
 file_mem(0, patterns_cut, npatterns * (1 + 4 * 1000));
 file_mem(0, patterns_res, npatterns * (1 + 4 * 1000));
 
@@ -98,13 +113,14 @@ view = 0; // 0 cut, 1 res
 npatterns = 12;
 lpattern_cut = -1;
 lpattern_res = -1;
-trigger_channel_cut = 9;
+trigger_channel_cut = 8;
 trigger_channel_res = 9;
 draw_wave = 1;
 show_about = 0;
 always_playing = 0;
 show_retrigger_slider = 0;
 link_edge_points = 1;
+link_patterns = 0;
 min_q = freemem; // min Q value for filters
 freemem += 30;
 patterns_cut = freemem; // buffer to store patterns 12 * (1 + 4 * 1000)
@@ -120,7 +136,7 @@ min_q[11] = 0.1; min_q[12] = 0.2; min_q[13] = 0.2; min_q[14] = 0.3; min_q[15] = 
 min_q[16] = 0.2; min_q[17] = 0.4; min_q[18] = 0.4; min_q[19] = 0.4; min_q[20] = 0.4;
 min_q[21] = 0.3; min_q[22] = 0.3; min_q[23] = 0.3; min_q[24] = 0.1; min_q[25] = 0.1;
 min_q[26] = 0.15; min_q[27] = 0.25; min_q[28] = 0.4;
- 
+
 function store_pattern(pattern, patterns, curve*)
 global()
 local(buf)
@@ -151,6 +167,22 @@ local(i)
   );
 );
 
+function copy_both()
+local(i)
+(
+  gmem[0] = curve_cut.points.size;
+  loop(i=0; 1000 * 4,
+    gmem[i+1] = curve_cut.points.buf[i];
+    i += 1;
+  );
+
+  gmem[4000] = curve_res.points.size;
+  loop(i=4000; 1000 * 4,
+    gmem[i+1] = curve_res.points.buf[i-4000];
+    i += 1;
+  );
+);
+
 function paste_curve(curve*)
 global(gmem)
 local(i)
@@ -163,6 +195,22 @@ local(i)
     );
   );
   curve.build_segments();
+);
+
+function paste_both()
+local(i)
+(
+  gmem[0] && gmem[4000] ? (
+    curve_cut.points.size = gmem[0];
+    curve_res.points.size = gmem[4000];
+    loop(i=0; 1000 * 4,
+      curve_cut.points.buf[i] = gmem[i+1];
+      curve_res.points.buf[i] = gmem[i+1+4000];
+      i += 1;
+    );
+  );
+  curve_res.build_segments();
+  curve_cut.build_segments();
 );
 
 freemem = curve_cut.curve_init(freemem, 1000);
@@ -258,6 +306,7 @@ function on_slider() (
   slider_show(_max_cut, !view);
   slider_show(_min_res, view);
   slider_show(_max_res, view);
+  slider_show(retrigger, show_retrigger_slider);
   _min_cut > _max_cut ? _min_cut = _max_cut;
   min_cut = _min_cut / 100;
   max_cut = _max_cut / 100;
@@ -271,6 +320,8 @@ function on_slider() (
     load_pattern(pattern_cut - 1, patterns_cut, curve_cut);
   );
   lpattern_cut = pattern_cut;
+
+  link_patterns ? pattern_res = pattern_cut;
 
   pattern_res = min(max(1, pattern_res),12)|0;
   lpattern_res != pattern_res ? (
@@ -392,7 +443,8 @@ processing ? (
   drive.smooth();
   boost.smooth();
 
-  filter.init_filter(filter_type, cutoff, cutoff, morph, morph, resonance);
+  cut = min(cutoff, limited_cutoff);
+  filter.init_filter(filter_type, cut, cut, morph, morph, resonance);
 
   current_drive = clamp(drive.smooth, -32, 48);
   current_boost = clamp(boost.smooth, -6, 48);
@@ -514,11 +566,11 @@ local(point, tension, next, rising)
   curve.build_segments();
 );
 
-function get_cutoff_hz(cut) 
+function get_cutoff_hz(cut)
 local(cutoff_hz)
 (
   cutoff_hz = 0.5 * sampling_ratio * srate * exp((cut) * log(20/22050));
-  cutoff_hz < 1000 
+  cutoff_hz < 1000
     ? sprintf(#, "%d Hz", cutoff_hz)
     : sprintf(#, "%.2f kHz", cutoff_hz / 1000);
 );
@@ -552,13 +604,15 @@ local (xx, yy)
   selected_point == i && !is_secondary ? (
     gfx_set(1,0,0,0.5);
     gfx_circle(xx, yy, 5, 1);
-    set_color(view ? color_res : color_cut);
-    xx > gfx_w / 2 ? (
-      gfx_x = xx - 100; gfx_y = yy - 3;
-      gfx_drawstr(get_cutoff_hz(point[1]), 2, xx-10, yy+20);
-    ) : (
-      gfx_x = xx+15; gfx_y = yy - 3;
-      gfx_drawstr(get_cutoff_hz(point[1]));
+    !view ? (
+      set_color(color_cut);
+      xx > gfx_w / 1.3 ? (
+        gfx_x = xx - 100; gfx_y = yy - 3;
+        gfx_drawstr(get_cutoff_hz(point[1]), 2, xx-10, yy+20);
+      ) : (
+        gfx_x = xx+15; gfx_y = yy - 3;
+        gfx_drawstr(get_cutoff_hz(point[1]));
+      );
     );
   );
 );
@@ -821,7 +875,7 @@ loop(i =0; view ? curve_res.points.size : curve_cut.points.size,
   i += 1;
 );
 
-// draw midpoints a second time so they show 
+// draw midpoints a second time so they show
 loop(i = 0; view ? curve_res.segments.size : curve_cut.segments.size,
   seg = view
     ? curve_res.segments.array_get(i)
@@ -923,47 +977,64 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   strcat(menu, _oversampling == 6  ? "!7x|": "7x|");
   strcat(menu, _oversampling == 7  ? "<!8x|": "<8x|");
   strcat(menu, ">Options|");
-  strcat(menu, ">Trigger Chn");
+  strcat(menu, ">Trigger Chn Cut");
   loop(i=0; 18,
-    i == 0 ? strcat(menu, trigger_channel == 0 ? "|!Off" : "|Off")
-    : i == 17 ? strcat(menu, trigger_channel == 17 ? "|<!Omni" : "|<Omni")
-    : strcat(menu, trigger_channel == i
+    i == 0 ? strcat(menu, trigger_channel_cut == 0 ? "|!Off" : "|Off")
+    : i == 17 ? strcat(menu, trigger_channel_cut == 17 ? "|<!Omni" : "|<Omni")
+    : strcat(menu, trigger_channel_cut == i
       ? sprintf(#, "|!%i", i)
       : sprintf(#, "|%i", i));
     i += 1;
   );
-  strcat(menu, "|>Smooth|");
-  strcat(menu, dual_smooth ? "Single smooth|" : "!Single smooth|");
-  strcat(menu, dual_smooth ? "<!Dual smooth" : "<Dual smooth");
+  strcat(menu, "|>Trigger Chn Res");
+  loop(i=0; 18,
+    i == 0 ? strcat(menu, trigger_channel_res == 0 ? "|!Off" : "|Off")
+    : i == 17 ? strcat(menu, trigger_channel_res == 17 ? "|<!Omni" : "|<Omni")
+    : strcat(menu, trigger_channel_res == i
+      ? sprintf(#, "|!%i", i)
+      : sprintf(#, "|%i", i));
+    i += 1;
+  );
   strcat(menu, link_edge_points ? "|!Link edge points" : "|Link edge points");
   strcat(menu, show_retrigger_slider ? "|<!Show retrigger slider" : "|<Show retrigger slider");
+  strcat(menu, link_patterns ? "|!Link patterns" : "|Link patterns");
   strcat(menu, draw_wave ? "|!Draw wave" : "|Draw wave");
-  strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
+  strcat(menu, "||Invert|Reverse|Clear");
+  strcat(menu, "|>Copy|Curve|<Both");
+  strcat(menu, "|>Paste|Curve|<Both");
   strcat(menu, "||>Load");
   strcat(menu, "|Sine|Triangle|<Random");
   strcat(menu, "|About");
   choice = gfx_showmenu(menu);
-  
+
   choice > 0 && choice <= 8 ? (
     _oversampling = choice - 1;
     on_slider();
   );
-  
+
   choice > 8 && choice <= 18+8 ? (
-    trigger_channel = choice - 1 - 8;
+    trigger_channel_cut = choice - 1 - 8;
   );
 
-  choice == 3 + 18+8 ? (
+  choice > 18+8 && choice < 18+8+18 ? (
+    trigger_channel_res = choice - 1 - 8 - 18;
+  );
+
+  choice == 1 + 18+8+18 ? (
     link_edge_points = !link_edge_points;
   );
-  choice == 4 + 18+8 ? (
+  choice == 2 + 18+8+18 ? (
     show_retrigger_slider = !show_retrigger_slider;
     on_slider();
   );
-  choice == 5+18+8 ? (
+  choice == 3 + 18+8+18 ? (
+    link_patterns = !link_patterns;
+    on_slider();
+  );
+  choice == 4+18+8+18 ? (
     draw_wave = !draw_wave;
   );
-  choice == 6+18+8 ? (
+  choice == 5+18+8+18 ? (
     view ? (
       curve_res.invert();
       curve_res.build_segments();
@@ -972,7 +1043,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 7+18+8 ? (
+  choice == 6+18+8+18 ? (
     view ? (
       curve_res.reverse();
       curve_res.build_segments();
@@ -981,7 +1052,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 8+18+8 ? (
+  choice == 7+18+8+18 ? (
     view ? (
       curve_res.clear();
       curve_res.build_segments();
@@ -990,17 +1061,23 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 9+18+8 ? (
-    view 
+  choice == 8+18+8+18 ? (
+    view
       ? copy_curve(curve_res)
       : copy_curve(curve_cut);
   );
-  choice == 10+18+8 ? (
-    view 
+  choice == 9+18+8+18 ? (
+    copy_both();
+  );
+  choice == 10+18+8+18 ? (
+    view
       ? paste_curve(curve_res)
       : paste_curve(curve_cut);
   );
-  choice == 11+18+8 ? (
+  choice == 11+18+8+18 ? (
+    paste_both();
+  );
+  choice == 12+18+8+18 ? (
     view ? (
       curve_res.load_sine();
       curve_res.build_segments();
@@ -1009,7 +1086,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 12+18+8 ? (
+  choice == 13+18+8+18 ? (
     view ? (
       curve_res.load_triangle();
       curve_res.build_segments();
@@ -1018,7 +1095,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 13+18+8 ? (
+  choice == 14+18+8+18 ? (
     view ? (
       curve_res.load_random(gridsegs);
       curve_res.build_segments();
@@ -1027,7 +1104,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 14+18+8 ? (
+  choice == 15+18+8+18 ? (
     show_about = 1;
   );
 );
@@ -1074,14 +1151,35 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 10, 10) ? (
   gridsegs < 2 ? gridsegs = 32;
 );
 
+drawx = gfx_w - 10;
+drawy = 30;
+drawx -= 50;
+draw_button(drawx, drawy, 50, "Paste", 0);
+mouse.left_click && mouse_in_rect(drawx, drawy, 50, 10) ? (
+  gfx_x = drawx; gfx_y = drawy + 10;
+  choice = gfx_showmenu("Curve|Both");
+  choice == 1 ? view ? paste_curve(curve_res) : paste_curve(curve_cut);
+  choice == 2 ? paste_both();
+);
+drawx -= 60;
+draw_button(drawx, drawy, 50, "Copy", 0);
+mouse.left_click && mouse_in_rect(drawx, drawy, 50, 10) ? (
+  gfx_x = drawx; gfx_y = drawy + 10;
+  choice = gfx_showmenu("Curve|Both");
+  choice == 1 ? view ? copy_curve(curve_res) : copy_curve(curve_cut);
+  choice == 2 ? copy_both();
+);
+
+// -----------------
+
 function get_point_at_mouse()
 local(i, point, found)
 (
   found = -1;
   i = 0;
   loop(i=0; view ? curve_res.points.size : curve_cut.points.size,
-    point = view 
-      ? curve_res.points.array_get(i) 
+    point = view
+      ? curve_res.points.array_get(i)
       : curve_cut.points.array_get(i);
     px = winx + winw * point[0];
     py = winy + winh * point[1];
@@ -1098,7 +1196,7 @@ local(point, choice, menu)
 (
   point = get_point_at_mouse();
   point >= 0 ? (
-    point = view 
+    point = view
       ? curve_res.points.array_get(point)
       : curve_cut.points.array_get(point);
     gfx_x = mouse.x; gfx_y = mouse.y;
@@ -1114,7 +1212,7 @@ local(point, choice, menu)
     choice = gfx_showmenu(menu);
     choice > 0 ? (
       point[3] = choice - 1;
-      view 
+      view
         ? curve_res.build_segments()
         : curve_cut.build_segments();
     );
@@ -1125,24 +1223,24 @@ mouse.right_click ? on_right_click();
 
 mouse.right && mouse_in_rect(winx,winy,winw,winh) ? (
   get_point_at_mouse() < 0 ? (
-    view 
+    view
       ? paint(curve_res)
       : paint(curve_cut);
   );
 );
 
 mouse.double_click ? (
-  view 
+  view
     ? on_double_click(curve_res)
     : on_double_click(curve_cut);
 )
 : selected_point > -1 && mouse.left && (mouse.dx != 0 || mouse.dy != 0) ? (
-  view 
+  view
     ? on_point_move(curve_res)
     : on_point_move(curve_cut);
 )
 : selected_midpoint > -1 && mouse.left && mouse.dy != 0 ? (
-  view 
+  view
     ? on_midpoint_move(mouse.dy, curve_res)
     : on_midpoint_move(mouse.dy, curve_cut);
 );
@@ -1172,9 +1270,9 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "GATE-1 1.0\nTilr 2024\n\n");
-  strcat(txt, "GATE-1 is an envelope generator for gate/volume control.\n\n");
-  strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 10 (default)\n");
+  strcpy(txt, "FLTR-1 1.0\nTilr 2024\n\n");
+  strcat(txt, "FLTR-1 is envelope based filter modulator.\n\n");
+  strcat(txt, "Toggle patterns 1-12 sending midi notes on chn 8 and 9 (default)\n");
   strcat(txt, "Left click - move points or set tension\n");
   strcat(txt, "Double click - remove or add points\n");
   strcat(txt, "Right click - Paint mode\n");
