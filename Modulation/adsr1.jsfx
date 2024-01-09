@@ -1,6 +1,6 @@
 desc: ADSR-1
 author: tilr
-version: 1.1.0
+version: 1.1.1
 provides:
   adsr1/adsr.array.jsfx-inc
   adsr1/adsr.curvelib.jsfx-inc
@@ -290,7 +290,7 @@ local(point, tension, next, rising)
 );
 
 function draw_point(point, i)
-local (xx, yy)
+local (xx, yy, pt_att, pt_dec, pt_sus, pt_rel, ts)
 (
   point[3] ? (
     gfx_set(0, 1, 1);
@@ -315,6 +315,29 @@ local (xx, yy)
   selected_point == i ? (
     gfx_set(1,0,0,0.5);
     gfx_circle(xx, yy, 5, 1);
+    
+    pt_att = curve.points.array_first();
+    pt_dec = get_dec_point(curve);
+    pt_sus = get_sus_point(curve);
+    pt_rel = curve.points.array_last();
+    
+    point[0] <= pt_dec[0] ? (
+      ts = (point[0] / pt_dec[0]) * att;
+    ) : point[0] <= pt_sus[0] ? (
+      ts = (point[0] - pt_dec[0]) / (pt_sus[0] - pt_dec[0]) * dec + att;
+    ) : (
+      ts = (point[0] - pt_sus[0]) / (1 - pt_sus[0]) * rel + dec + att;
+    );
+    
+    gfx_set(1,1,1);
+    gfx_y = yy - 3;
+    xx > gfx_w / 1.25 ? (
+      gfx_x = xx - 100;
+      gfx_drawstr(sprintf(#, "%i ms", ts), 2, xx-10, yy + 20);
+    ) : (
+      gfx_x = xx + 15;
+      gfx_drawstr(sprintf(#, "%i ms", ts));
+    );
   );
 );
 
