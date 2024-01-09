@@ -1,6 +1,6 @@
 desc: ADSR-1
 author: tilr
-version: 1.1.1
+version: 1.1.2
 provides:
   adsr1/adsr.array.jsfx-inc
   adsr1/adsr.curvelib.jsfx-inc
@@ -197,9 +197,9 @@ while (midirecv(offset, msg1, note, vel)) (
 @sample
 
 // when midi trigger starts reset env smooth
-!lmidi_trigger && midi_trigger ? (
-  value.smooth = 1 - curve.get_y_at(0);
-);
+//!lmidi_trigger && midi_trigger ? (
+//  value.smooth = 1 - curve.get_y_at(0);
+//);
 lmidi_trigger = midi_trigger;
 
 midi_trigger ? (
