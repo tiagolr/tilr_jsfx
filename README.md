@@ -76,7 +76,7 @@ Envelope based filter modulator with 28 filter types.
 
 #### Features:
 
-* 28 filter types from Saikes filters
+* 29 filter types from Saikes filters
 * Filter drive
 * MSEGs for cutoff and resonance
 * 12 patterns triggered by midi notes
