@@ -1,6 +1,6 @@
 desc: MSEG-1
 author: tilr
-version: 1.0.3
+version: 1.0.4
 provides:
   mseg1/mseg.array.jsfx-inc
   mseg1/mseg.curvelib.jsfx-inc
@@ -91,7 +91,7 @@ local(buf)
 (
   buf = patterns + pattern * (1 + 4 * 1000);
   buf[0] = curve.points.size;
-  memcpy(buf + 1, curve.buf, 4 * 1000);
+  memcpy(buf + 1, curve.points.buf, 4 * 1000);
 );
 
 function load_pattern(pattern)
@@ -99,7 +99,7 @@ local(buf)
 (
   buf = patterns + pattern * (1 + 4 * 1000);
   curve.points.size = buf[0];
-  memcpy(curve.buf, buf + 1, 4 * 1000);
+  memcpy(curve.points.buf, buf + 1, 4 * 1000);
   curve.build_segments();
 );
 
@@ -123,7 +123,7 @@ local(i)
 (
   gmem[0] = curve.points.size;
   loop(i=0; 1000 * 4,
-    gmem[i+1] = curve.buf[i];
+    gmem[i+1] = curve.points.buf[i];
     i += 1;
   );
 );
@@ -134,7 +134,7 @@ local(i)
   gmem[0] ? (
     curve.points.size = gmem[0];
     loop(i=0; 1000 * 4,
-      curve.buf[i] = gmem[i+1];
+      curve.points.buf[i] = gmem[i+1];
       i += 1;
     );
   );
@@ -266,7 +266,9 @@ lretrigger = retrigger;
 
 @sample
 
-function send_value_midi_cc () (
+function send_value_midi_cc()
+local(hr, msb, lsb)
+(
   cc > 32 ? (
     midisend(samples_offset, 0xB0+cc_channel, cc-1-32, round(value * 127));
   ) : ( 

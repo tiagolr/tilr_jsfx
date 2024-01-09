@@ -1,6 +1,6 @@
 desc: TIME-1
 author: tilr
-version: 1.0.1
+version: 1.0.2
 provides:
   time1/time.array.jsfx-inc
   time1/time.curvelib.jsfx-inc
@@ -79,7 +79,7 @@ local(buf)
 (
   buf = patterns + pattern * (1 + 4 * 1000);
   buf[0] = curve.points.size;
-  memcpy(buf + 1, curve.buf, 4 * 1000);
+  memcpy(buf + 1, curve.points.buf, 4 * 1000);
 );
 
 function load_pattern(pattern)
@@ -87,7 +87,7 @@ local(buf)
 (
   buf = patterns + pattern * (1 + 4 * 1000);
   curve.points.size = buf[0];
-  memcpy(curve.buf, buf + 1, 4 * 1000);
+  memcpy(curve.points.buf, buf + 1, 4 * 1000);
   curve.build_segments();
 );
 
@@ -96,7 +96,7 @@ local(i)
 (
   gmem[0] = curve.points.size;
   loop(i=0; 1000 * 4,
-    gmem[i+1] = curve.buf[i];
+    gmem[i+1] = curve.points.buf[i];
     i += 1;
   );
 );
@@ -107,7 +107,7 @@ local(i)
   gmem[0] ? (
     curve.points.size = gmem[0];
     loop(i=0; 1000 * 4,
-      curve.buf[i] = gmem[i+1];
+      curve.points.buf[i] = gmem[i+1];
       i += 1;
     );
   );
