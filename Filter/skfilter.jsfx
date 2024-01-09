@@ -1,6 +1,6 @@
 desc: SKFilter
 author: tilr
-version: 1.0
+version: 1.0.1
 provides:
   skfilter/skf.Saike_Yutani_Filters.jsfx-inc
   skfilter/skf.Saike_Yutani_oversampling.jsfx-inc
@@ -167,7 +167,7 @@ gfx_y = 5;
 
 filter_type == 0 ? gfx_drawstr("2-pole linear state variable filter (12 dB/oct).")
 : filter_type == 1 ? gfx_drawstr("MS-20 emulation (12 dB/oct LP, BP, 6 dB/oct HP).")
-: filter_type == 2 ? gfx_drawstr("4-pole linear state variable filter (12 dB/oct)")
+: filter_type == 2 ? gfx_drawstr("4-pole linear state variable filter (24 dB/oct)")
 : filter_type == 3 ? gfx_drawstr("Moog emulation (24 dB/oct).")
 : filter_type == 4 ? gfx_drawstr("Ladder filter with two stages (12 dB/oct).")
 : filter_type == 5 ? gfx_drawstr("Blaukraut's 303 filter emulation")

@@ -104,12 +104,23 @@ draw_wave = 1;
 show_about = 0;
 always_playing = 0;
 show_retrigger_slider = 0;
+link_edge_points = 1;
+min_q = freemem; // min Q value for filters
+freemem += 30;
 patterns_cut = freemem; // buffer to store patterns 12 * (1 + 4 * 1000)
 patterns_res = freemem+100000; // buffer to store patterns 12 * (1 + 4 * 1000)
 pre_samples = freemem+200000; // buffer with pre volume samples - winx size
 post_samples = freemem+300000; // buffer with post volume samples - winx size
 freemem += 500000;
 
+// Imprecise minimum Q values for flat filter response
+min_q[0] = 0.4; min_q[1] = 0.3; min_q[2] = 0.4; min_q[3] = 0.1; min_q[4] = 0.02; min_q[5] = 0.2;
+min_q[6] = 0.5; min_q[7] = 0.2; min_q[8] = 0.4; min_q[9] = 0.4; min_q[10] = 0.1;
+min_q[11] = 0.1; min_q[12] = 0.2; min_q[13] = 0.2; min_q[14] = 0.3; min_q[15] = 0.2;
+min_q[16] = 0.2; min_q[17] = 0.4; min_q[18] = 0.4; min_q[19] = 0.4; min_q[20] = 0.4;
+min_q[21] = 0.3; min_q[22] = 0.3; min_q[23] = 0.3; min_q[24] = 0.1; min_q[25] = 0.1;
+min_q[26] = 0.15; min_q[27] = 0.25; min_q[28] = 0.4;
+ 
 function store_pattern(pattern, patterns, curve*)
 global()
 local(buf)
@@ -161,9 +172,8 @@ curve_cut.insert_point(1,1,0,1);
 curve_cut.build_segments();
 
 curve_res.curve_init(freemem, 1000);
-curve_res.insert_point(0,1,0,1);
-curve_res.insert_point(0.5,0.5,0,1);
-curve_res.insert_point(1,1,0,1);
+curve_res.insert_point(0,.5,0,1);
+curve_res.insert_point(1,.5,0,1);
 curve_res.build_segments();
 
 loop(i=0; npatterns, // init all memory patterns with same curve
@@ -259,7 +269,6 @@ function on_slider() (
   lpattern_cut != pattern_cut ? (
     lpattern_cut >= 0 ? store_pattern(lpattern_cut - 1, patterns_cut, curve_cut);
     load_pattern(pattern_cut - 1, patterns_cut, curve_cut);
-    curve_res.build_segments(); // FIX
   );
   lpattern_cut = pattern_cut;
 
@@ -267,7 +276,6 @@ function on_slider() (
   lpattern_res != pattern_res ? (
     lpattern_res >= 0 ? store_pattern(lpattern_res - 1, patterns_res, curve_res);
     load_pattern(pattern_res - 1, patterns_res, curve_res);
-    curve_cut.build_segments(); // FIX
   );
   lpattern_res = pattern_res;
 
@@ -289,8 +297,6 @@ function on_slider() (
   : sync == 15 ? sync_qn = 1/1*1.5 // 1/4.
   : sync == 16 ? sync_qn = 2/1*1.5 // 1/2.
   : sync == 17 ? sync_qn = 4/1*1.5; // 1/1.
-
-  check_safety();
 );
 
 function retrigger_lfo() (
@@ -362,10 +368,11 @@ lplay_state = play_state;
 
   nextv = get_res_y(xpos);
   value_res = value_res.smooth2(nextv, nextv > value_res);
+  
+  check_safety();
 
   cutoff = value_cut;
-  //resonance = 0.707 + value_res * (1 - 0.707); // linear map resonance
-  resonance = value_res;
+  resonance = min_q[filter_type] + value_res * (1 - min_q[filter_type]); // linear map resonance
 
   winpos = floor(xpos * winw);
   lwinpos != winpos ? (
@@ -852,7 +859,16 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   gfx_x = drawx;
   gfx_y = drawy+10;
   menu = #;
-  strcpy(menu, ">Options|");
+  strcpy(menu, ">Oversampling|");
+  strcat(menu, _oversampling == 0 ? "!Off|": "Off|");
+  strcat(menu, _oversampling == 1 ? "!2x|": "2x|");
+  strcat(menu, _oversampling == 2 ? "!3x|": "3x|");
+  strcat(menu, _oversampling == 3 ? "!4x|": "4x|");
+  strcat(menu, _oversampling == 4  ? "!5x|": "5x|");
+  strcat(menu, _oversampling == 5  ? "!6x|": "6x|");
+  strcat(menu, _oversampling == 6  ? "!7x|": "7x|");
+  strcat(menu, _oversampling == 7  ? "<!8x|": "<8x|");
+  strcat(menu, ">Options|");
   strcat(menu, ">Trigger Chn");
   loop(i=0; 18,
     i == 0 ? strcat(menu, trigger_channel == 0 ? "|!Off" : "|Off")
@@ -873,21 +889,27 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   strcat(menu, "|Sine|Triangle|<Random");
   strcat(menu, "|About");
   choice = gfx_showmenu(menu);
-  choice > 0 && choice <= 18 ? (
-    trigger_channel = choice - 1;
+  
+  choice > 0 && choice <= 8 ? (
+    _oversampling = choice - 1;
+    on_slider();
+  );
+  
+  choice > 8 && choice <= 18+8 ? (
+    trigger_channel = choice - 1 - 8;
   );
 
-  choice == 3 + 18 ? (
+  choice == 3 + 18+8 ? (
     link_edge_points = !link_edge_points;
   );
-  choice == 4 + 18 ? (
+  choice == 4 + 18+8 ? (
     show_retrigger_slider = !show_retrigger_slider;
     on_slider();
   );
-  choice == 5+18 ? (
+  choice == 5+18+8 ? (
     draw_wave = !draw_wave;
   );
-  choice == 6+18 ? (
+  choice == 6+18+8 ? (
     view ? (
       curve_res.invert();
       curve_res.build_segments();
@@ -896,7 +918,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 7+18 ? (
+  choice == 7+18+8 ? (
     view ? (
       curve_res.reverse();
       curve_res.build_segments();
@@ -905,7 +927,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 8+18 ? (
+  choice == 8+18+8 ? (
     view ? (
       curve_res.clear();
       curve_res.build_segments();
@@ -914,17 +936,17 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 9+18 ? (
+  choice == 9+18+8 ? (
     view 
       ? copy_curve(curve_res)
       : copy_curve(curve_cut);
   );
-  choice == 10+18 ? (
+  choice == 10+18+8 ? (
     view 
       ? paste_curve(curve_res)
       : paste_curve(curve_cut);
   );
-  choice == 11+18 ? (
+  choice == 11+18+8 ? (
     view ? (
       curve_res.load_sine();
       curve_res.build_segments();
@@ -933,7 +955,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 12+18 ? (
+  choice == 12+18+8 ? (
     view ? (
       curve_res.load_triangle();
       curve_res.build_segments();
@@ -942,7 +964,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 13+18 ? (
+  choice == 13+18+8 ? (
     view ? (
       curve_res.load_random(gridsegs);
       curve_res.build_segments();
@@ -951,7 +973,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 14+18 ? (
+  choice == 14+18+8 ? (
     show_about = 1;
   );
 );
