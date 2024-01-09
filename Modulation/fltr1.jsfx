@@ -25,16 +25,16 @@ slider10:_max_res=100<0,100,1>Max Res
 slider11:lfosmooth=0<0,100>Smooth
 
 slider20:filter_type=0<0,28,1{Linear,MS-20,Linear x2,Moog,Ladder,303,MS-20 asym,DblRes,DualPeak,TriplePeak,svf nl 2p,svf nl 4p,svf nl 2p inc,svf nl 4p inc,rectified resonance,Steiner,SteinerA,Muck,Pill2p,Pill4p,Pill2p Aggro,Pill4p Aggro,Pill2p Stacc,Pill4p Stacc,Ladder3,Ladder6,HLadder,SVF2,SVF4}>Filter type
-slider21:drive=0<0,48,1>Filter Drive (dB)
-slider22:boost=0<-6,48,1>Post Boost (dB)
-slider23:cutoff=.6<0,1,.0001>-Cutoff
-slider24:resonance=0.707<0.707,1,.0001>-Resonance
-slider25:filter_mode=0<0,3,1{Low Pass,Band Pass,High Pass,Band Reject}>Filter Mode
+slider21:filter_mode=0<0,3,1{Low Pass,Band Pass,High Pass,Band Reject}>Filter Mode
+slider22:drive=0<0,48,1>Filter Drive (dB)
+slider23:boost=0<-6,48,1>Post Boost (dB)
+slider24:cutoff=.6<0,1,.0001>-Cutoff
+slider25:resonance=0.707<0.707,1,.0001>-Resonance
 slider26:morph=0<0,1,.0001>-Morph
 
 slider30:value_cut=0.5<0,1,0.01>-Value Cutoff
 slider31:value_res=0.5<0,1,0.01>-Value Resonance
-slider32:_oversampling=0<0,7,1{Off,2x,3x,4x,5x,6x,7x,8x}>Oversampling
+slider32:_oversampling=0<0,7,1{Off,2x,3x,4x,5x,6x,7x,8x}>-Oversampling
 
 import fltr.Saike_Yutani_Filters.jsfx-inc
 import fltr.Saike_Yutani_oversampling.jsfx-inc
@@ -368,8 +368,6 @@ lplay_state = play_state;
 
   nextv = get_res_y(xpos);
   value_res = value_res.smooth2(nextv, nextv > value_res);
-  
-  check_safety();
 
   cutoff = value_cut;
   resonance = min_q[filter_type] + value_res * (1 - min_q[filter_type]); // linear map resonance
@@ -383,6 +381,8 @@ lplay_state = play_state;
   pre_samples[winpos] < abs((spl0 + spl1) / 2)
     ? pre_samples[winpos] = (spl0 + spl1) / 2;
 );
+
+check_safety();
 
 // ******************* Filter processing
 
@@ -447,10 +447,10 @@ processing = max(processing, spl0 || spl1);
 @gfx 600 350
 
 !gridsegs ? gridsegs = 8;
-color_active = 0x0080FF;
+color_active = 0x00aaFF;
 color_bg = 0x141618;
 color_cut = 0xFFFFFF;
-color_res = 0x0080FF;
+color_res = 0x00aaFF;
 hover_radius = 8;
 hover = 0;
 winx = 10;
@@ -514,29 +514,52 @@ local(point, tension, next, rising)
   curve.build_segments();
 );
 
-function draw_point(point, i, color)
+function get_cutoff_hz(cut) 
+local(cutoff_hz)
+(
+  cutoff_hz = 0.5 * sampling_ratio * srate * exp((cut) * log(20/22050));
+  cutoff_hz < 1000 
+    ? sprintf(#, "%d Hz", cutoff_hz)
+    : sprintf(#, "%.2f kHz", cutoff_hz / 1000);
+);
+
+function draw_point(point, i, color, is_secondary)
 local (xx, yy)
 (
   set_color(color);
-  gfx_a = 1;
+  gfx_a = is_secondary ? 0.5 : 1;
   xx = point[0] * winw + winx;
   yy = point[1] * winh + winy;
-  gfx_circle(xx, yy, 4, 1);
+  gfx_circle(xx, yy, is_secondary ? 3 : 4, 1);
 
   selected_point == -1 && selected_midpoint == -1 && !hover
     && mouse_in_rect(xx - hover_radius, yy - hover_radius, hover_radius * 2, hover_radius * 2) ?
     (
     hover = 1;
-    gfx_a = 0.5;
+    gfx_a = is_secondary ? 0.25 : 0.5;
     gfx_circle(xx, yy, hover_radius, 1);
+
     mouse.left_click ? (
-      selected_point = i;
+      is_secondary ? (
+        view = !view;
+        on_slider();
+      ) : (
+        selected_point = i;
+      );
     );
   );
 
-  selected_point == i ? (
+  selected_point == i && !is_secondary ? (
     gfx_set(1,0,0,0.5);
     gfx_circle(xx, yy, 5, 1);
+    set_color(view ? color_res : color_cut);
+    xx > gfx_w / 2 ? (
+      gfx_x = xx - 100; gfx_y = yy - 3;
+      gfx_drawstr(get_cutoff_hz(point[1]), 2, xx-10, yy+20);
+    ) : (
+      gfx_x = xx+15; gfx_y = yy - 3;
+      gfx_drawstr(get_cutoff_hz(point[1]));
+    );
   );
 );
 
@@ -694,9 +717,9 @@ local(i, ypos)
   gfx_y = winh - min(abs(samples[0]),1) * winh + winy;
   loop(i = 0; winw,
     ypos = min(abs(samples[i]),1);
-    gfx_a = ypos ? 0.0625 : 0;
+    gfx_a = ypos ? 0.1 : 0;
     gfx_triangle(gfx_x, gfx_y, gfx_x, winh + winy, i+winx, winh+winy, i+winx, winh - ypos * winh + winy);
-    gfx_a = ypos ? 0.5 : 0;
+    gfx_a = 0;
     gfx_lineto(i + winx, winh - ypos * winh + winy);
     i += 1;
   );
@@ -734,15 +757,46 @@ draw_grid();
 
 function draw_seek ()
 (
-  gfx_set(0.5,1,1,0.5);
+  gfx_set(1,1,0.5,0.5);
   gfx_line(xpos * winw + winx, winy, xpos * winw + winx, winy + winh);
-  gfx_set(.5,1,1,1);
+  gfx_set(1,1,.5,1);
   gfx_circle(xpos * winw + winx, (1-(view ? value_res : value_cut)) * winh + winy, 5);
 );
 
 // draw seek
 play_state & 1 || always_playing ? (
   draw_seek();
+);
+
+// draw midpoints a second time so they take precedence on click
+loop(i = 0; view ? curve_res.segments.size : curve_cut.segments.size,
+  seg = view
+    ? curve_res.segments.array_get(i)
+    : curve_cut.segments.array_get(i);
+  !is_collinear(seg) ? (
+    view
+      ? draw_midpoint(seg, i, curve_res)
+      : draw_midpoint(seg, i, curve_cut);
+  );
+  i += 1;
+);
+
+// draw points a second time so they take precedence on click
+loop(i =0; view ? curve_res.points.size : curve_cut.points.size,
+  point = view
+    ? curve_res.points.array_get(i)
+    : curve_cut.points.array_get(i);
+  draw_point(point, i, view ? color_res : color_cut, 0);
+  i += 1;
+);
+
+// draw secondary curve points
+loop(i =0; !view ? curve_res.points.size : curve_cut.points.size,
+  point = !view
+    ? curve_res.points.array_get(i)
+    : curve_cut.points.array_get(i);
+  draw_point(point, i, !view ? color_res : color_cut, 1);
+  i += 1;
 );
 
 gfx_a = 1;
@@ -758,16 +812,16 @@ view ? (
   curve_cut.draw_segments(winx, winy, winw, winh, 1);
 );
 
-// draw points
+// draw points a second time so they are shown in front
 loop(i =0; view ? curve_res.points.size : curve_cut.points.size,
   point = view
     ? curve_res.points.array_get(i)
     : curve_cut.points.array_get(i);
-  draw_point(point, i, view ? color_res : color_cut);
+  draw_point(point, i, view ? color_res : color_cut, 0);
   i += 1;
 );
 
-// draw midpoints
+// draw midpoints a second time so they show 
 loop(i = 0; view ? curve_res.segments.size : curve_cut.segments.size,
   seg = view
     ? curve_res.segments.array_get(i)
@@ -779,6 +833,7 @@ loop(i = 0; view ? curve_res.segments.size : curve_cut.segments.size,
   );
   i += 1;
 );
+
 
 // draw left buttons
 drawx = winx;
@@ -794,7 +849,6 @@ mouse.left_click && mouse_in_rect(drawx, drawy, 100, 10) ? (
   view = 1;
   on_slider();
 );
-
 
 drawx = winx;
 drawy = 30;
@@ -1025,8 +1079,10 @@ local(i, point, found)
 (
   found = -1;
   i = 0;
-  loop(i=0; curve.points.size,
-    point = curve.points.array_get(i);
+  loop(i=0; view ? curve_res.points.size : curve_cut.points.size,
+    point = view 
+      ? curve_res.points.array_get(i) 
+      : curve_cut.points.array_get(i);
     px = winx + winw * point[0];
     py = winy + winh * point[1];
     point_in_rect(mouse.x, mouse.y, px-hover_radius, py-hover_radius, hover_radius * 2, hover_radius * 2) ? (
@@ -1042,7 +1098,9 @@ local(point, choice, menu)
 (
   point = get_point_at_mouse();
   point >= 0 ? (
-    point = curve.points.array_get(point);
+    point = view 
+      ? curve_res.points.array_get(point)
+      : curve_cut.points.array_get(point);
     gfx_x = mouse.x; gfx_y = mouse.y;
     menu = #;
     strcpy(menu, point[3] == 0 ? "!Hold" : "Hold");
@@ -1056,7 +1114,9 @@ local(point, choice, menu)
     choice = gfx_showmenu(menu);
     choice > 0 ? (
       point[3] = choice - 1;
-      curve.build_segments();
+      view 
+        ? curve_res.build_segments()
+        : curve_cut.build_segments();
     );
   );
 );
