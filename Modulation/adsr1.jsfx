@@ -401,7 +401,7 @@ local (xx, yy, pt_att, pt_dec, pt_sus, pt_rel, ts)
       ts = (point[0] - pt_sus[0]) / (1 - pt_sus[0]) * rel + dec + att;
     );
     
-    gfx_set(1,1,1);
+    gfx_set(1,1,1, 0.5);
     gfx_y = yy - 3;
     xx > gfx_w / 1.25 ? (
       gfx_x = xx - 100;
