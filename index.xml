@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="fd5c16848068a75fe8f2fee344b31a506d0b355e" name="Tilr">
+<index version="1" commit="dae47479ac74de19823ae6720c625011f3a6df59" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -418,6 +418,14 @@ Add output audio / CV]]></changelog>
         <source file="mseg1/mseg.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d134ca5ed389a1d5fcbaa48a7dafdfdce47b23ac/Modulation/mseg1/mseg.array.jsfx-inc</source>
         <source file="mseg1/mseg.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d134ca5ed389a1d5fcbaa48a7dafdfdce47b23ac/Modulation/mseg1/mseg.curvelib.jsfx-inc</source>
         <source file="mseg1/mseg.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d134ca5ed389a1d5fcbaa48a7dafdfdce47b23ac/Modulation/mseg1/mseg.mouselib.jsfx-inc</source>
+      </version>
+      <version name="1.1.2" author="tilr" time="2024-01-10T17:29:11Z">
+        <changelog><![CDATA[Modulate stereo
+Fix midi mode modulation when not triggering]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/dae47479ac74de19823ae6720c625011f3a6df59/Modulation/mseg1.jsfx</source>
+        <source file="mseg1/mseg.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dae47479ac74de19823ae6720c625011f3a6df59/Modulation/mseg1/mseg.array.jsfx-inc</source>
+        <source file="mseg1/mseg.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dae47479ac74de19823ae6720c625011f3a6df59/Modulation/mseg1/mseg.curvelib.jsfx-inc</source>
+        <source file="mseg1/mseg.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dae47479ac74de19823ae6720c625011f3a6df59/Modulation/mseg1/mseg.mouselib.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="time1.jsfx" type="effect" desc="TIME-1">
