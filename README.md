@@ -72,7 +72,7 @@ TIME-1 is a playback/time and pitch editor similar to plugins like GrossBeat and
 
 ![](doc/fltr1.png)
 
-Envelope based filter modulator with 28 filter types.
+Envelope based filter modulator with 29 filter types.
 
 #### Features:
 
