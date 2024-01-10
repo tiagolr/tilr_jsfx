@@ -1,16 +1,14 @@
 desc: MSEG-1
 author: tilr
-version: 1.1.1
+version: 1.1.2
 provides:
   mseg1/mseg.array.jsfx-inc
   mseg1/mseg.curvelib.jsfx-inc
   mseg1/mseg.mouselib.jsfx-inc
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/mseg1.png
 changelog:
-  Add volume and panning modulation
-  Add MIDI HR output
-  Add MIDI channel select
-  Add output audio / CV
+  Modulate stereo
+  Fix midi mode modulation when not triggering
 about:
   # MSEG-1
 
@@ -89,6 +87,7 @@ show_retrigger_slider = 0;
 link_edge_points = 1;
 modulate_volume = 0;
 modulate_pan = 0;
+modulate_stereo = 0;
 patterns = 1000000; // buffer to store patterns 12 * (1 + 4 * 1000)
 
 function store_pattern(pattern)
@@ -319,6 +318,13 @@ mode == 0 && (always_playing || play_state & 1) ? (
     value >= 0.5 ? spl0 *= 1 - (value * 2 -1);
     value < 0.5 ? spl1 *= value * 2;
   );
+  modulate_stereo ? (
+    mono = (spl0 + spl1) * 0.5;
+    stereo = (spl0 - spl1);
+    
+    spl0 = (mono + stereo * value);
+    spl1 = (mono - stereo * value);
+  );
 );
 
 // free mode
@@ -346,6 +352,13 @@ mode == 1 ? (
     value >= 0.5 ? spl0 *= 1 - (value * 2 -1);
     value < 0.5 ? spl1 *= value * 2;
   );
+  modulate_stereo ? (
+    mono = (spl0 + spl1) * 0.5;
+    stereo = (spl0 - spl1);
+    
+    spl0 = (mono + stereo * value);
+    spl1 = (mono - stereo * value);
+  );
 );
 
 // midi trigger
@@ -355,7 +368,7 @@ mode == 2 && midi_trigger && !always_playing ? (
     : 1 / srate * ratehz;
   xpos == 1 ? (
     midi_trigger = 0;
-    xpos = 1;
+    xpos = 0;
   );
   nextv = get_curve_y(xpos);
   value = value.smooth2(nextv, nextv > value);
@@ -363,14 +376,6 @@ mode == 2 && midi_trigger && !always_playing ? (
   output_audio ? ( // output audio for CV racks/plugins
     spl0 += value;
     spl1 += value;
-  );
-  modulate_volume ? (
-    spl0 *= value;
-    spl1 *= value;
-  );
-  modulate_pan ? (
-    value >= 0.5 ? spl0 *= 1 - (value * 2 -1);
-    value < 0.5 ? spl1 *= value * 2;
   );
 );
 
@@ -392,6 +397,10 @@ mode == 2 && always_playing ? (
     spl0 += value;
     spl1 += value;
   );
+);
+
+// In midi mode keep processing audio modulation even if not triggering
+mode == 2 ? (
   modulate_volume ? (
     spl0 *= value;
     spl1 *= value;
@@ -399,6 +408,13 @@ mode == 2 && always_playing ? (
   modulate_pan ? (
     value >= 0.5 ? spl0 *= 1 - (value * 2 -1);
     value < 0.5 ? spl1 *= value * 2;
+  );
+  modulate_stereo ? (
+    mono = (spl0 + spl1) * 0.5;
+    stereo = (spl0 - spl1);
+    
+    spl0 = (mono + stereo * value);
+    spl1 = (mono - stereo * value);
   );
 );
 
@@ -786,7 +802,8 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   strcat(menu, output_audio ? "<!Output audio / CV" : "<Output audio / CV");
   strcat(menu, "|>Modulate");
   strcat(menu, modulate_volume ? "|!Volume" : "|Volume");
-  strcat(menu, modulate_pan ? "|<!Pan" : "|<Pan");
+  strcat(menu, modulate_pan ? "|!Pan" : "|Pan");
+  strcat(menu, modulate_stereo ? "|<!Stereo" : "|<Stereo");
   strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
   strcat(menu, "||>Load");
   strcat(menu, "|Sine|Triangle|<Random");
@@ -828,36 +845,39 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
     modulate_pan = !modulate_pan;
   );
   choice == 10+17 ? (
+    modulate_stereo = !modulate_stereo;
+  );
+  choice == 11+17 ? (
     curve.invert();
     curve.build_segments();
   );
-  choice == 11+17 ? (
+  choice == 12+17 ? (
     curve.reverse();
     curve.build_segments();
   );
-  choice == 12+17 ? (
+  choice == 13+17 ? (
     curve.clear();
     curve.build_segments();
   );
-  choice == 13+17 ? (
+  choice == 14+17 ? (
     copy_curve();
   );
-  choice == 14+17 ? (
+  choice == 15+17 ? (
     paste_curve();
   );
-  choice == 15+17 ? (
+  choice == 16+17 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 16+17 ? (
+  choice == 17+17 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 17+17 ? (
+  choice == 18+17 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );
-  choice == 18+17 ? (
+  choice == 19+17 ? (
     show_about = 1;
   );
 );
