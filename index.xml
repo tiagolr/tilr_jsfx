@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="d134ca5ed389a1d5fcbaa48a7dafdfdce47b23ac" name="Tilr">
+<index version="1" commit="fd5c16848068a75fe8f2fee344b31a506d0b355e" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -247,6 +247,13 @@ Yutani Bass
         <source file="adsr1/adsr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/1a59d15a2569ec696c7c6750fe05e12977e0e117/Modulation/adsr1/adsr.array.jsfx-inc</source>
         <source file="adsr1/adsr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/1a59d15a2569ec696c7c6750fe05e12977e0e117/Modulation/adsr1/adsr.curvelib.jsfx-inc</source>
         <source file="adsr1/adsr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/1a59d15a2569ec696c7c6750fe05e12977e0e117/Modulation/adsr1/adsr.mouselib.jsfx-inc</source>
+      </version>
+      <version name="1.2.0" author="tilr" time="2024-01-09T23:15:59Z">
+        <changelog><![CDATA[Remove slider automate]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/7b5417f6793aa7add3eaefd5b17b0bc8e02e44e7/Modulation/adsr1.jsfx</source>
+        <source file="adsr1/adsr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/7b5417f6793aa7add3eaefd5b17b0bc8e02e44e7/Modulation/adsr1/adsr.array.jsfx-inc</source>
+        <source file="adsr1/adsr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/7b5417f6793aa7add3eaefd5b17b0bc8e02e44e7/Modulation/adsr1/adsr.curvelib.jsfx-inc</source>
+        <source file="adsr1/adsr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/7b5417f6793aa7add3eaefd5b17b0bc8e02e44e7/Modulation/adsr1/adsr.mouselib.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="fltr1.jsfx" type="effect" desc="FLTR-1">
