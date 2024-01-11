@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="3eb6dfba4856f2372a598affb4832b1ccf75d57f" name="Tilr">
+<index version="1" commit="41a04406b683c2229add9156a4b3809c5e0f8aa0" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -308,6 +308,17 @@ Add MIDI trigger mode]]></changelog>
         <source file="fltr1/fltr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/3eb6dfba4856f2372a598affb4832b1ccf75d57f/Modulation/fltr1/fltr.curvelib.jsfx-inc</source>
         <source file="fltr1/fltr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/3eb6dfba4856f2372a598affb4832b1ccf75d57f/Modulation/fltr1/fltr.mouselib.jsfx-inc</source>
       </version>
+      <version name="1.1.2" author="tilr" time="2024-01-11T15:10:23Z">
+        <changelog><![CDATA[Filter drive hidden by default
+Add MIDI trigger mode]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/fltr1.jsfx</source>
+        <source file="fltr1/fltr.Saike_Yutani_Filters.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/fltr1/fltr.Saike_Yutani_Filters.jsfx-inc</source>
+        <source file="fltr1/fltr.Saike_Yutani_oversampling.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/fltr1/fltr.Saike_Yutani_oversampling.jsfx-inc</source>
+        <source file="fltr1/fltr.Saike_Yutani_upsamplers.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/fltr1/fltr.Saike_Yutani_upsamplers.jsfx-inc</source>
+        <source file="fltr1/fltr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/fltr1/fltr.array.jsfx-inc</source>
+        <source file="fltr1/fltr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/fltr1/fltr.curvelib.jsfx-inc</source>
+        <source file="fltr1/fltr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/fltr1/fltr.mouselib.jsfx-inc</source>
+      </version>
     </reapack>
     <reapack name="gate1.jsfx" type="effect" desc="GATE-1">
       <metadata>
@@ -353,6 +364,13 @@ Add link edge points option]]></changelog>
         <source file="gate1/gate.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/f0b6c293393e6e8bac6c741f0495e9bbb0df28b6/Modulation/gate1/gate.array.jsfx-inc</source>
         <source file="gate1/gate.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/f0b6c293393e6e8bac6c741f0495e9bbb0df28b6/Modulation/gate1/gate.curvelib.jsfx-inc</source>
         <source file="gate1/gate.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/f0b6c293393e6e8bac6c741f0495e9bbb0df28b6/Modulation/gate1/gate.mouselib.jsfx-inc</source>
+      </version>
+      <version name="1.1.0" author="tilr" time="2024-01-11T15:10:23Z">
+        <changelog><![CDATA[Add midi mode]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/gate1.jsfx</source>
+        <source file="gate1/gate.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/gate1/gate.array.jsfx-inc</source>
+        <source file="gate1/gate.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/gate1/gate.curvelib.jsfx-inc</source>
+        <source file="gate1/gate.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/41a04406b683c2229add9156a4b3809c5e0f8aa0/Modulation/gate1/gate.mouselib.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="mseg1.jsfx" type="effect" desc="MSEG-1">
