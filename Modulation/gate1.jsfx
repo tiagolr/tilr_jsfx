@@ -1,14 +1,12 @@
 desc: GATE-1
 author: tilr
-version: 1.0.2
+version: 1.1.0
 provides:
   gate1/gate.array.jsfx-inc
   gate1/gate.curvelib.jsfx-inc
   gate1/gate.mouselib.jsfx-inc
 changelog:
-  Remove slider automate
-  Add retrigger slider
-  Add link edge points option
+  Add midi mode
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/gate1.png
 about:
   # GATE-1
@@ -54,6 +52,8 @@ file_var(0, always_playing);
 file_var(0, link_edge_points);
 file_var(0, show_retrigger_slider);
 file_var(0, trigger_channel);
+file_var(0, mode);
+file_var(0, show_value_slider);
 file_mem(0, patterns, npatterns * (1 + 4 * 1000));
 
 file_avail(0) >= 0 ? (
@@ -78,7 +78,9 @@ draw_wave = 1;
 show_about = 0;
 always_playing = 0;
 link_edge_points = 0;
+mode = 0; // 0 - Sync, 2 - MIDI
 show_retrigger_slider = 0;
+show_value_slider = 0;
 patterns = 100000; // buffer to store patterns 12 * (1 + 4 * 1000)
 pre_samples = 200000; // buffer with pre volume samples - winx size
 post_samples = 300000; // buffer with post volume samples - winx size
@@ -175,6 +177,7 @@ function on_slider() (
   set_smooth();
   slider_show(ratehz, !sync);
   slider_show(retrigger, show_retrigger_slider);
+  slider_show(value, show_value_slider);
   _lfomin > _lfomax ? _lfomin = _lfomax;
   lfomin = _lfomin / 100;
   lfomax = _lfomax / 100;
@@ -221,8 +224,12 @@ on_slider();
 @block
 
 beats_per_spl = tempo / (60 * srate);
-sync && play_state ? (
+mode == 0 && sync && play_state & 1 ? (
   beat_pos = beat_position;
+);
+// reset play position for Hz sync mode
+mode == 0 && !sync && (play_state & 1) && (!lplay_state & 1) ? (
+  beat_pos = 0;
 );
 
 while (midirecv(offset, msg1, note, vel)) (
@@ -232,40 +239,27 @@ while (midirecv(offset, msg1, note, vel)) (
     pattern = note % 12 + 1;
     on_slider();
   );
+  mode == 2 && event == 0x90 && vel && 
+  channel != trigger_channel - 1 && 
+  (
+    midi_trigger = 1;
+    xpos = phase;
+  );
   midisend(offset, msg1, note, vel);
 );
 
-always_playing && !(play_state & 1) && retrigger && !lretrigger ? (
+mode == 0 && always_playing && !(play_state & 1) && retrigger && !lretrigger ? (
   retrigger_lfo();
 );
 lretrigger = retrigger;
 
 @sample
 
-// when playback starts reset env smooth
-sync && (!lplay_state & 1) && (play_state & 1)  ? (
-  value.smooth = get_curve_y(beat_pos / sync_qn + phase);
-  memset(pre_samples,0,winw);
-  memset(post_samples,0,winw);
-);
-
-lplay_state = play_state;
-
-(play_state & 1 || always_playing) ? (
-  //beat_pos += sync ? beats_per_spl;
-  //xpos = beat_pos / sync_qn + phase;
-  sync ? (
-    beat_pos += beats_per_spl;
-    xpos = beat_pos / sync_qn + phase;
-  ) : (
-    beat_pos += 1 / srate * ratehz;
-    xpos = beat_pos + phase;
-  );
-
-  xpos -= floor(xpos);
+function process_pos(xpos) 
+(
   nextv = get_curve_y(xpos);
   value = value.smooth2(nextv, nextv > value);
-
+  
   winpos = floor(xpos * winw);
   lwinpos != winpos ? (
     pre_samples[winpos] = 0;
@@ -280,6 +274,52 @@ lplay_state = play_state;
     ? post_samples[winpos] = (spl0 + spl1) / 2;
 );
 
+// when playback starts reset env smooth
+sync && (!lplay_state & 1) && (play_state & 1)  ? (
+  value.smooth = get_curve_y(beat_pos / sync_qn + phase);
+  memset(pre_samples,0,winw);
+  memset(post_samples,0,winw);
+);
+
+lplay_state = play_state;
+
+mode == 0 && (play_state & 1 || always_playing) ? (
+  //beat_pos += sync ? beats_per_spl;
+  //xpos = beat_pos / sync_qn + phase;
+  sync ? (
+    beat_pos += beats_per_spl;
+    xpos = beat_pos / sync_qn + phase;
+  ) : (
+    beat_pos += 1 / srate * ratehz;
+    xpos = beat_pos + phase;
+  );
+
+  xpos -= floor(xpos);
+  process_pos(xpos);
+);
+
+mode == 2 && (always_playing || midi_trigger) ? (
+  always_playing && midi_trigger ? (
+    xpos = phase;
+    midi_trigger = 0;
+  );
+  xpos += sync
+    ? beats_per_spl / sync_qn
+    : 1 / srate * ratehz;
+  !always_playing && xpos >= 1 ? (
+    midi_trigger = 0;
+    xpos = 0;
+  );
+  
+   xpos -= floor(xpos);
+   process_pos(xpos);
+);
+
+mode == 2 && !always_playing && !midi_trigger ? (
+  xpos = 0;
+  process_pos(xpos);
+);
+
 @gfx 600 350
 
 !gridsegs ? gridsegs = 8;
@@ -288,7 +328,7 @@ color_bg = 0x141618;
 hover_radius = 8;
 hover = 0;
 winx = 10;
-winy = gfx_w < 480 ? 50 : 30;
+winy = gfx_w < 550 ? 50 : 30;
 winw = gfx_w - 20;
 winh = gfx_h - winy - 10;
 gridx = winw / gridsegs;
@@ -570,7 +610,7 @@ function draw_seek ()
 );
 
 // draw seek
-play_state & 1 || always_playing ? (
+(mode == 0 && play_state & 1) || always_playing || (mode == 2 && midi_trigger) ? (
   draw_seek();
 );
 
@@ -595,7 +635,8 @@ loop(i = 0; curve.segments.size,
 
 // draw left buttons
 drawx = winx;
-drawy = gfx_w < 480 ? 30 : 10;
+drawy = gfx_w < 550 ? 30 : 10;
+
 gfx_x = drawx; gfx_y = drawy;
 gfx_set(1,1,1);
 gfx_drawstr("Paint:");
@@ -637,7 +678,7 @@ always_playing ? (
 ) : (
   gfx_triangle(drawx+5, drawy-2, drawx+5, drawy+10-2, drawx+5+10, drawy-2 +5);
 );
-(always_playing && !(play_state & 1)) ? (
+mode == 0 && (always_playing && !(play_state & 1)) ? (
   drawx += 25;
   draw_button(drawx, drawy, 20, "R", 0);
   mouse.left_click && mouse_in_rect(drawx, drawy-2, 20, 10+2) ? (
@@ -672,6 +713,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   strcat(menu, dual_smooth ? "Single smooth|" : "!Single smooth|");
   strcat(menu, dual_smooth ? "<!Dual smooth" : "<Dual smooth");
   strcat(menu, link_edge_points ? "|!Link edge points" : "|Link edge points");
+  strcat(menu, show_value_slider ? "|!Show value slider" : "|Show value slider");
   strcat(menu, show_retrigger_slider ? "|<!Show retrigger slider" : "|<Show retrigger slider");
   strcat(menu, draw_wave ? "|!Draw wave" : "|Draw wave");
   strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
@@ -694,45 +736,55 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
     link_edge_points = !link_edge_points;
   );
   choice == 4 + 18 ? (
+    show_value_slider = !show_value_slider;
+    on_slider();
+  );
+  choice == 5 + 18 ? (
     show_retrigger_slider = !show_retrigger_slider;
     on_slider();
   );
-  choice == 5+18 ? (
+  choice == 6+18 ? (
     draw_wave = !draw_wave;
   );
-  choice == 6+18 ? (
+  choice == 7+18 ? (
     curve.invert();
     curve.build_segments();
   );
-  choice == 7+18 ? (
+  choice == 8+18 ? (
     curve.reverse();
     curve.build_segments();
   );
-  choice == 8+18 ? (
+  choice == 9+18 ? (
     curve.clear();
     curve.build_segments();
   );
-  choice == 9+18 ? (
+  choice == 10+18 ? (
     copy_curve();
   );
-  choice == 10+18 ? (
+  choice == 11+18 ? (
     paste_curve();
   );
-  choice == 11+18 ? (
+  choice == 12+18 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 12+18 ? (
+  choice == 13+18 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 13+18 ? (
+  choice == 14+18 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );
-  choice == 14+18 ? (
+  choice == 15+18 ? (
     show_about = 1;
   );
+);
+
+drawx -= 60;
+draw_button(drawx, drawy, 50, "MIDI", mode == 2);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 50, 10+2) ? (
+  mode = mode == 0 ? 2 : 0;
 );
 
 drawx -= 60;
@@ -861,7 +913,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "GATE-1 1.0.2\nTilr 2024\n\n");
+  strcpy(txt, "GATE-1 1.1.0\nTilr 2024\n\n");
   strcat(txt, "GATE-1 is an envelope generator for gate/volume control.\n\n");
   strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 10 (default)\n");
   strcat(txt, "Left click - move points or set tension\n");
