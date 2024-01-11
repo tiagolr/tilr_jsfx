@@ -1,6 +1,6 @@
 desc: GATE-1
 author: tilr
-version: 1.1.0
+version: 1.1.1
 provides:
   gate1/gate.array.jsfx-inc
   gate1/gate.curvelib.jsfx-inc
@@ -913,7 +913,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "GATE-1 1.1.0\nTilr 2024\n\n");
+  strcpy(txt, "GATE-1 1.1.1\nTilr 2024\n\n");
   strcat(txt, "GATE-1 is an envelope generator for gate/volume control.\n\n");
   strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 10 (default)\n");
   strcat(txt, "Left click - move points or set tension\n");
