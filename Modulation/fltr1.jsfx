@@ -1,6 +1,6 @@
 desc: FLTR-1
 author: tilr
-version: 1.0
+version: 1.1
 provides:
   fltr1/fltr.Saike_Yutani_Filters.jsfx-inc
   fltr1/fltr.Saike_Yutani_oversampling.jsfx-inc
@@ -8,6 +8,9 @@ provides:
   fltr1/fltr.array.jsfx-inc
   fltr1/fltr.curvelib.jsfx-inc
   fltr1/fltr.mouselib.jsfx-inc
+changelog:
+  Filter drive hidden by default
+  Add MIDI trigger mode
 about:
   # FLTR-1
 
@@ -71,6 +74,7 @@ file_var(0, show_retrigger_slider);
 file_var(0, trigger_channel_cut);
 file_var(0, trigger_channel_res);
 file_var(0, link_patterns);
+file_var(0, show_filter_drive);
 file_mem(0, patterns_cut, npatterns * (1 + 4 * 1000));
 file_mem(0, patterns_res, npatterns * (1 + 4 * 1000));
 
@@ -119,8 +123,10 @@ draw_wave = 1;
 show_about = 0;
 always_playing = 0;
 show_retrigger_slider = 0;
+show_filter_drive = 0;
 link_edge_points = 1;
 link_patterns = 0;
+mode = 0; // 0 Sync, 2 - MIDI
 min_q = freemem; // min Q value for filters
 freemem += 30;
 patterns_cut = freemem; // buffer to store patterns 12 * (1 + 4 * 1000)
@@ -307,6 +313,8 @@ function on_slider() (
   slider_show(_min_res, view);
   slider_show(_max_res, view);
   slider_show(retrigger, show_retrigger_slider);
+  slider_show(drive, show_filter_drive);
+  slider_show(boost, show_filter_drive);
   _min_cut > _max_cut ? _min_cut = _max_cut;
   min_cut = _min_cut / 100;
   max_cut = _max_cut / 100;
@@ -370,21 +378,41 @@ on_slider();
 @block
 
 beats_per_spl = tempo / (60 * srate);
-sync && play_state ? (
+mode == 0 && sync && play_state & 1 ? (
   beat_pos = beat_position;
+);
+// reset play position for Hz sync mode
+mode == 0 && !sync && (play_state & 1) && (!lplay_state & 1) ? (
+  beat_pos = 0;
 );
 
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
   channel = msg1 & 0x0F;
-  event == 0x90 && vel && (channel == trigger_channel_cut - 1 || trigger_channel_cut == 17) ? (
+  
+  event == 0x90 && vel && 
+  (channel == trigger_channel_cut - 1 || trigger_channel_cut == 17) ? 
+  (
     pattern_cut = note % 12 + 1;
     on_slider();
   );
-  event == 0x90 && vel && (channel == trigger_channel_res - 1 || trigger_channel_res == 17) ? (
+  
+  event == 0x90 && vel && 
+  (channel == trigger_channel_res - 1 || trigger_channel_res == 17) ? 
+  (
     pattern_res = note % 12 + 1;
     on_slider();
   );
+  
+  mode == 2 && event == 0x90 && vel && 
+  channel != trigger_channel_cut - 1 && 
+  channel != trigger_channel_res - 1 ? 
+  (
+    lmidi_trigger = 0;
+    midi_trigger = 1;
+    xpos = phase;
+  );
+  
   midisend(offset, msg1, note, vel);
 );
 
@@ -395,6 +423,26 @@ lretrigger = retrigger;
 
 @sample
 
+function process_pos(xpos) (
+  nextv = get_cut_y(xpos);
+  value_cut = value_cut.smooth2(nextv, nextv > value_cut);
+  
+  nextv = get_res_y(xpos);
+  value_res = value_res.smooth2(nextv, nextv > value_res);
+  
+  cutoff = value_cut;
+  resonance = min_q[filter_type] + value_res * (1 - min_q[filter_type]); // linear map resonance
+  
+  winpos = floor(xpos * winw);
+  lwinpos != winpos ? (
+    pre_samples[winpos] = 0;
+    post_samples[winpos] = 0;
+  );
+  lwinpos = winpos;
+  pre_samples[winpos] < abs((spl0 + spl1) / 2)
+    ? pre_samples[winpos] = (spl0 + spl1) / 2;
+);
+
 // when playback starts reset env smooth
 sync && (!lplay_state & 1) && (play_state & 1)  ? (
   value_cut.smooth = get_cut_y(beat_pos / sync_qn + phase);
@@ -402,9 +450,10 @@ sync && (!lplay_state & 1) && (play_state & 1)  ? (
   memset(pre_samples,0,winw);
   memset(post_samples,0,winw);
 );
+
 lplay_state = play_state;
 
-(play_state & 1 || always_playing) ? (
+mode == 0 && (play_state & 1 || always_playing) ? (
   sync ? (
     beat_pos += beats_per_spl;
     xpos = beat_pos / sync_qn + phase;
@@ -414,23 +463,23 @@ lplay_state = play_state;
   );
 
   xpos -= floor(xpos);
-  nextv = get_cut_y(xpos);
-  value_cut = value_cut.smooth2(nextv, nextv > value_cut);
+  process_pos(xpos);
+);
 
-  nextv = get_res_y(xpos);
-  value_res = value_res.smooth2(nextv, nextv > value_res);
-
-  cutoff = value_cut;
-  resonance = min_q[filter_type] + value_res * (1 - min_q[filter_type]); // linear map resonance
-
-  winpos = floor(xpos * winw);
-  lwinpos != winpos ? (
-    pre_samples[winpos] = 0;
-    post_samples[winpos] = 0;
+mode == 2 && (always_playing || midi_trigger) ? (
+  always_playing && midi_trigger ? (
+    xpos = phase;
+    midi_trigger = 0;
   );
-  lwinpos = winpos;
-  pre_samples[winpos] < abs((spl0 + spl1) / 2)
-    ? pre_samples[winpos] = (spl0 + spl1) / 2;
+  xpos += sync
+    ? beats_per_spl / sync_qn
+    : 1 / srate * ratehz;
+  !always_playing && xpos >= 1 ? (
+    midi_trigger = 0;
+    xpos = 0;
+  );
+   xpos -= floor(xpos);
+   process_pos(xpos);
 );
 
 check_safety();
@@ -496,7 +545,7 @@ processing ? (
 // We need to make sure that both input and output are silent before shutting down the filter.
 processing = max(processing, spl0 || spl1);
 
-@gfx 600 350
+@gfx 600 380
 
 !gridsegs ? gridsegs = 8;
 color_active = 0x00aaFF;
@@ -818,7 +867,7 @@ function draw_seek ()
 );
 
 // draw seek
-play_state & 1 || always_playing ? (
+(mode == 0 && play_state & 1) || always_playing || (mode == 2 && midi_trigger) ? (
   draw_seek();
 );
 
@@ -996,6 +1045,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
     i += 1;
   );
   strcat(menu, link_edge_points ? "|!Link edge points" : "|Link edge points");
+  strcat(menu, show_filter_drive ? "|!Show filter drive" : "|Show filter drive");
   strcat(menu, show_retrigger_slider ? "|<!Show retrigger slider" : "|<Show retrigger slider");
   strcat(menu, link_patterns ? "|!Link patterns" : "|Link patterns");
   strcat(menu, draw_wave ? "|!Draw wave" : "|Draw wave");
@@ -1023,18 +1073,24 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   choice == 1 + 18+8+18 ? (
     link_edge_points = !link_edge_points;
   );
+  
   choice == 2 + 18+8+18 ? (
+    show_filter_drive = !show_filter_drive;
+    on_slider();
+  );
+  
+  choice == 3 + 18+8+18 ? (
     show_retrigger_slider = !show_retrigger_slider;
     on_slider();
   );
-  choice == 3 + 18+8+18 ? (
+  choice == 4 + 18+8+18 ? (
     link_patterns = !link_patterns;
     on_slider();
   );
-  choice == 4+18+8+18 ? (
+  choice == 5+18+8+18 ? (
     draw_wave = !draw_wave;
   );
-  choice == 5+18+8+18 ? (
+  choice == 6+18+8+18 ? (
     view ? (
       curve_res.invert();
       curve_res.build_segments();
@@ -1043,7 +1099,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 6+18+8+18 ? (
+  choice == 7+18+8+18 ? (
     view ? (
       curve_res.reverse();
       curve_res.build_segments();
@@ -1052,7 +1108,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 7+18+8+18 ? (
+  choice == 8+18+8+18 ? (
     view ? (
       curve_res.clear();
       curve_res.build_segments();
@@ -1061,23 +1117,23 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 8+18+8+18 ? (
+  choice == 9+18+8+18 ? (
     view
       ? copy_curve(curve_res)
       : copy_curve(curve_cut);
   );
-  choice == 9+18+8+18 ? (
+  choice == 10+18+8+18 ? (
     copy_both();
   );
-  choice == 10+18+8+18 ? (
+  choice == 11+18+8+18 ? (
     view
       ? paste_curve(curve_res)
       : paste_curve(curve_cut);
   );
-  choice == 11+18+8+18 ? (
+  choice == 12+18+8+18 ? (
     paste_both();
   );
-  choice == 12+18+8+18 ? (
+  choice == 13+18+8+18 ? (
     view ? (
       curve_res.load_sine();
       curve_res.build_segments();
@@ -1086,7 +1142,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 13+18+8+18 ? (
+  choice == 14+18+8+18 ? (
     view ? (
       curve_res.load_triangle();
       curve_res.build_segments();
@@ -1095,7 +1151,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 14+18+8+18 ? (
+  choice == 15+18+8+18 ? (
     view ? (
       curve_res.load_random(gridsegs);
       curve_res.build_segments();
@@ -1104,7 +1160,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
       curve_cut.build_segments();
     );
   );
-  choice == 15+18+8+18 ? (
+  choice == 16+18+8+18 ? (
     show_about = 1;
   );
 );
@@ -1151,6 +1207,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 10, 10) ? (
   gridsegs < 2 ? gridsegs = 32;
 );
 
+
 drawx = gfx_w - 10;
 drawy = 30;
 drawx -= 50;
@@ -1168,6 +1225,11 @@ mouse.left_click && mouse_in_rect(drawx, drawy, 50, 10) ? (
   choice = gfx_showmenu("Curve|Both");
   choice == 1 ? view ? copy_curve(curve_res) : copy_curve(curve_cut);
   choice == 2 ? copy_both();
+);
+drawx -= 80;
+draw_button(drawx, drawy, 70, "MIDI In", mode == 2);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 70, 10+2) ? (
+  mode = mode == 2 ? 0 : 2;
 );
 
 // -----------------
@@ -1270,7 +1332,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "FLTR-1 1.0\nTilr 2024\n\n");
+  strcpy(txt, "FLTR-1 1.1\nTilr 2024\n\n");
   strcat(txt, "FLTR-1 is envelope based filter modulator.\n\n");
   strcat(txt, "Toggle patterns 1-12 sending midi notes on chn 8 and 9 (default)\n");
   strcat(txt, "Left click - move points or set tension\n");

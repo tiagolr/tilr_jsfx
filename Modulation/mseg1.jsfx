@@ -255,7 +255,6 @@ while (midirecv(offset, msg1, note, vel)) (
     on_slider();
   )
   : event == 0x90 && vel && mode == 2 ? (
-    lmidi_trigger = 0;
     midi_trigger = 1;
     xpos = phase;
     //value.smooth = get_curve_y(xpos);
@@ -291,7 +290,6 @@ mode == 0 && (!lplay_state & 1) && (play_state & 1) ? (
 );
 
 lplay_state = play_state;
-lmidi_trigger = midi_trigger;
 
 // sync mode
 mode == 0 && (always_playing || play_state & 1) ? (
