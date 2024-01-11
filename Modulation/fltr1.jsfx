@@ -1,6 +1,6 @@
 desc: FLTR-1
 author: tilr
-version: 1.1
+version: 1.1.1
 provides:
   fltr1/fltr.Saike_Yutani_Filters.jsfx-inc
   fltr1/fltr.Saike_Yutani_oversampling.jsfx-inc
@@ -996,7 +996,7 @@ always_playing ? (
 ) : (
   gfx_triangle(drawx+5, drawy-2, drawx+5, drawy+10-2, drawx+5+10, drawy-2 +5);
 );
-(always_playing && !(play_state & 1)) ? (
+mode == 0 && (always_playing && !(play_state & 1)) ? (
   drawx += 25;
   draw_button(drawx, drawy, 20, "R", 0);
   mouse.left_click && mouse_in_rect(drawx, drawy-2, 20, 10+2) ? (
@@ -1332,7 +1332,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "FLTR-1 1.1\nTilr 2024\n\n");
+  strcpy(txt, "FLTR-1 1.1.1\nTilr 2024\n\n");
   strcat(txt, "FLTR-1 is envelope based filter modulator.\n\n");
   strcat(txt, "Toggle patterns 1-12 sending midi notes on chn 8 and 9 (default)\n");
   strcat(txt, "Left click - move points or set tension\n");
