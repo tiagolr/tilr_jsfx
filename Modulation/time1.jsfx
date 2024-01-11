@@ -1,14 +1,13 @@
 desc: TIME-1
 author: tilr
-version: 1.0.2
+version: 1.1.0
 provides:
   time1/time.array.jsfx-inc
   time1/time.curvelib.jsfx-inc
   time1/time.delay.jsfx-inc
   time1/time.mouselib.jsfx-inc
 changelog:
-  Add retrigger
-  Add retrigger slider
+  Add MIDI mode
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/time1.png
 about:
   # TIME-1
@@ -44,6 +43,7 @@ file_var(0, draw_wave);
 file_var(0, always_playing);
 file_var(0, show_retrigger_slider);
 file_var(0, trigger_channel);
+file_var(0, mode);
 file_mem(0, patterns, npatterns * (1 + 4 * 1000));
 
 file_avail(0) >= 0 ? (
@@ -66,6 +66,7 @@ trigger_channel = 11;
 draw_wave = 0;
 show_about = 0;
 always_playing = 0;
+mode = 0; // 0 sync, 2 - MIDI
 show_retrigger_slider = 0;
 anoise = 1; // anti-noise/clicks 0 = no anti-noise, 1 = low, 2 - strong
 patterns = 100000; // buffer to store patterns 12 * (1 + 3 * 1000)
@@ -182,9 +183,14 @@ on_slider();
 @block
 
 beats_per_spl = tempo / (60 * srate);
-play_state & 1 ? (
+mode == 0 && sync && play_state & 1 ? (
   beat_pos = beat_position;
 );
+// reset play position for Hz sync mode
+mode == 0 && !sync && (play_state & 1) && (!lplay_state & 1) ? (
+  beat_pos = 0;
+);
+
 anoise == 0 ? ansamps = 0; // no anti-noise
 anoise == 1 ? ansamps = floor(0.0015 * srate); // low anti-noise
 anoise == 2 ? ansamps = floor(0.01 * srate); // high anti-noise
@@ -195,6 +201,12 @@ while (midirecv(offset, msg1, note, vel)) (
   event == 0x90 && vel && (channel == trigger_channel - 1 || trigger_channel == 17) ? (
     pattern = note % 12 + 1;
     on_slider();
+  );
+  mode == 2 && event == 0x90 && vel && 
+  channel != trigger_channel - 1 && 
+  (
+    midi_trigger = 1;
+    xpos = phase;
   );
   midisend(offset, msg1, note, vel);
 );
@@ -215,20 +227,13 @@ lretrigger = retrigger;
 );
 lplay_state = play_state;
 
-play_state & 1 || always_playing ? (
-  beat_pos += beats_per_spl;
-  sync ? (
-    xpos = beat_pos / sync_qn;
-  ) : (
-    xpos += 1 / srate * ratehz;
-  );
-
-  xpos -= floor(xpos);
+function process_pos(xpos) 
+(
   value = curve.get_y_at(xpos);
-
+  
   d0.delay_write(spl0);
   d1.delay_write(spl1);
-
+  
   winpos = floor(xpos * winw);
   lwinpos != winpos ? (
     pre_samples[winpos] = 0;
@@ -237,7 +242,7 @@ play_state & 1 || always_playing ? (
   lwinpos = winpos;
   pre_samples[winpos] < abs((spl0 + spl1) / 2)
     ? pre_samples[winpos] = (spl0 + spl1) / 2;
-
+  
   value === prev ? (
     outl = d0.delay_read(1 + value * d0.size);
     outr = d1.delay_read(1 + value * d1.size);
@@ -246,13 +251,13 @@ play_state & 1 || always_playing ? (
     outl = d0.delay_read3(1 + value * d0.size);
     outr = d1.delay_read3(1 + value * d1.size);
   );
-
+  
   // when y value jumps activate cross fade / anti-click
   abs(value - prev) > 0.001 ? (
     xfade = ansamps;
     xfadepos = 1 + prev * d0.size;
   );
-
+  
   // anti-noise cross fade
   // fades in new signal fades out old signal
   xfade ? (
@@ -260,14 +265,43 @@ play_state & 1 || always_playing ? (
     outr = outr * (ansamps - xfade) / ansamps + d1.delay_read3(xfadepos + ansamps - xfade) * xfade / ansamps;
     xfade -= 1;
   );
-
+  
   spl0 = outl;
   spl1 = outr;
-
+  
   prev = value;
-
+  
   post_samples[winpos] < abs((spl0 + spl1) / 2)
     ? post_samples[winpos] = (spl0 + spl1) / 2;
+);
+
+mode == 0 && (play_state & 1 || always_playing) ? (
+  beat_pos += beats_per_spl;
+  sync ? (
+    xpos = beat_pos / sync_qn;
+  ) : (
+    xpos += 1 / srate * ratehz;
+  );
+
+  xpos -= floor(xpos);
+  process_pos(xpos);
+);
+
+mode == 2 && (always_playing || midi_trigger) ? (
+  always_playing && midi_trigger ? (
+    xpos = phase;
+    midi_trigger = 0;
+  );
+  xpos += sync
+    ? beats_per_spl / sync_qn
+    : 1 / srate * ratehz;
+  !always_playing && xpos >= 1 ? (
+    midi_trigger = 0;
+    xpos = 0;
+  );
+  
+   xpos -= floor(xpos);
+   process_pos(xpos);
 );
 
 @gfx 600 350
@@ -278,7 +312,7 @@ color_bg = 0x141618;
 hover_radius = 8;
 hover = 0;
 winx = 10;
-winy = gfx_w < 450 ? 50 : 30;
+winy = gfx_w < 550 ? 50 : 30;
 winw = gfx_w - 20;
 winh = gfx_h - winy - 10;
 gridx = winw / gridsegs;
@@ -559,7 +593,8 @@ draw_wave && (!sync || play_state & 1) ? (
 
 draw_grid();
 
-play_state & 1 || always_playing ? (
+// draw seek
+(mode == 0 && play_state & 1) || always_playing || (mode == 2 && midi_trigger) ? (
   draw_seek();
 );
 
@@ -584,7 +619,7 @@ loop(i = 0; curve.segments.size,
 
 // draw left buttons
 drawx = winx;
-drawy = gfx_w < 450 ? 30 : 10;
+drawy = gfx_w < 550 ? 30 : 10;
 gfx_x = drawx;
 gfx_y = drawy;
 gfx_set(1,1,1);
@@ -627,7 +662,7 @@ always_playing ? (
 ) : (
   gfx_triangle(drawx+5, drawy-2, drawx+5, drawy+10-2, drawx+5+10, drawy-2+5);
 );
-(always_playing && !(play_state & 1)) ? (
+mode == 0 && (always_playing && !(play_state & 1)) ? (
   drawx += 25;
   draw_button(drawx, drawy, 20, "R", 0);
   mouse.left_click && mouse_in_rect(drawx, drawy-2, 20, 10+2) ? (
@@ -720,6 +755,12 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   choice == 14+18 ? (
     show_about = 1;
   );
+);
+
+drawx -= 60;
+draw_button(drawx, drawy, 50, "MIDI", mode == 2);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 50, 10+2) ? (
+  mode = mode == 0 ? 2 : 0;
 );
 
 drawx -= 60;
@@ -848,7 +889,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "TIME-1 1.0.2\nTilr 2024\n\n");
+  strcpy(txt, "TIME-1 1.1.0\nTilr 2024\n\n");
   strcat(txt, "TIME-1 is a playback/time and pitch editor.\n");
   strcat(txt, "X axis is time, Y axis controls the delay position.\n\n");
   strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 11 (default)\n");
