@@ -60,7 +60,7 @@ function hardclip(x, gain) (
 
 function softclip(x, gain) (
   x *= gain;
-  sign(x) * atan(abs(x));
+  atan(x)
 );
 
 function cubic(x, gain) (
@@ -82,6 +82,16 @@ function sine3(x, gain) (
   (1.85*sin(x)+atan(2*x))/(4+sin(3*x));
 );
 
+function sine4(x, gain) (
+  x *= gain;
+  tanh(x)+(gain-1)/gain*x/gain*sin(x);
+);
+
+function sine5(x, gain) (
+  x = x * gain;
+  tanh(x)+sin(x)*exp(-abs(x/gain)*5)
+);
+
 function crush(x, gain)
 local(depth)
 (
@@ -94,11 +104,16 @@ function ribbon(x, gain)
   x *= gain;
   tanh(x) * tanh(x+10) * tanh(x+20)
 );
-
+ 
 function ribbon2(x, gain)
 (
   x *= gain;
   atan(x) * atan(x+20) * atan(x-20) / -2;
+);
+
+function ribbon3(x, gain) 
+(
+  atan(x) * atan(x+10) * atan(x-10) * atan(x+20) * atan(x-20) / 4 + sin(x) * exp(abs(x/gain)*-5);
 );
 
 function ribbon3(x, gain)
@@ -114,7 +129,6 @@ local(drivefactor)
   drivefactor = drive/48;
   (x+(gain^0.5)*sin(x))/(2-drivefactor)/gain/factor
 );
-
 
 function test(x, gain) (
   x = x * gain;
@@ -256,7 +270,7 @@ local(i,x,y)
   gfx_y = (1-(y+1)/2)*winh+winy;
   step = 2 / winw;
   loop(i=-1; winw,
-    gfx_lineto((i+1)/2*winw+winx, (1-(process(i, gain.smooth, factor)+1)/2)*winh+winy);
+    gfx_lineto((i+1)/2*winw+winx, min(1,max(0,(1-(process(i, gain.smooth, factor)+1)/2)))*winh+winy);
     i += step;
   );
 );
