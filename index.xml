@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="a154c29d13f106dc71ff9612f006f33e6a199d83" name="Tilr">
+<index version="1" commit="002c1ddfb2d6c5ad8970cd36a782699a76c900ea" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -100,6 +100,24 @@
         <source file="qddelay/qdd.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Delay/qddelay/qdd.delay.jsfx-inc</source>
         <source file="qddelay/qdd.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Delay/qddelay/qdd.rbj_filter.jsfx-inc</source>
         <source file="qddelay/qdd.saike_pitchlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9ee52fd4bfd73f693acac2e35e30dd277fd88ea3/Delay/qddelay/qdd.saike_pitchlib.jsfx-inc</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Distortion">
+    <reapack name="quickdist.jsfx" type="effect" desc="QuickDist">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 QuickDist\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 Waveshaper distortion with 9 modes\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0" author="tilr" time="2024-01-15T19:29:35Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/89366a4c6f6ffd788d2cb1020467c4c6319b9be6/Distortion/quickdist.jsfx</source>
+        <source file="qdist/qdist.squashman_upsamplers.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/89366a4c6f6ffd788d2cb1020467c4c6319b9be6/Distortion/qdist/qdist.squashman_upsamplers.jsfx-inc</source>
       </version>
     </reapack>
   </category>
