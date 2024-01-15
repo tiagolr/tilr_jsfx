@@ -1,0 +1,168 @@
+desc:QuickDist
+author:TiagoLr
+ 
+slider1:mode=0<0, 5, 1{Tanh,Hardclip,Softclip,Cubic,Ribbon,Ribbon2,Sine,BitCrush,SinCrush}>Mode
+slider2:drive=0<0,48,0.1>Drive Db
+slider3:drive_amp=20<0,100,.1>Drive Amp
+
+@init
+function db2gain(db) (
+  10^(db / 20);
+);
+
+// Parameter smoothing
+function rc_set(rc)
+  instance(a) (
+    a = 1 / (rc * srate + 1);
+);
+function rc_lp(sample)
+  instance(lp, a) (
+    lp += a * (sample - lp);
+);
+function smooth()
+  instance (lp, smooth) (
+    lp = smooth;
+    smooth = this.rc_lp(this);
+);
+
+// distortions
+function tanh(x) (
+  x = exp(2*x);
+  (x - 1) / (x + 1);
+);
+
+dc = 0.05;
+tanh_dc = tanh(dc);
+
+function tube(x, gain) (
+  x *= gain;
+  tanh(x + dc) - tanh_dc;
+);
+
+function hardclip(x, gain) (
+  x *= gain;
+  x < -1 ? -1 : x > 1 ? 1: x;
+);
+
+function softclip(x, gain) (
+  x *= gain;
+  sign(x) * atan(abs(x));
+);
+
+function cubic(x, gain) (
+  x *= gain;
+  tanh(x)^3;
+);
+
+function sine(x, gain) (
+  sin(x*gain);
+);
+
+function sine2(x, gain) (
+  x *= gain;
+  (sin(x)+atan(2*x))/2;
+);
+
+function sine3(x, gain) (
+  x *= gain;
+  (1.85*sin(x)+atan(2*x))/(4+sin(3*x));
+);
+
+function crush(x, gain)
+local(depth)
+(
+  depth = 1000 / gain;
+  floor(x * depth + 0.5) / depth / factor;
+);
+
+function ribbon(x, gain)
+(
+  x *= gain;
+  tanh(x) * tanh(x+10) * tanh(x+20)
+);
+
+function ribbon2(x, gain) 
+(
+  x *= gain;
+  atan(x) * atan(x+20) * atan(x-20) / -2;
+);
+
+function ribbon3(x, gain) 
+(
+  x *= gain;
+  (1+1.6*x)/(1.6+x^4)-0.625;
+);
+
+function sincrush(x, gain)
+local(drivefactor)
+(
+  x = x * gain;
+  drivefactor = drive/48;
+  (x+(gain^0.5)*sin(x))/(2-drivefactor)/gain/factor
+);
+
+
+function test(x, gain) (
+  x = x * gain;
+  tanh(x)
+);
+
+gain.rc_set(0.0033);
+gain.smooth = db2gain(drive);
+
+function process(s, gain, factor) (
+  mode == 0 ? tube(s, gain) * factor
+  : mode == 1 ? hardclip(s, gain) * factor
+  : mode == 2 ? softclip(s, gain) * factor
+  : mode == 3 ? cubic(s, gain) * factor
+  : mode == 4 ? ribbon(s, gain) * factor
+  : mode == 5 ? ribbon2(s, gain) * factor
+  : mode == 6 ? sine2(s, gain) * factor
+  : mode == 7 ? crush(s, gain) * factor
+  : mode == 8 ? sincrush(s, gain) * factor;
+);
+
+@slider
+gain = db2gain(drive);
+
+@sample
+
+gain.smooth();
+f1 = drive_amp / 100;
+f2 = 1/(1-f1)-1;
+factor = f1 + 1/(gain.smooth + f2 * sqr(gain.smooth));
+
+spl0 = process(spl0, gain.smooth, factor);
+spl1 = process(spl1, gain.smooth, factor);
+
+@gfx 300 200
+
+winx = 10;
+winy = 10;
+winw = gfx_w - 20;
+winh = gfx_h - 20;
+
+gfx_set(1,1,1);
+
+gfx_rect(winx, winy, winw, winh, 0);
+
+function draw_wave() 
+local(i,x,y)
+(
+  x = -1;
+  y = process(x, gain.smooth, factor);
+  gfx_x = (x+1)/2*winw+winx;
+  gfx_y = (1-(y+1)/2)*winh+winy;
+  step = 2 / winw;
+  loop(i=-1; winw, 
+    gfx_lineto((i+1)/2*winw+winx, (1-(process(i, gain.smooth, factor)+1)/2)*winh+winy);
+    i += step;
+  );
+  
+);
+
+gfx_set(0.5,0.5,0.5,0.5);
+gfx_line(winx+winw/2, winy, winx+winw/2, winy+winh);
+gfx_line(winx, winy+winh/2, winx+winw, winy+winh/2);
+gfx_set(1,1,1);
+draw_wave();
