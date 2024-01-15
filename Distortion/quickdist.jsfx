@@ -1,9 +1,10 @@
 desc:QuickDist
 author:TiagoLr
- 
+
 slider1:mode=0<0, 5, 1{Tanh,Hardclip,Softclip,Cubic,Ribbon,Ribbon2,Sine,BitCrush,SinCrush}>Mode
 slider2:drive=0<0,48,0.1>Drive Db
 slider3:drive_amp=20<0,100,.1>Drive Amp
+slider4:dynamics=0.0<0,1>Dynamics
 
 @init
 function db2gain(db) (
@@ -81,13 +82,13 @@ function ribbon(x, gain)
   tanh(x) * tanh(x+10) * tanh(x+20)
 );
 
-function ribbon2(x, gain) 
+function ribbon2(x, gain)
 (
   x *= gain;
   atan(x) * atan(x+20) * atan(x-20) / -2;
 );
 
-function ribbon3(x, gain) 
+function ribbon3(x, gain)
 (
   x *= gain;
   (1+1.6*x)/(1.6+x^4)-0.625;
@@ -122,6 +123,22 @@ function process(s, gain, factor) (
   : mode == 8 ? sincrush(s, gain) * factor;
 );
 
+ENV_CA = 2/(srate*0.001);
+ENV_CR = 2/(srate*0.050);
+function envDetect(x) 
+instance(s ms1 ms2 denv env k)
+(
+  s = sqr(x);
+  ms1 += ( s  > ms1 ? ENV_CA : ENV_CR) * ( s  - ms1);
+  ms2 += (ms1 > ms2 ? ENV_CA : ENV_CR) * (ms1 - ms2);
+  k <= 0 ? (
+    denv = (sqrt(ms2) - env) * (1/8);
+    k = 8;
+  );
+  k -= 1;
+  env += denv;
+);
+
 @slider
 gain = db2gain(drive);
 
@@ -132,8 +149,11 @@ f1 = drive_amp / 100;
 f2 = 1/(1-f1)-1;
 factor = f1 + 1/(gain.smooth + f2 * sqr(gain.smooth));
 
-spl0 = process(spl0, gain.smooth, factor);
-spl1 = process(spl1, gain.smooth, factor);
+L.envDetect(spl0);
+R.envDetect(spl1);
+
+spl0 = process(spl0, gain.smooth, factor) * (1+dynamics * (L.env - 1));
+spl1 = process(spl1, gain.smooth, factor) * (1+dynamics * (R.env - 1));
 
 @gfx 300 200
 
@@ -146,7 +166,7 @@ gfx_set(1,1,1);
 
 gfx_rect(winx, winy, winw, winh, 0);
 
-function draw_wave() 
+function draw_wave()
 local(i,x,y)
 (
   x = -1;
@@ -154,11 +174,11 @@ local(i,x,y)
   gfx_x = (x+1)/2*winw+winx;
   gfx_y = (1-(y+1)/2)*winh+winy;
   step = 2 / winw;
-  loop(i=-1; winw, 
+  loop(i=-1; winw,
     gfx_lineto((i+1)/2*winw+winx, (1-(process(i, gain.smooth, factor)+1)/2)*winh+winy);
     i += step;
   );
-  
+
 );
 
 gfx_set(0.5,0.5,0.5,0.5);
