@@ -1,12 +1,23 @@
 desc:QuickDist
-author:TiagoLr
+author:tilr
+version: 1.0
+provides:
+  qdist/qdist.squashman_upsamplers.jsfx-inc
+about:
+  # QuickDist
+
+  Waveshaper distortion with 9 modes
+
+import qdist.squashman_upsamplers.jsfx-inc
 
 slider1:mode=0<0, 5, 1{Tanh,Hardclip,Softclip,Cubic,Ribbon,Ribbon2,Sine,BitCrush,SinCrush}>Mode
 slider2:drive=0<0,48,0.1>Drive Db
 slider3:drive_amp=20<0,100,.1>Drive Amp
 slider4:dynamics=0.0<0,1>Dynamics
-slider5:hp=20<20,2000>Low cut
-slider6:lp=20000<500,20000>High cut
+slider5:hp=10<10,2000,1:log>Low cut
+slider6:lp=20000<500,20000,1:log>High cut
+
+slider10:oversampling=1<1,4,1>Oversampling
 
 @init
 function db2gain(db) (
@@ -127,7 +138,7 @@ function process(s, gain, factor) (
 
 ENV_CA = 2/(srate*0.001);
 ENV_CR = 2/(srate*0.050);
-function envDetect(x) 
+function envDetect(x)
 instance(s ms1 ms2 denv env k)
 (
   s = sqr(x);
@@ -141,27 +152,27 @@ instance(s ms1 ms2 denv env k)
   env += denv;
 );
 
-function HP_set(f) 
+function HP_set(f)
 instance(b a)
 (
   a = exp(-$pi*f/srate);
   b = (1+a)*0.5;
 );
-function HP_proc(x) 
+function HP_proc(x)
 instance(b a x1 y)
 (
   y = a * y + b * (x - x1);
   x1 = x;
   y;
 );
-function LP_set(f) 
+function LP_set(f)
 instance(b1 b2 a)
 (
   a = exp(-$pi*f/srate);
   b1 = (1 - a) * (1/1.12);
   b2 = 0.12 * b1;
 );
-function LP_proc(x) 
+function LP_proc(x)
 instance(b1 b2 a x1 y)
 (
   y = a * y + b1 * x + b2 * x1;
@@ -171,10 +182,10 @@ instance(b1 b2 a x1 y)
 
 @slider
 gain = db2gain(drive);
-L.hp.HP_set(hp); 
-R.hp.HP_set(hp); 
-L.lp.LP_set(lp); 
-R.lp.LP_set(lp); 
+L.hp.HP_set(hp);
+R.hp.HP_set(hp);
+L.lp.LP_set(lp);
+R.lp.LP_set(lp);
 
 @sample
 
@@ -186,16 +197,44 @@ factor = f1 + 1/(gain.smooth + f2 * sqr(gain.smooth));
 L.envDetect(spl0);
 R.envDetect(spl1);
 
-sl = process(spl0, gain.smooth, factor) * (1+dynamics * (L.env - 1));
-sl = L.hp.HP_proc(sl);
-sl = L.lp.LP_proc(sl);
+oversampling == 1 ? (
+  sl = process(spl0, gain.smooth, factor) * (1+dynamics * (L.env - 1));
+  sl = L.hp.HP_proc(sl);
+  sl = L.lp.LP_proc(sl);
 
-sr = process(spl1, gain.smooth, factor) * (1+dynamics * (R.env - 1));
-sr = R.hp.HP_proc(sr);
-sr = R.lp.LP_proc(sr);
+  sr = process(spl1, gain.smooth, factor) * (1+dynamics * (R.env - 1));
+  sr = R.hp.HP_proc(sr);
+  sr = R.lp.LP_proc(sr);
 
-spl0 = sl;
-spl1 = sr;
+  spl0 = sl;
+  spl1 = sr;
+) : (
+  sl = spl0;
+  sr = spl1;
+  upsampleL.updateUpHist(oversampling, sl);
+  upsampleR.updateUpHist(oversampling, sr);
+
+  loop(f=0; oversampling,
+    f += 1;
+    sl = oversampling*upsampleL.upSample(oversampling);
+    sr = oversampling*upsampleR.upSample(oversampling);
+
+    sl = process(sl, gain.smooth, factor) * (1+dynamics * (L.env - 1));
+    sl = L.hp.HP_proc(sl);
+    sl = L.lp.LP_proc(sl);
+    sr = process(sr, gain.smooth, factor) * (1+dynamics * (R.env - 1));
+    sr = R.hp.HP_proc(sr);
+    sr = R.lp.LP_proc(sr);
+
+    downL.updateDownHist(oversampling, sl);
+    downR.updateDownHist(oversampling, sr);
+
+    ( f == 1 ) ? (
+      spl0 = downL.downSample(oversampling);
+      spl1 = downR.downSample(oversampling);
+    );
+  );
+);
 
 @gfx 300 200
 
@@ -220,7 +259,6 @@ local(i,x,y)
     gfx_lineto((i+1)/2*winw+winx, (1-(process(i, gain.smooth, factor)+1)/2)*winh+winy);
     i += step;
   );
-
 );
 
 gfx_set(0.5,0.5,0.5,0.5);
