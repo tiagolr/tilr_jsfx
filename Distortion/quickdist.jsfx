@@ -5,6 +5,8 @@ slider1:mode=0<0, 5, 1{Tanh,Hardclip,Softclip,Cubic,Ribbon,Ribbon2,Sine,BitCrush
 slider2:drive=0<0,48,0.1>Drive Db
 slider3:drive_amp=20<0,100,.1>Drive Amp
 slider4:dynamics=0.0<0,1>Dynamics
+slider5:hp=20<20,2000>Low cut
+slider6:lp=20000<500,20000>High cut
 
 @init
 function db2gain(db) (
@@ -139,8 +141,40 @@ instance(s ms1 ms2 denv env k)
   env += denv;
 );
 
+function HP_set(f) 
+instance(b a)
+(
+  a = exp(-$pi*f/srate);
+  b = (1+a)*0.5;
+);
+function HP_proc(x) 
+instance(b a x1 y)
+(
+  y = a * y + b * (x - x1);
+  x1 = x;
+  y;
+);
+function LP_set(f) 
+instance(b1 b2 a)
+(
+  a = exp(-$pi*f/srate);
+  b1 = (1 - a) * (1/1.12);
+  b2 = 0.12 * b1;
+);
+function LP_proc(x) 
+instance(b1 b2 a x1 y)
+(
+  y = a * y + b1 * x + b2 * x1;
+  x1 = x;
+  y;
+);
+
 @slider
 gain = db2gain(drive);
+L.hp.HP_set(hp); 
+R.hp.HP_set(hp); 
+L.lp.LP_set(lp); 
+R.lp.LP_set(lp); 
 
 @sample
 
@@ -152,8 +186,16 @@ factor = f1 + 1/(gain.smooth + f2 * sqr(gain.smooth));
 L.envDetect(spl0);
 R.envDetect(spl1);
 
-spl0 = process(spl0, gain.smooth, factor) * (1+dynamics * (L.env - 1));
-spl1 = process(spl1, gain.smooth, factor) * (1+dynamics * (R.env - 1));
+sl = process(spl0, gain.smooth, factor) * (1+dynamics * (L.env - 1));
+sl = L.hp.HP_proc(sl);
+sl = L.lp.LP_proc(sl);
+
+sr = process(spl1, gain.smooth, factor) * (1+dynamics * (R.env - 1));
+sr = R.hp.HP_proc(sr);
+sr = R.lp.LP_proc(sr);
+
+spl0 = sl;
+spl1 = sr;
 
 @gfx 300 200
 
