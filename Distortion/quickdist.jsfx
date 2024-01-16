@@ -1,6 +1,6 @@
 desc:QuickDist
 author:tilr
-version: 1.0
+version: 1.0.1
 provides:
   qdist/qdist.squashman_upsamplers.jsfx-inc
 about:
@@ -116,11 +116,28 @@ function ribbon3(x, gain)
   atan(x) * atan(x+10) * atan(x-10) * atan(x+20) * atan(x-20) / 4 + sin(x) * exp(abs(x/gain)*-5);
 );
 
+function flathat(x, gain) 
+(
+  x *= gain;
+  tanh(min(2^x-1, 300));
+);
+
+function fold(x, gain) (
+  x *= gain;
+  while(x > 1 || x < -1) (
+    x > 1 ? x = 2 - x;
+    x < -1 ? x = -2 - x;
+  );
+  x;
+);
+
 function ribbon3(x, gain)
 (
   x *= gain;
   (1+1.6*x)/(1.6+x^4)-0.625;
 );
+
+function log2(x) ( log(x) / log(2); );
 
 function sincrush(x, gain)
 local(drivefactor)
@@ -130,9 +147,14 @@ local(drivefactor)
   (x+(gain^0.5)*sin(x))/(2-drivefactor)/gain/factor
 );
 
+function sincrush2(x, gain) (
+  x *= gain;
+  tanh(x + sin(10*x) * min((gain/10-1/10), 1))
+);
+
 function test(x, gain) (
-  x = x * gain;
-  tanh(x)
+  x *= gain;
+  tanh(x + sin(10*x) * min((gain/10-1/10), 1))
 );
 
 gain.rc_set(0.0033);
@@ -267,7 +289,7 @@ local(i,x,y)
   x = -1;
   y = process(x, gain.smooth, factor);
   gfx_x = (x+1)/2*winw+winx;
-  gfx_y = (1-(y+1)/2)*winh+winy;
+  gfx_y = min(1,max(0,(1-(y+1)/2)))*winh+winy;
   step = 2 / winw;
   loop(i=-1; winw,
     gfx_lineto((i+1)/2*winw+winx, min(1,max(0,(1-(process(i, gain.smooth, factor)+1)/2)))*winh+winy);
