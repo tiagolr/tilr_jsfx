@@ -1,6 +1,6 @@
 desc:DIST-R
 author:tilr
-version: 1.0.1
+version: 1.0.0
 provides:
   distr/distr.squashman_upsamplers.jsfx-inc
   distr/distr.curvelib.jsfx-inc
@@ -28,7 +28,7 @@ import distr.distortions.jsfx-inc
 
 slider1:pattern=1<1,12,1>Pattern
 slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
-slider3:ratehz=1<0.01,140,.01:log>Rate (Hz)
+slider3:ratehz=1<0.01,140,.01:log>-Rate (Hz)
 slider4:phase=0<0,1,.01>Phase
 
 slider6:_lfomin=0<0,100,1>Min
@@ -128,7 +128,6 @@ local(i)
 
 curve.curve_init(0, 1000);
 curve.insert_point(0,1,0,1);
-curve.insert_point(0.5,0,0,1);
 curve.insert_point(1,1,0,1);
 curve.build_segments();
 
@@ -376,10 +375,8 @@ post_samples[winpos] < abs((spl0 + spl1) / 2)
 @gfx 600 380
 
 !gridsegs ? gridsegs = 8;
-color_active = 0x00aaFF;
+color_active = 0xFF5555;
 color_bg = 0x141618;
-color_cut = 0xFFFFFF;
-color_res = 0x00aaFF;
 hover_radius = 8;
 hover = 0;
 winx = 10;
@@ -388,6 +385,257 @@ winw = gfx_w - 20;
 winh = gfx_h - winy - 10;
 gridx = winw / gridsegs;
 gridy = winh / gridsegs;
+
+function set_color(color) (
+  gfx_r = (color & 0xFF0000) / 0xFF0000;
+  gfx_g = (color & 0x00FF00) / 0x00FF00;
+  gfx_b = (color & 0x0000FF) / 0x0000FF;
+);
+
+function round(x) (
+  floor(x + 0.5 * sign(x));
+);
+
+function draw_midpoint(seg, i)
+local (x, y, xx, yy)
+(
+  x = (seg[1] + seg[0]) * 0.5;
+  y = seg[6] > 1
+    ? (seg[2] + seg[3]) / 2
+    : curve.get_y_at(x);
+  xx = x * winw + winx;
+  yy = y * winh + winy;
+  set_color(color_active);
+  gfx_circle(xx, yy, 3);
+
+  selected_midpoint == -1 && selected_point == -1 && !hover
+  && mouse_in_rect(xx - hover_radius, yy - hover_radius, hover_radius * 2, hover_radius * 2) ?
+  (
+    hover = 1;
+    gfx_a = 0.5;
+    gfx_circle(xx, yy, hover_radius, 1);
+    mouse.left_click ? (
+      selected_midpoint = i;
+    );
+  );
+
+  selected_midpoint == i ? (
+    gfx_a = 1;
+    gfx_circle(xx, yy, 3, 1);
+  );
+);
+
+function on_midpoint_move(dy)
+local(point, tension, next, rising)
+(
+  point = curve.points.array_get(selected_midpoint);
+  next = curve.points.array_get(selected_midpoint + 1);
+  rising = point[1] < next[1];
+  rising ? dy *= -1;
+  tension = point[2];
+  tension += dy / 100;
+  tension > 1 ? tension = 1;
+  tension < -1 ? tension = -1;
+  point[2] = tension;
+  curve.build_segments();
+);
+
+function draw_point(point, i)
+local (xx, yy)
+(
+  gfx_set(1, 1, 1);
+  xx = point[0] * winw + winx;
+  yy = point[1] * winh + winy;
+  gfx_circle(xx, yy, 4, 1);
+
+  selected_point == -1 && selected_midpoint == -1 && !hover
+    && mouse_in_rect(xx - hover_radius, yy - hover_radius, hover_radius * 2, hover_radius * 2) ?
+    (
+    hover = 1;
+    gfx_set(1,1,1,0.5);
+    gfx_circle(xx, yy, hover_radius, 1);
+    mouse.left_click ? (
+      selected_point = i;
+    );
+  );
+
+  selected_point == i ? (
+    gfx_set(1,0,0,0.5);
+    gfx_circle(xx, yy, 5, 1);
+  );
+);
+
+function on_point_move()
+local(point, prev, next, xx, yy)
+(
+  point = curve.points.array_get(selected_point);
+  snap || mouse.control ? (
+    xx = round((mouse.x - winx) / gridx) * gridx + winx;
+    yy = round((mouse.y - winy) / gridy) * gridy + winy;
+  ) : (
+    xx = mouse.x;
+    yy = mouse.y;
+  );
+  xx = (xx - winx) / winw;
+  yy = (yy - winy) / winh;
+
+  selected_point == 0 ? (
+    point[1] = yy;
+    point[1] < 0 ? point[1] = 0;
+    point[1] > 1 ? point[1] = 1;
+    link_edge_points ? (
+      next = curve.points.array_get(curve.points.size - 1);
+      next[1] = point[1];
+    );
+  ) :
+  selected_point == curve.points.size - 1 ? (
+    point[1] = yy;
+    point[1] < 0 ? point[1] = 0;
+    point[1] > 1 ? point[1] = 1;
+    link_edge_points ? (
+      prev = curve.points.array_get(0);
+      prev[1] = point[1];
+    );
+  ) : (
+    point[0] = xx;
+    point[1] = yy;
+    point[0] < 0 ? point[0] = 0;
+    point[0] > 1 ? point[0] = 1;
+    point[1] < 0 ? point[1] = 0;
+    point[1] > 1 ? point[1] = 1;
+    prev = curve.points.array_get(selected_point - 1);
+    next = curve.points.array_get(selected_point + 1);
+    point[0] < prev[0] ? point[0] = prev[0];
+    point[0] > next[0] ? point[0] = next[0];
+  );
+  curve.build_segments();
+);
+
+
+function on_double_click ()
+local (found, seg, px, py, i, point, x, y, coolinear)
+(
+  found = 0;
+  // if xy in point and point not edge delete point
+  loop(i=0; curve.points.size,
+    point = curve.points.array_get(i);
+    px = winx + winw * point[0];
+    py = winy + winh * point[1];
+    !found && point_in_rect(mouse.x, mouse.y, px-hover_radius, py-hover_radius, hover_radius * 2, hover_radius * 2) ? (
+      i && point != curve.points.array_last() ? (
+        curve.remove_point(i);
+      );
+      found = 1;
+    );
+    i += 1;
+  );
+  // if xy in midpoint reset tension
+  loop(i=0; curve.segments.size,
+    seg = curve.segments.array_get(i);
+    x = (seg[1] + seg[0]) * 0.5;
+    y = curve.get_y_at(x);
+    px = x * winw + winx;
+    py = y * winh + winy;
+    !found && !is_collinear(seg) && point_in_rect(mouse.x, mouse.y, px-hover_radius, py-hover_radius, hover_radius * 2, hover_radius * 2) ? (
+      point = curve.points.array_get(i);
+      point[2] = 0; // reset tension
+      found = 1;
+    );
+    i += 1;
+  );
+
+  !found ? (
+    px = mouse.x;
+    py = mouse.y;
+    snap || mouse.control ? (
+      px = round((mouse.x - winx) / gridx) * gridx + winx;
+      py = round((mouse.y - winy) / gridy) * gridy + winy;
+    );
+    x = (px - winx) / winw;
+    y = (py - winy) / winh;
+    x >= 0 && x <= 1 && y >= 0 && y <= 1 ? ( // point in env window
+      x == 1 ? x -= 0.000001; // special case avoid inserting point after last point
+      selected_point = curve.insert_point(x, y, 0, point_mode);
+    );
+  );
+  curve.build_segments();
+);
+
+/*
+  Paint function activated on RMB
+*/
+function paint ()
+local (seg, mousex, mousey)
+(
+  mousex = (mouse.x - winx) / winw;
+  mousey = (mouse.y - winy) / winh;
+  snap || mouse.control ? (
+    mousey = round(mousey * gridsegs) / gridsegs;
+  );
+  seg = floor(mousex * gridsegs);
+
+  paint_mode == 0 || mouse.alt ? ( // erase mode
+    curve.remove_points_in_range(seg / gridsegs, (seg + 1) / gridsegs);
+  ) :
+  paint_mode == 1 ? ( // line mode
+    curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
+    curve.insert_point(seg / gridsegs + 0.00001, mousey, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, mousey, 0, 1);
+  ) :
+  paint_mode == 2 ? ( // saw up
+    curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
+    curve.insert_point(seg / gridsegs + 0.00001, 1, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, mousey, 0, 1);
+  ) :
+  paint_mode == 3 ? ( // saw down
+    curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
+    curve.insert_point(seg / gridsegs + 0.00001, mousey, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, 1, 0, 1);
+  ) :
+  paint_mode == 4 ? ( // triangle
+    curve.remove_points_in_range(seg / gridsegs + 0.00001, (seg + 1) / gridsegs - 0.00001);
+    curve.insert_point(seg / gridsegs + 0.00001, 1, 0, 1);
+    curve.insert_point(seg / gridsegs + (((seg+1) / gridsegs - seg / gridsegs) / 2), mousey, 0, 1);
+    curve.insert_point((seg+1) / gridsegs - 0.00001, 1, 0, 1);
+  );
+  curve.build_segments();
+);
+
+function draw_grid ()
+local(i)
+(
+  gfx_set(1, 1, 1);
+  loop(i = 0; gridsegs + 1,
+    gfx_a = gridsegs % 4 == 0 && i && i % 4 == 0 && i < gridsegs ? .15 : 0.075;
+    gfx_line(winx, winy + gridy * i, winx + winw, winy + gridy * i, 0);
+    gfx_line(winx + gridx * i, winy, winx + gridx * i, winy + winh, 0);
+    i += 1;
+  );
+);
+
+function draw_wave(samples)
+local(i, ypos)
+(
+  gfx_x = winx;
+  gfx_y = winh - min(abs(samples[0]),1) * winh + winy;
+  loop(i = 0; winw,
+    ypos = min(abs(samples[i]),1);
+    gfx_a = ypos ? 0.0625 : 0;
+    gfx_triangle(gfx_x, gfx_y, gfx_x, winh + winy, i+winx, winh+winy, i+winx, winh - ypos * winh + winy);
+    gfx_a = ypos ? 0.5 : 0;
+    gfx_lineto(i + winx, winh - ypos * winh + winy);
+    i += 1;
+  );
+);
+
+function draw_button (x, y, w, label, toggled) (
+  gfx_a = 1;
+  set_color(color_active);
+  gfx_rect(x, y - 2, w, 10 + 2, toggled);
+  gfx_x = x; gfx_y = y;
+  set_color(toggled ? color_bg : color_active);
+  gfx_drawstr(label, 1, x+w, y+10);
+);
 
 function draw_distwave(x,y,w,h)
 local(i,xx,yy)
@@ -409,8 +657,356 @@ local(i,xx,yy)
   );
 );
 
-drawx = 10;
+mouse.update_mouse_state();
+gfx_clear = color_bg;
+
+draw_wave && (always_playing || play_state & 1) ? (
+  gfx_set(.5,.5,.5);
+  draw_wave(pre_samples);
+  set_color(color_active);
+  draw_wave(post_samples);
+);
+
+draw_grid();
+
+function draw_seek ()
+(
+  gfx_set(0.5,1,1,0.5);
+  gfx_line(xpos * winw + winx, winy, xpos * winw + winx, winy + winh);
+  gfx_set(.5,1,1,1);
+  gfx_circle(xpos * winw + winx, (1-value) * winh + winy, 5);
+);
+
+// draw seek
+(trigger_mode == 0 && play_state & 1) || always_playing || (trigger_mode == 2 && midi_trigger) ? (
+  draw_seek();
+);
+
+gfx_set(1,1,1,1);
+curve.draw_segments(winx, winy, winw, winh, 1);
+
+// draw points
+loop(i =0; curve.points.size,
+  point = curve.points.array_get(i);
+  draw_point(point, i);
+  i += 1;
+);
+
+// draw midpoints
+loop(i = 0; curve.segments.size,
+  seg = curve.segments.array_get(i);
+  !is_collinear(seg) ? (
+    draw_midpoint(seg, i);
+  );
+  i += 1;
+);
+
+drawx = winx;
 drawy = 10;
 draw_distwave(drawx,drawy,60,30);
+mouse.left_click && mouse_in_rect(drawx,drawy,60,30) ? (
+  draw_wave_big = !draw_wave_big;
+);
+draw_wave_big ? (
+  gfx_x = winx; gfx_y = winy;
+  gfx_blurto(winw+winx, winy+winh);
+  gfx_x = winx; gfx_y = winy;
+  gfx_blurto(winw+winx, winy+winh);
+  gfx_set(0,0,0,0.75);
+  gfx_rect(winx,winy,winw,winh);
+  draw_distwave(winx,winy,winw,winh);
+);
+drawx += 70;
 
+gfx_x = drawx; gfx_y = drawy;
+gfx_set(1,1,1);
+gfx_drawstr("Paint:");
+drawx += 55;
+label = paint_mode == 0 ? "Erase" : paint_mode == 1 ? "Line"
+  : paint_mode == 2 ? "Saw up" : paint_mode == 3 ? "Saw dn"
+  : paint_mode == 4 ? "Tri";
+draw_button(drawx, drawy, 60, label, 0);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 60, 10+2) ? (
+  gfx_x = drawx; gfx_y = drawy+10;
+  choice = gfx_showmenu("Erase (Alt + RClick)|Line|Saw up|Saw down|Triangle");
+  choice ? paint_mode = choice - 1;
+);
 
+drawx = winx + 70;
+drawy = 30;
+gfx_x = drawx; gfx_y = drawy;
+gfx_set(1,1,1);
+gfx_drawstr("Pt:");
+drawx += 30;
+label = point_mode == 0 ? "Hold" : point_mode == 1 ? "Curve"
+  : point_mode == 2 ? "SCurve" : point_mode == 3 ? "Pulse"
+  : point_mode == 4 ? "Wave" : point_mode == 5 ? "Tri"
+  : point_mode == 6 ? "Stairs" : point_mode == 7 ? "SStairs";
+draw_button(drawx, drawy, 60, label, 0);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 60, 10+2) ? (
+  gfx_x = drawx; gfx_y = drawy+10;
+  choice = gfx_showmenu("Hold|Curve|S-Curve|Pulse|Wave|Triangle|Stairs|Smooth Stairs");
+  choice > 0 ? point_mode = choice - 1;
+);
+
+drawx += 70;
+gfx_line(drawx, drawy-2, drawx, drawy+8);
+drawx += 5;
+mouse.left_click && mouse_in_rect(drawx, drawy-4, 20, 17) ? (
+  always_playing = !always_playing;
+);
+always_playing ? (
+  gfx_rect(drawx+4, drawy-1, 11, 9);
+) : (
+  gfx_triangle(drawx+5, drawy-2, drawx+5, drawy+10-2, drawx+5+10, drawy-2 +5);
+);
+mode == 0 && (always_playing && !(play_state & 1)) ? (
+  drawx += 25;
+  draw_button(drawx, drawy, 20, "R", 0);
+  mouse.left_click && mouse_in_rect(drawx, drawy-2, 20, 10+2) ? (
+    retrigger_lfo();
+  );
+);
+
+mouse.left_click ? show_about = 0;
+
+// draw right buttons
+drawx = gfx_w - 40;
+drawy = 10;
+gfx_x = drawx; gfx_y = drawy;
+set_color(color_active);
+gfx_drawstr("...", 1, gfx_x+30, drawy+12);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
+  gfx_x = drawx;
+  gfx_y = drawy+10;
+  menu = #;
+  strcpy(menu, ">Oversampling|");
+  strcat(menu, oversampling == 1 ? "!Off|": "Off|");
+  strcat(menu, oversampling == 2 ? "!2x|": "2x|");
+  strcat(menu, oversampling == 3 ? "!3x|": "3x|");
+  strcat(menu, oversampling == 4 ? "<!4x|": "<4x|");
+  strcat(menu, ">Options|");
+  strcat(menu, ">Trigger Chn");
+  loop(i=0; 18,
+    i == 0 ? strcat(menu, trigger_channel == 0 ? "|!Off" : "|Off")
+    : i == 17 ? strcat(menu, trigger_channel == 17 ? "|<!Omni" : "|<Omni")
+    : strcat(menu, trigger_channel == i
+      ? sprintf(#, "|!%i", i)
+      : sprintf(#, "|%i", i));
+    i += 1;
+  );
+  strcat(menu, link_edge_points ? "|!Link edge points" : "|Link edge points");
+  strcat(menu, show_value_slider ? "|!Show value slider" : "|Show value slider");
+  strcat(menu, show_retrigger_slider ? "|<!Show retrigger slider" : "|<Show retrigger slider");
+  strcat(menu, draw_wave ? "|!Draw wave" : "|Draw wave");
+  strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
+  strcat(menu, "||>Load");
+  strcat(menu, "|Sine|Triangle|<Random");
+  strcat(menu, "|About");
+  choice = gfx_showmenu(menu);
+  choice > 0 && choice <= 4 ? (
+    oversampling = choice;
+  );
+  
+  choice > 0+4 && choice <= 18+4 ? (
+    trigger_channel = choice - 1 - 4;
+  );
+  choice == 1 + 18+4 ? (
+    link_edge_points = !link_edge_points;
+  );
+  choice == 2 + 18+4 ? (
+    show_value_slider = !show_value_slider;
+    on_slider();
+  );
+  choice == 3 + 18+4 ? (
+    show_retrigger_slider = !show_retrigger_slider;
+    on_slider();
+  );
+  choice == 4+18+4 ? (
+    draw_wave = !draw_wave;
+  );
+  choice == 5+18+4 ? (
+    curve.invert();
+    curve.build_segments();
+  );
+  choice == 6+18+4 ? (
+    curve.reverse();
+    curve.build_segments();
+  );
+  choice == 7+18+4 ? (
+    curve.clear();
+    curve.build_segments();
+  );
+  choice == 8+18+4 ? (
+    copy_curve();
+  );
+  choice == 9+18+4 ? (
+    paste_curve();
+  );
+  choice == 10+18+4 ? (
+    curve.load_sine();
+    curve.build_segments();
+  );
+  choice == 11+18+4 ? (
+    curve.load_triangle();
+    curve.build_segments();
+  );
+  choice == 12+18+4 ? (
+    curve.load_random(gridsegs);
+    curve.build_segments();
+  );
+  choice == 13+18+4 ? (
+    show_about = 1;
+  );
+);
+
+drawy = 30;
+drawx = gfx_w - 60;
+draw_button(drawx, drawy, 50, "MIDI", trigger_mode == 2);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 50, 10+2) ? (
+  trigger_mode = trigger_mode == 0 ? 2 : 0;
+);
+
+drawx -= 60;
+draw_button(drawx, drawy, 50, "Snap", snap || mouse.control);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 50, 10+2) ? (
+  snap = !snap;
+);
+
+drawy = 10;
+drawx = gfx_w - 55;
+set_color(color_active);
+gfx_triangle(drawx, drawy-2, drawx+10, drawy+5-2, drawx, drawy+10-2);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 10, 10) ? (
+  gridsegs += 1;
+  gridsegs > 32 ? gridsegs = 2;
+);
+
+drawx -= 65;
+gfx_x = drawx; gfx_y = drawy;
+gfx_set(1,1,1);
+gfx_drawstr(sprintf(#, "Grid %i", gridsegs), 1, drawx + 60, drawy+10);
+//draw_button(drawx, 10, 60, sprintf(#, "Grid %i", gridsegs), 0);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 60, 10+2) ? (
+  gfx_x = drawx; gfx_y = drawy+10;
+  choice = gfx_showmenu("2|3|4|5|6|8|10|12|16|32");
+  choice == 1 ? gridsegs = 2;
+  choice == 2 ? gridsegs = 3;
+  choice == 3 ? gridsegs = 4;
+  choice == 4 ? gridsegs = 5;
+  choice == 5 ? gridsegs = 6;
+  choice == 6 ? gridsegs = 8;
+  choice == 7 ? gridsegs = 10;
+  choice == 8 ? gridsegs = 12;
+  choice == 9 ? gridsegs = 16;
+  choice == 10 ? gridsegs = 32;
+);
+
+drawx -= 18;
+set_color(color_active);
+gfx_triangle(drawx, drawy+5-2, drawx+10, drawy-2, drawx+10, drawy+10-2);
+mouse.left_click && mouse_in_rect(drawx, drawy-2, 10, 10) ? (
+  gridsegs -= 1;
+  gridsegs < 2 ? gridsegs = 32;
+);
+
+function get_point_at_mouse()
+local(i, point, found)
+(
+  found = -1;
+  i = 0;
+  loop(i=0; curve.points.size,
+    point = curve.points.array_get(i);
+    px = winx + winw * point[0];
+    py = winy + winh * point[1];
+    point_in_rect(mouse.x, mouse.y, px-hover_radius, py-hover_radius, hover_radius * 2, hover_radius * 2) ? (
+      found = i;
+    );
+    i += 1;
+  );
+  found;
+);
+
+function on_right_click ()
+local(point, choice, menu)
+(
+  point = get_point_at_mouse();
+  point >= 0 ? (
+    point = curve.points.array_get(point);
+    gfx_x = mouse.x; gfx_y = mouse.y;
+    menu = #;
+    strcpy(menu, point[3] == 0 ? "!Hold" : "Hold");
+    strcat(menu, point[3] == 1 ? "|!Curve":"|Curve");
+    strcat(menu, point[3] == 2 ? "|!S-Curve":"|S-Curve");
+    strcat(menu, point[3] == 3 ? "|!Pulse":"|Pulse");
+    strcat(menu, point[3] == 4 ? "|!Wave":"|Wave");
+    strcat(menu, point[3] == 5 ? "|!Triangle":"|Triangle");
+    strcat(menu, point[3] == 6 ? "|!Stairs":"|Stairs");
+    strcat(menu, point[3] == 7 ? "|!Smooth Stairs":"|Smooth Stairs");
+    choice = gfx_showmenu(menu);
+    choice > 0 ? (
+      point[3] = choice - 1;
+      curve.build_segments();
+    );
+  );
+);
+
+mouse.right_click ? on_right_click();
+
+mouse.right && mouse_in_rect(winx,winy,winw,winh) ? (
+  get_point_at_mouse() < 0 ? (
+    paint();
+  );
+);
+
+mouse.double_click ? (
+  on_double_click()
+)
+: selected_point > -1 && mouse.left && (mouse.dx != 0 || mouse.dy != 0) ? (
+  on_point_move();
+)
+: selected_midpoint > -1 && mouse.left && mouse.dy != 0 ? (
+  on_midpoint_move(mouse.dy);
+);
+
+!mouse.left ? (
+  selected_midpoint = -1;
+  selected_point = -1;
+);
+
+mouse.wheel && mouse_in_rect(winx,winy,winw,winh) ? (
+  gridsegs -= mouse.wheel;
+  gridsegs < 2 ? gridsegs = 32;
+  gridsegs > 32 ? gridsegs = 2;
+);
+
+function draw_about ()
+local(xsize, ysize, txt, pad)
+(
+  gfx_setfont(1, "Arial", 16);
+  xsize = 420;
+  ysize = 220;
+  pad = 20;
+  gfx_x = 0; gfx_y = 0;
+  gfx_blurto(gfx_w, gfx_h);
+  gfx_x = 0; gfx_y = 0;
+  gfx_blurto(gfx_w, gfx_h);
+  gfx_set(0,0,0,0.8);
+  gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
+  txt = #;
+  strcpy(txt, "DIST-R 1.0.0\nTilr 2024\n\n");
+  strcat(txt, "DIST-R is an envelope generator for distortion.\n\n");
+  strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 7 (default)\n");
+  strcat(txt, "Left click - move points or set tension\n");
+  strcat(txt, "Double click - remove or add points\n");
+  strcat(txt, "Right click - Paint mode\n");
+  strcat(txt, "Alt Right click - Erase mode\n");
+  strcat(txt, "Control - Snapping On");
+  gfx_x = gfx_w/2 - xsize/2 + pad;
+  gfx_y = gfx_h/2 - ysize/2 + pad;
+  gfx_set(1,1,1);
+  gfx_drawstr(txt,0,gfx_w/2+xsize/2-pad,gfx_h/2+ysize/2-pad);
+  gfx_setfont(0);
+);
+
+show_about ? draw_about();

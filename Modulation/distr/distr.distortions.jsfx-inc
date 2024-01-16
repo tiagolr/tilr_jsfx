@@ -96,7 +96,8 @@ function sincrush2(x, gain) (
 );
 
 function process_dist(s, gain, factor) (
-  mode == 0 ? tube(s, gain) * factor
+  gain === 1 ? s
+  : mode == 0 ? tube(s, gain) * factor
   : mode == 1 ? hardclip(s, gain) * factor
   : mode == 2 ? softclip(s, gain) * factor
   : mode == 3 ? cubic(s, gain) * factor
