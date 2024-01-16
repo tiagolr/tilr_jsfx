@@ -137,6 +137,11 @@ function ribbon3(x, gain)
   (1+1.6*x)/(1.6+x^4)-0.625;
 );
 
+function ribbon4(x, gain) (
+  x *= gain;
+  tanh(x - atan(5*x)*2 * min((gain/20-1/20), 1))
+);
+
 function log2(x) ( log(x) / log(2); );
 
 function sincrush(x, gain)
@@ -154,6 +159,7 @@ function sincrush2(x, gain) (
 
 function test(x, gain) (
   x *= gain;
+  //tanh(x + sin(10*x) * min((gain/10-1/10), 1))
   tanh(x + sin(10*x) * min((gain/10-1/10), 1))
 );
 

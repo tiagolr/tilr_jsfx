@@ -1,0 +1,152 @@
+desc:distr.distortions.jsfx-inc
+
+@init
+function tanh(x) (
+  x = exp(2*x);
+  (x - 1) / (x + 1);
+);
+dc = 0.05;
+tanh_dc = tanh(dc);
+function tube(x, gain) (
+  x *= gain;
+  tanh(x + dc) - tanh_dc;
+);
+function hardclip(x, gain) (
+  x *= gain;
+  x < -1 ? -1 : x > 1 ? 1: x;
+);
+function softclip(x, gain) (
+  x *= gain;
+  atan(x)
+);
+function cubic(x, gain) (
+  x *= gain;
+  tanh(x)^3;
+);
+function sine(x, gain) (
+  sin(x*gain);
+);
+function sine2(x, gain) (
+  x *= gain;
+  (sin(x)+atan(2*x))/2;
+);
+function sine3(x, gain) (
+  x *= gain;
+  (1.85*sin(x)+atan(2*x))/(4+sin(3*x));
+);
+function sine4(x, gain) (
+  x *= gain;
+  tanh(x)+(gain-1)/gain*x/gain*sin(x);
+);
+function sine5(x, gain) (
+  x = x * gain;
+  tanh(x)+sin(x)*exp(-abs(x/gain)*5)
+);
+function crush(x, gain)
+local(depth)
+(
+  depth = 1000 / gain;
+  floor(x * depth + 0.5) / depth / factor;
+);
+function ribbon(x, gain)
+(
+  x *= gain;
+  tanh(x) * tanh(x+10) * tanh(x+20)
+);
+function ribbon2(x, gain)
+(
+  x *= gain;
+  atan(x) * atan(x+20) * atan(x-20) / -2;
+);
+function ribbon3(x, gain)
+(
+  atan(x) * atan(x+10) * atan(x-10) * atan(x+20) * atan(x-20) / 4 + sin(x) * exp(abs(x/gain)*-5);
+);
+function flathat(x, gain)
+(
+  x *= gain;
+  tanh(min(2^x-1, 300));
+);
+function fold(x, gain) (
+  x *= gain;
+  while(x > 1 || x < -1) (
+    x > 1 ? x = 2 - x;
+    x < -1 ? x = -2 - x;
+  );
+  x;
+);
+function ribbon3(x, gain)
+(
+  x *= gain;
+  (1+1.6*x)/(1.6+x^4)-0.625;
+);
+function ribbon4(x, gain) (
+  x *= gain;
+  tanh(x - atan(5*x)*2 * min((gain/20-1/20), 1))
+);
+function sincrush(x, gain)
+local(drivefactor)
+(
+  x = x * gain;
+  (x+(gain^0.5)*sin(x))/(2-value)/gain/factor
+);
+function sincrush2(x, gain) (
+  x *= gain;
+  tanh(x + sin(10*x) * min((gain/10-1/10), 1))
+);
+
+function process_dist(s, gain, factor) (
+  mode == 0 ? tube(s, gain) * factor
+  : mode == 1 ? hardclip(s, gain) * factor
+  : mode == 2 ? softclip(s, gain) * factor
+  : mode == 3 ? cubic(s, gain) * factor
+  : mode == 4 ? ribbon(s, gain) * factor
+  : mode == 5 ? ribbon2(s, gain) * factor
+  : mode == 6 ? sine2(s, gain) * factor
+  : mode == 7 ? crush(s, gain) * factor
+  : mode == 8 ? sincrush(s, gain) * factor;
+);
+
+ENV_CA = 2/(srate*0.001);
+ENV_CR = 2/(srate*0.050);
+function envDetect(x)
+instance(s ms1 ms2 denv env k)
+(
+  s = sqr(x);
+  ms1 += ( s  > ms1 ? ENV_CA : ENV_CR) * ( s  - ms1);
+  ms2 += (ms1 > ms2 ? ENV_CA : ENV_CR) * (ms1 - ms2);
+  k <= 0 ? (
+    denv = (sqrt(ms2) - env) * (1/8);
+    k = 8;
+  );
+  k -= 1;
+  env += denv;
+);
+
+function HP_set(f)
+instance(b a)
+(
+  a = exp(-$pi*f/srate);
+  b = (1+a)*0.5;
+);
+function HP_proc(x)
+instance(b a x1 y)
+(
+  y = a * y + b * (x - x1);
+  x1 = x;
+  y;
+);
+function LP_set(f)
+instance(b1 b2 a)
+(
+  a = exp(-$pi*f/srate);
+  b1 = (1 - a) * (1/1.12);
+  b2 = 0.12 * b1;
+);
+function LP_proc(x)
+instance(b1 b2 a x1 y)
+(
+  y = a * y + b1 * x + b2 * x1;
+  x1 = x;
+  y;
+);

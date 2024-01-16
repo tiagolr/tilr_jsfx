@@ -1,0 +1,416 @@
+desc:DIST-R
+author:tilr
+version: 1.0.1
+provides:
+  distr/distr.squashman_upsamplers.jsfx-inc
+  distr/distr.curvelib.jsfx-inc
+  distr/distr.mouselib.jsfx-inc
+  distr/distr.array.jsfx-inc
+  distr/distr.distortions.jsfx-inc
+about:
+  # DIST-R
+
+  Multi-segment envelope for waveshaper distortion
+  
+  Features:
+  
+  * 9 distortion modes
+  * Multi-segment envelope editor
+  * 12 midi triggable envelope patterns
+  * Envelope smoothing
+  * Paint modes and point modes
+  * Pre and post waveform display
+
+import distr.squashman_upsamplers.jsfx-inc
+import distr.curvelib.jsfx-inc
+import distr.mouselib.jsfx-inc
+import distr.distortions.jsfx-inc
+
+slider1:pattern=1<1,12,1>Pattern
+slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
+slider3:ratehz=1<0.01,140,.01:log>Rate (Hz)
+slider4:phase=0<0,1,.01>Phase
+
+slider6:_lfomin=0<0,100,1>Min
+slider7:_lfomax=100<0,100,1>Max
+slider8:lfosmooth=0<0,100>Smooth
+
+slider10:mode=0<0, 5, 1{Tanh,Hardclip,Softclip,Cubic,Ribbon,Ribbon2,Sine,BitCrush,SinCrush}>Distortion
+slider11:drive_amp=20<0,100,.1>Drive Amp
+slider12:dynamics=0.0<0,1>Dynamics
+slider13:hp=20<20,2000,1:log>Low cut
+slider14:lp=20000<500,20000,1:log>High cut
+
+slider20:value=0.5<0,1,0.01>-Value
+slider21:oversampling=1<1,4,1>-Oversampling
+slider22:retrigger=0<0,1,1>-Retrigger
+
+options:gfx_hz=60 no_meter gmem=mseg1
+
+@serialize
+
+store_pattern(pattern_cut - 1);
+file_var(0, paint_mode);
+file_var(0, gridsegs);
+file_var(0, draw_wave);
+file_var(0, always_playing);
+file_var(0, link_edge_points);
+file_var(0, show_retrigger_slider);
+file_var(0, trigger_channel);
+file_var(0, trigger_mode);
+file_mem(0, patterns, npatterns * (1 + 4 * 1000));
+
+file_avail(0) >= 0 ? (
+  lpattern = -1; // force load current pattern
+  on_slider(); // update sliders after loading vars
+);
+
+@init
+ext_noinit = 1;
+snap = 0;
+selected_point = -1;
+selected_midpoint = -1;
+paint_mode = 1; // 0 = Erase, 1 = Line
+point_mode = 1; // 0 = hold, 1 line
+npatterns = 12;
+lpattern = -1;
+trigger_channel = 7;
+draw_wave = 1;
+show_about = 0;
+always_playing = 0;
+show_retrigger_slider = 0;
+link_edge_points = 0;
+gain = 1;
+trigger_mode = 0; // 0 Sync, 2 - MIDI
+patterns = 100000; // buffer to store patterns 12 * (1 + 4 * 1000)
+pre_samples = 200000; // buffer with pre volume samples - winw size
+post_samples = 300000; // buffer with post volume samples - winw size
+
+function store_pattern(pattern)
+local(buf)
+(
+  buf = patterns + pattern * (1 + 4 * 1000);
+  buf[0] = curve.points.size;
+  memcpy(buf + 1, curve.points.buf, 4 * 1000);
+);
+
+function load_pattern(pattern)
+local(buf)
+(
+  buf = patterns + pattern * (1 + 4 * 1000);
+  curve.points.size = buf[0];
+  memcpy(curve.points.buf, buf + 1, 4 * 1000);
+  curve.build_segments();
+);
+
+function copy_curve()
+local(i)
+(
+  gmem[0] = curve.points.size;
+  loop(i=0; 1000 * 4,
+    gmem[i+1] = curve.points.buf[i];
+    i += 1;
+  );
+);
+
+function paste_curve ()
+local(i)
+(
+  gmem[0] ? (
+    curve.points.size = gmem[0];
+    loop(i=0; 1000 * 4,
+      curve.points.buf[i] = gmem[i+1];
+      i += 1;
+    );
+  );
+  curve.build_segments();
+);
+
+curve.curve_init(0, 1000);
+curve.insert_point(0,1,0,1);
+curve.insert_point(0.5,0,0,1);
+curve.insert_point(1,1,0,1);
+curve.build_segments();
+
+loop(i=0; npatterns, // init all memory patterns with same curve
+  store_pattern(i);
+  i += 1;
+);
+
+function db2gain(db) (
+  10^(db / 20);
+);
+
+// Parameter smoothing
+function rc_set(rc)
+  instance(a) (
+    a = 1 / (rc * srate + 1);
+);
+function rc_lp(sample)
+  instance(lp, a) (
+    lp += a * (sample - lp);
+);
+function smooth()
+  instance (lp, smooth) (
+    lp = smooth;
+    smooth = this.rc_lp(this);
+);
+
+function rc_set2(rca, rcb)
+instance (a, b)
+(
+  a = 1 / (rca * srate + 1);
+  b = 1 / (rcb * srate + 1);
+);
+function rc_lp2(sample, ab)
+instance(lp, a, b)
+(
+  lp += ab
+    ? a * (sample - lp)
+    : b * (sample - lp);
+);
+function smooth2(sample, ab)
+instance(lp, smooth)
+(
+  lp = smooth;
+  smooth = this.rc_lp2(sample, ab);
+);
+
+function get_curve_y(x)
+local(val)
+(
+  val =  1 - curve.get_y_at(x);
+  lfomin + (lfomax - lfomin) * val;
+);
+
+function on_slider() (
+  L.hp.HP_set(hp);
+  R.hp.HP_set(hp);
+  L.lp.LP_set(lp);
+  R.lp.LP_set(lp);
+  value.rc_set2(lfosmooth * 0.0025, lfosmooth * 0.0025);
+  slider_show(ratehz, !sync);
+  slider_show(retrigger, show_retrigger_slider);
+  _lfomin > _lfomax ? _lfomin = _lfomax;
+  lfomin = _lfomin / 100;
+  lfomax = _lfomax / 100;
+
+  pattern = min(max(1, pattern),12)|0;
+  lpattern != pattern ? (
+    lpattern >= 0 ? store_pattern(lpattern - 1);
+    load_pattern(pattern - 1);
+  );
+  lpattern = pattern;
+
+  sync == 0 ? sync_qn = 0
+  : sync == 1 ? sync_qn = 1/4 // 1/16
+  : sync == 2 ? sync_qn = 1/2 // 1/8
+  : sync == 3 ? sync_qn = 1/1 // 1/4
+  : sync == 4 ? sync_qn = 1*2 // 1/2
+  : sync == 5 ? sync_qn = 1*4 // 1bar
+  : sync == 6 ? sync_qn = 1*8 // 2bar
+  : sync == 7 ? sync_qn = 1*16 // 4bar
+  : sync == 8 ? sync_qn = 1/6 // 1/16t
+  : sync == 9 ? sync_qn = 1/3 // 1/8t
+  : sync == 10 ? sync_qn = 2/3 // 1/4t
+  : sync == 11 ? sync_qn = 4/3 // 1/2t
+  : sync == 12 ? sync_qn = 8/3 // 1/1t
+  : sync == 13 ? sync_qn = 1/4*1.5 // 1/16.
+  : sync == 14 ? sync_qn = 1/2*1.5 // 1/8.
+  : sync == 15 ? sync_qn = 1/1*1.5 // 1/4.
+  : sync == 16 ? sync_qn = 2/1*1.5 // 1/2.
+  : sync == 17 ? sync_qn = 4/1*1.5; // 1/1.
+);
+
+function retrigger_lfo() (
+  sync ? (
+    beat_pos = -phase * sync_qn;
+  ) : (
+    beat_pos = -phase;
+  );
+);
+
+@slider
+
+on_slider();
+
+@block
+
+beats_per_spl = tempo / (60 * srate);
+trigger_mode == 0 && sync && play_state & 1 ? (
+  beat_pos = beat_position;
+);
+// reset play position for Hz sync mode
+trigger_mode == 0 && !sync && (play_state & 1) && (!lplay_state & 1) ? (
+  beat_pos = 0;
+);
+
+while (midirecv(offset, msg1, note, vel)) (
+  event = msg1 & 0xF0;
+  channel = msg1 & 0x0F;
+  event == 0x90 && vel && (channel == trigger_channel - 1 || trigger_channel == 17) ? (
+    pattern = note % 12 + 1;
+    on_slider();
+  );
+  trigger_mode == 2 && event == 0x90 && vel && 
+  channel != trigger_channel - 1 && 
+  (
+    midi_trigger = 1;
+    xpos = phase;
+  );
+  midisend(offset, msg1, note, vel);
+);
+
+trigger_mode == 0 && always_playing && !(play_state & 1) && retrigger && !lretrigger ? (
+  retrigger_lfo();
+);
+lretrigger = retrigger;
+
+@sample
+
+function process_pos(xpos) 
+(
+  nextv = get_curve_y(xpos);
+  value = value.smooth2(nextv, nextv > value);
+  
+  winpos = floor(xpos * winw);
+  lwinpos != winpos ? (
+    pre_samples[winpos] = 0;
+    post_samples[winpos] = 0;
+  );
+  lwinpos = winpos;
+  pre_samples[winpos] < abs((spl0 + spl1) / 2)
+    ? pre_samples[winpos] = (spl0 + spl1) / 2;
+);
+
+// when playback starts reset env smooth
+sync && (!lplay_state & 1) && (play_state & 1)  ? (
+  value.smooth = get_curve_y(beat_pos / sync_qn + phase);
+  memset(pre_samples,0,winw);
+  memset(post_samples,0,winw);
+);
+
+lplay_state = play_state;
+
+trigger_mode == 0 && (play_state & 1 || always_playing) ? (
+  sync ? (
+    beat_pos += beats_per_spl;
+    xpos = beat_pos / sync_qn + phase;
+  ) : (
+    beat_pos += 1 / srate * ratehz;
+    xpos = beat_pos + phase;
+  );
+
+  xpos -= floor(xpos);
+  process_pos(xpos);
+);
+
+trigger_mode == 2 && (always_playing || midi_trigger) ? (
+  always_playing && midi_trigger ? (
+    xpos = phase;
+    midi_trigger = 0;
+  );
+  xpos += sync
+    ? beats_per_spl / sync_qn
+    : 1 / srate * ratehz;
+  !always_playing && xpos >= 1 ? (
+    midi_trigger = 0;
+    xpos = 1;
+  ) : (
+    xpos -= floor(xpos);
+  );
+  process_pos(xpos);
+);
+
+gain = db2gain(value*48);
+
+f1 = drive_amp / 100;
+f2 = 1/(1-f1)-1;
+factor = f1 + 1/(gain + f2 * sqr(gain));
+
+L.envDetect(spl0);
+R.envDetect(spl1);
+
+oversampling == 1 ? (
+  sl = process_dist(spl0, gain, factor) * (1+dynamics * (L.env - 1));
+  sl = L.hp.HP_proc(sl);
+  sl = L.lp.LP_proc(sl);
+
+  sr = process_dist(spl1, gain, factor) * (1+dynamics * (R.env - 1));
+  sr = R.hp.HP_proc(sr);
+  sr = R.lp.LP_proc(sr);
+
+  spl0 = sl;
+  spl1 = sr;
+) : (
+  sl = spl0;
+  sr = spl1;
+  upsampleL.updateUpHist(oversampling, sl);
+  upsampleR.updateUpHist(oversampling, sr);
+
+  loop(f=0; oversampling,
+    f += 1;
+    sl = oversampling*upsampleL.upSample(oversampling);
+    sr = oversampling*upsampleR.upSample(oversampling);
+
+    sl = process_dist(sl, gain, factor) * (1+dynamics * (L.env - 1));
+    sl = L.hp.HP_proc(sl);
+    sl = L.lp.LP_proc(sl);
+    sr = process_dist(sr, gain, factor) * (1+dynamics * (R.env - 1));
+    sr = R.hp.HP_proc(sr);
+    sr = R.lp.LP_proc(sr);
+
+    downL.updateDownHist(oversampling, sl);
+    downR.updateDownHist(oversampling, sr);
+
+    ( f == 1 ) ? (
+      spl0 = downL.downSample(oversampling);
+      spl1 = downR.downSample(oversampling);
+    );
+  );
+);
+
+post_samples[winpos] < abs((spl0 + spl1) / 2)
+  ? post_samples[winpos] = (spl0 + spl1) / 2;
+
+@gfx 600 380
+
+!gridsegs ? gridsegs = 8;
+color_active = 0x00aaFF;
+color_bg = 0x141618;
+color_cut = 0xFFFFFF;
+color_res = 0x00aaFF;
+hover_radius = 8;
+hover = 0;
+winx = 10;
+winy = 50;
+winw = gfx_w - 20;
+winh = gfx_h - winy - 10;
+gridx = winw / gridsegs;
+gridy = winh / gridsegs;
+
+function draw_distwave(x,y,w,h)
+local(i,xx,yy)
+(
+  gfx_set(1,1,1);
+  gfx_rect(x, y, w, h, 0);
+  //gfx_set(0.5,0.5,0.5,0.5);
+  //gfx_line(x+w/2, y, x+w/2, y+h);
+  //gfx_line(x, y+h/2, x+w, y+h/2);
+  gfx_set(1,1,1);
+  xx = -1;
+  yy = process_dist(xx, gain, factor);
+  gfx_x = (xx+1)/2*w+x;
+  gfx_y = min(1,max(0,(1-(yy+1)/2)))*h+y;
+  step = 2 / w;
+  loop(i=-1; w,
+    gfx_lineto((i+1)/2*w+x, min(1,max(0,(1-(process_dist(i, gain, factor)+1)/2)))*h+y);
+    i += step;
+  );
+);
+
+drawx = 10;
+drawy = 10;
+draw_distwave(drawx,drawy,60,30);
+
+
