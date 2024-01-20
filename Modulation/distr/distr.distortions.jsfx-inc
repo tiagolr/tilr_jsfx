@@ -42,6 +42,10 @@ function sine5(x, gain) (
   x = x * gain;
   tanh(x)+sin(x)*exp(-abs(x/gain)*5)
 );
+function sine6(x, gain) (
+  x *= gain;
+  tanh(x) + sin(x)*sin(2*x)^2 *exp(-abs(x/gain)*5)
+);
 function crush(x, gain)
 local(depth)
 (
@@ -84,15 +88,22 @@ function ribbon4(x, gain) (
   x *= gain;
   tanh(x - atan(5*x)*2 * min((gain/20-1/20), 1))
 );
+
 function sincrush(x, gain)
-local(drivefactor)
+local(v)
 (
   x = x * gain;
-  (x+(gain^0.5)*sin(x))/(2-value)/gain/factor
+  v = 20*log10(gain)/48;
+  (x+(gain^0.5)*sin(x))/(2-v)/gain/factor
 );
 function sincrush2(x, gain) (
   x *= gain;
   tanh(x + sin(10*x) * min((gain/10-1/10), 1))
+);
+
+function teeth(x, gain) (
+  x *= gain;
+  tanh(x + sin(x*2)* x * min((gain/10-1/10), 1)*exp(-abs(x/200)))
 );
 
 function process_dist(s, gain, factor) (
@@ -104,8 +115,11 @@ function process_dist(s, gain, factor) (
   : mode == 4 ? ribbon(s, gain) * factor
   : mode == 5 ? ribbon2(s, gain) * factor
   : mode == 6 ? sine2(s, gain) * factor
-  : mode == 7 ? crush(s, gain) * factor
-  : mode == 8 ? sincrush(s, gain) * factor;
+  : mode == 7 ? sine6(s, gain) * factor
+  : mode == 8 ? crush(s, gain) * factor
+  : mode == 9 ? sincrush(s, gain) * factor
+  : mode == 10 ? sincrush2(s, gain) * factor
+  : mode == 11 ? teeth(s, gain) * factor;
 );
 
 ENV_CA = 2/(srate*0.001);
@@ -127,7 +141,7 @@ instance(s ms1 ms2 denv env k)
 function HP_set(f)
 instance(b a)
 (
-  a = exp(-$pi*f/srate);
+  a = exp(-$pi*f/srate*(1/oversampling));
   b = (1+a)*0.5;
 );
 function HP_proc(x)
@@ -140,7 +154,7 @@ instance(b a x1 y)
 function LP_set(f)
 instance(b1 b2 a)
 (
-  a = exp(-$pi*f/srate);
+  a = exp(-$pi*f/srate*(1/oversampling));
   b1 = (1 - a) * (1/1.12);
   b2 = 0.12 * b1;
 );

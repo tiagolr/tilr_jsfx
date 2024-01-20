@@ -552,6 +552,7 @@ is_playing  || is_paused ? (
 
 mouse.wheel && mouse_in_rect(winx,winy,winw,winh) && !is_recording ? (
   //scrollx = (mouse.x - winx) / winw / zoom + scrollx / zoom * (zoom - 1);
+  //scrollx = scrollx + (mouse.x - winx) / winw / zoom - scrollx / zoom;
   zoom == 1 ? (
     scrollx = (mouse.x - winx) / winw; // zoom does not work properly
   );

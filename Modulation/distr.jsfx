@@ -14,7 +14,7 @@ about:
   
   Features:
   
-  * 9 distortion modes
+  * 12 distortion modes
   * Multi-segment envelope editor
   * 12 midi triggable envelope patterns
   * Envelope smoothing
@@ -35,10 +35,10 @@ slider6:_lfomin=0<0,100,1>Min
 slider7:_lfomax=100<0,100,1>Max
 slider8:lfosmooth=0<0,100>Smooth
 
-slider10:mode=0<0, 5, 1{Tanh,Hardclip,Softclip,Cubic,Ribbon,Ribbon2,Sine,BitCrush,SinCrush}>Distortion
+slider10:mode=0<0, 5, 1{Tanh,Hardclip,Softclip,Cubic,Ribbon,Ribbon2,Sine,Sine2,BitCrush,SinCrush,SinCrush2,Teeth}>Distortion
 slider11:drive_amp=20<0,100,.1>Drive Amp
 slider12:dynamics=0.0<0,1>Dynamics
-slider13:hp=20<20,2000,1:log>Low cut
+slider13:hp=1<1,2000,1:log>Low cut
 slider14:lp=20000<500,20000,1:log>High cut
 
 slider20:value=0.5<0,1,0.01>-Value
@@ -49,7 +49,7 @@ options:gfx_hz=60 no_meter gmem=mseg1
 
 @serialize
 
-store_pattern(pattern_cut - 1);
+store_pattern(pattern - 1);
 file_var(0, paint_mode);
 file_var(0, gridsegs);
 file_var(0, draw_wave);
@@ -79,7 +79,7 @@ draw_wave = 1;
 show_about = 0;
 always_playing = 0;
 show_retrigger_slider = 0;
-link_edge_points = 0;
+link_edge_points = 1;
 gain = 1;
 trigger_mode = 0; // 0 Sync, 2 - MIDI
 patterns = 100000; // buffer to store patterns 12 * (1 + 4 * 1000)
@@ -267,6 +267,8 @@ lretrigger = retrigger;
 
 @sample
 
+value = -1;
+
 function process_pos(xpos) 
 (
   nextv = get_curve_y(xpos);
@@ -321,6 +323,11 @@ trigger_mode == 2 && (always_playing || midi_trigger) ? (
   process_pos(xpos);
 );
 
+// keep processing value and distortion in midi mode
+trigger_mode == 2 && !always_playing && !midi_trigger ? (
+  process_pos(xpos);
+);
+
 gain = db2gain(value*48);
 
 f1 = drive_amp / 100;
@@ -329,6 +336,8 @@ factor = f1 + 1/(gain + f2 * sqr(gain));
 
 L.envDetect(spl0);
 R.envDetect(spl1);
+
+value != -1 ? (
 
 oversampling == 1 ? (
   sl = process_dist(spl0, gain, factor) * (1+dynamics * (L.env - 1));
@@ -367,6 +376,8 @@ oversampling == 1 ? (
       spl1 = downR.downSample(oversampling);
     );
   );
+);
+
 );
 
 post_samples[winpos] < abs((spl0 + spl1) / 2)
@@ -640,12 +651,7 @@ function draw_button (x, y, w, label, toggled) (
 function draw_distwave(x,y,w,h)
 local(i,xx,yy)
 (
-  gfx_set(1,1,1);
   gfx_rect(x, y, w, h, 0);
-  //gfx_set(0.5,0.5,0.5,0.5);
-  //gfx_line(x+w/2, y, x+w/2, y+h);
-  //gfx_line(x, y+h/2, x+w, y+h/2);
-  gfx_set(1,1,1);
   xx = -1;
   yy = process_dist(xx, gain, factor);
   gfx_x = (xx+1)/2*w+x;
@@ -703,6 +709,8 @@ loop(i = 0; curve.segments.size,
 
 drawx = winx;
 drawy = 10;
+set_color(draw_wave_big ? color_active : 0xFFFFFF);
+gfx_a = 1;
 draw_distwave(drawx,drawy,60,30);
 mouse.left_click && mouse_in_rect(drawx,drawy,60,30) ? (
   draw_wave_big = !draw_wave_big;
@@ -714,6 +722,7 @@ draw_wave_big ? (
   gfx_blurto(winw+winx, winy+winh);
   gfx_set(0,0,0,0.75);
   gfx_rect(winx,winy,winw,winh);
+  gfx_set(1,1,1);
   draw_distwave(winx,winy,winw,winh);
 );
 drawx += 70;
@@ -760,7 +769,7 @@ always_playing ? (
 ) : (
   gfx_triangle(drawx+5, drawy-2, drawx+5, drawy+10-2, drawx+5+10, drawy-2 +5);
 );
-mode == 0 && (always_playing && !(play_state & 1)) ? (
+trigger_mode == 0 && (always_playing && !(play_state & 1)) ? (
   drawx += 25;
   draw_button(drawx, drawy, 20, "R", 0);
   mouse.left_click && mouse_in_rect(drawx, drawy-2, 20, 10+2) ? (
@@ -806,6 +815,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   choice = gfx_showmenu(menu);
   choice > 0 && choice <= 4 ? (
     oversampling = choice;
+    on_slider(); // re-init filters
   );
   
   choice > 0+4 && choice <= 18+4 ? (

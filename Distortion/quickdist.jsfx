@@ -6,11 +6,11 @@ provides:
 about:
   # QuickDist
 
-  Waveshaper distortion with 9 modes
+  Waveshaper distortion with 12 modes
 
 import qdist.squashman_upsamplers.jsfx-inc
 
-slider1:mode=0<0, 5, 1{Tanh,Hardclip,Softclip,Cubic,Ribbon,Ribbon2,Sine,BitCrush,SinCrush}>Mode
+slider1:mode=0<0, 5, 1{Tanh,Hardclip,Softclip,Cubic,Ribbon,Ribbon2,Sine,Sine2,BitCrush,SinCrush,SinCrush2,Teeth}>Mode
 slider2:drive=0<0,48,0.1>Drive Db
 slider3:drive_amp=20<0,100,.1>Drive Amp
 slider4:dynamics=0.0<0,1>Dynamics
@@ -92,6 +92,11 @@ function sine5(x, gain) (
   tanh(x)+sin(x)*exp(-abs(x/gain)*5)
 );
 
+function sine6(x, gain) (
+  x *= gain;
+  tanh(x) + sin(x)*sin(2*x)^2 *exp(-abs(x/gain)*5)
+);
+
 function crush(x, gain)
 local(depth)
 (
@@ -157,10 +162,24 @@ function sincrush2(x, gain) (
   tanh(x + sin(10*x) * min((gain/10-1/10), 1))
 );
 
+function sincrush3(x, gain) (
+  x *= gain;
+  tanh(x + sin(10*x)^7*2 * min((gain/10-1/10), 1))
+);
+
+function sincrush4(x, gain) (
+  x *= gain;
+  tanh(x + abs(2*x)*sin(5/x)* min((gain/10-1/10), 1));
+);
+
+function teeth(x, gain) (
+  x *= gain;
+  tanh(x + sin(x*2)* x * min((gain/10-1/10), 1)*exp(-abs(x/200)))
+);
+
 function test(x, gain) (
   x *= gain;
-  //tanh(x + sin(10*x) * min((gain/10-1/10), 1))
-  tanh(x + sin(10*x) * min((gain/10-1/10), 1))
+  x/gain;
 );
 
 gain.rc_set(0.0033);
@@ -174,8 +193,11 @@ function process(s, gain, factor) (
   : mode == 4 ? ribbon(s, gain) * factor
   : mode == 5 ? ribbon2(s, gain) * factor
   : mode == 6 ? sine2(s, gain) * factor
-  : mode == 7 ? crush(s, gain) * factor
-  : mode == 8 ? sincrush(s, gain) * factor;
+  : mode == 7 ? sine6(s, gain) * factor
+  : mode == 8 ? crush(s, gain) * factor
+  : mode == 9 ? sincrush(s, gain) * factor
+  : mode == 10 ? sincrush2(s, gain) * factor
+  : mode == 11 ? teeth(s, gain) * factor
 );
 
 ENV_CA = 2/(srate*0.001);
