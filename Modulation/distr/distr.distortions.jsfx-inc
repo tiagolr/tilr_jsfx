@@ -19,6 +19,10 @@ function softclip(x, gain) (
   x *= gain;
   atan(x)
 );
+function fuzz(x, gain) (
+  x *= gain;
+  x / (1+abs(x)^10)^(1/10)
+);
 function cubic(x, gain) (
   x *= gain;
   tanh(x)^3;
@@ -141,7 +145,7 @@ instance(s ms1 ms2 denv env k)
 function HP_set(f)
 instance(b a)
 (
-  a = exp(-$pi*f/srate*(1/oversampling));
+  a = exp(-$pi*f/srate/oversampling);
   b = (1+a)*0.5;
 );
 function HP_proc(x)
@@ -154,7 +158,7 @@ instance(b a x1 y)
 function LP_set(f)
 instance(b1 b2 a)
 (
-  a = exp(-$pi*f/srate*(1/oversampling));
+  a = exp(-$pi*f/srate/oversampling);
   b1 = (1 - a) * (1/1.12);
   b2 = 0.12 * b1;
 );

@@ -1,12 +1,12 @@
 desc: ADSR-1
 author: tilr
-version: 1.2.0
+version: 1.2.1
 provides:
   adsr1/adsr.array.jsfx-inc
   adsr1/adsr.curvelib.jsfx-inc
   adsr1/adsr.mouselib.jsfx-inc
 changelog:
-  Remove slider automate
+  Snap toggle when pressing control
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/adsr1.png
 about:
   # ADSR-1
@@ -309,6 +309,10 @@ gridsegs = 16;
 gridx = winw / gridsegs;
 gridy = winh / gridsegs;
 
+function is_snapping() (
+  (snap && !mouse.control) || (!snap && mouse.control);
+);
+
 function set_color(color) (
   gfx_r = (color & 0xFF0000) / 0xFF0000;
   gfx_g = (color & 0x00FF00) / 0x00FF00;
@@ -417,7 +421,7 @@ function on_point_move()
 local(point, prev, next, xx, yy)
 (
   point = curve.points.array_get(selected_point);
-  snap || mouse.control ? (
+  is_snapping() ? (
     xx = round((mouse.x - winx) / gridx) * gridx + winx;
     yy = round((mouse.y - winy) / gridy) * gridy + winy;
   ) : (
@@ -486,7 +490,7 @@ local (found, seg, px, py, i, point, x, y, coolinear)
   !found ? (
     px = mouse.x;
     py = mouse.y;
-    snap || mouse.control ? (
+    is_snapping() ? (
       px = round((mouse.x - winx) / gridx) * gridx + winx;
       py = round((mouse.y - winy) / gridy) * gridy + winy;
     );
@@ -586,7 +590,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
 );
 
 drawx -= 60;
-draw_button(drawx, 10, 50, "Snap", snap || mouse.control);
+draw_button(drawx, 10, 50, "Snap", is_snapping());
 mouse.left_click && mouse_in_rect(drawx, 10-2, 50, 10+2) ? (
   snap = !snap;
 );

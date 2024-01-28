@@ -1,6 +1,6 @@
 desc: FLTR-1
 author: tilr
-version: 1.1.4
+version: 1.1.5
 provides:
   fltr1/fltr.Saike_Yutani_Filters.jsfx-inc
   fltr1/fltr.Saike_Yutani_oversampling.jsfx-inc
@@ -9,8 +9,7 @@ provides:
   fltr1/fltr.curvelib.jsfx-inc
   fltr1/fltr.mouselib.jsfx-inc
 changelog:
-  Filter drive hidden by default
-  Add MIDI trigger mode
+  Snap toggle when pressing control
 about:
   # FLTR-1
 
@@ -569,6 +568,10 @@ winh = gfx_h - winy - 10;
 gridx = winw / gridsegs;
 gridy = winh / gridsegs;
 
+function is_snapping() (
+  (snap && !mouse.control) || (!snap && mouse.control);
+);
+
 function set_color(color) (
   gfx_r = (color & 0xFF0000) / 0xFF0000;
   gfx_g = (color & 0x00FF00) / 0x00FF00;
@@ -678,7 +681,7 @@ function on_point_move(curve*)
 local(point, prev, next, xx, yy)
 (
   point = curve.points.array_get(selected_point);
-  snap || mouse.control ? (
+  is_snapping() ? (
     xx = round((mouse.x - winx) / gridx) * gridx + winx;
     yy = round((mouse.y - winy) / gridy) * gridy + winy;
   ) : (
@@ -755,7 +758,7 @@ local (found, seg, px, py, i, point, x, y, coolinear)
   !found ? (
     px = mouse.x;
     py = mouse.y;
-    snap || mouse.control ? (
+    is_snapping() ? (
       px = round((mouse.x - winx) / gridx) * gridx + winx;
       py = round((mouse.y - winy) / gridy) * gridy + winy;
     );
@@ -777,7 +780,7 @@ local (seg, mousex, mousey)
 (
   mousex = (mouse.x - winx) / winw;
   mousey = (mouse.y - winy) / winh;
-  snap || mouse.control ? (
+  is_snapping() ? (
     mousey = round(mousey * gridsegs) / gridsegs;
   );
   seg = floor(mousex * gridsegs);
@@ -1174,7 +1177,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
 );
 
 drawx -= 60;
-draw_button(drawx, drawy, 50, "Snap", snap || mouse.control);
+draw_button(drawx, drawy, 50, "Snap", is_snapping());
 mouse.left_click && mouse_in_rect(drawx, drawy-2, 50, 10+2) ? (
   snap = !snap;
 );
@@ -1340,7 +1343,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "FLTR-1 1.1.4\nTilr 2024\n\n");
+  strcpy(txt, "FLTR-1 1.1.5\nTilr 2024\n\n");
   strcat(txt, "FLTR-1 is envelope based filter modulator.\n\n");
   strcat(txt, "Toggle patterns 1-12 sending midi notes on chn 8 and 9 (default)\n");
   strcat(txt, "Left click - move points or set tension\n");

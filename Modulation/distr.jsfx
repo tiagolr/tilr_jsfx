@@ -1,6 +1,6 @@
 desc:DIST-R
 author:tilr
-version: 1.0.0
+
 provides:
   distr/distr.squashman_upsamplers.jsfx-inc
   distr/distr.curvelib.jsfx-inc
