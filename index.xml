@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="ae96311a256e4b08e2e638975157419ba84813c2" name="Tilr">
+<index version="1" commit="353702e3c540086836d671b356774faf20cec506" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -318,6 +318,14 @@ Yutani Bass
         <source file="distr/distr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/de59522dd6bcf6942f34ac9b1d67010277f790e9/Modulation/distr/distr.mouselib.jsfx-inc</source>
         <source file="distr/distr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/de59522dd6bcf6942f34ac9b1d67010277f790e9/Modulation/distr/distr.array.jsfx-inc</source>
         <source file="distr/distr.distortions.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/de59522dd6bcf6942f34ac9b1d67010277f790e9/Modulation/distr/distr.distortions.jsfx-inc</source>
+      </version>
+      <version name="1.0.2" author="tilr" time="2024-02-06T11:32:49Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/353702e3c540086836d671b356774faf20cec506/Modulation/distr.jsfx</source>
+        <source file="distr/distr.squashman_upsamplers.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/353702e3c540086836d671b356774faf20cec506/Modulation/distr/distr.squashman_upsamplers.jsfx-inc</source>
+        <source file="distr/distr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/353702e3c540086836d671b356774faf20cec506/Modulation/distr/distr.curvelib.jsfx-inc</source>
+        <source file="distr/distr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/353702e3c540086836d671b356774faf20cec506/Modulation/distr/distr.mouselib.jsfx-inc</source>
+        <source file="distr/distr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/353702e3c540086836d671b356774faf20cec506/Modulation/distr/distr.array.jsfx-inc</source>
+        <source file="distr/distr.distortions.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/353702e3c540086836d671b356774faf20cec506/Modulation/distr/distr.distortions.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="fltr1.jsfx" type="effect" desc="FLTR-1">
