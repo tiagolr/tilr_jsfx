@@ -84,6 +84,22 @@ Envelope based filter modulator with 29 filter types.
 * Envelope smoothing
 * Pre and post waveform display
 
+## DIST-R
+
+![](doc/distr.png)
+
+Envelope based waveshaper distortion
+
+#### Features:
+
+* 12 distortion modes
+* Multi-segment envelope editor
+* 12 midi triggable envelope patterns
+* Envelope smoothing
+* Oversampling
+* Paint modes and point modes
+* Pre and post waveform display
+
 ## TinyRec
 
 Audio recording utility similar to Image-Line Edison, stores up to 4 minutes at 44100 sample rate.
