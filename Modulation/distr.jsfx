@@ -1,6 +1,6 @@
 desc:DIST-R
 author:tilr
-version: 1.0.0
+version: 1.0.1
 provides:
   distr/distr.squashman_upsamplers.jsfx-inc
   distr/distr.curvelib.jsfx-inc
@@ -11,9 +11,9 @@ about:
   # DIST-R
 
   Multi-segment envelope for waveshaper distortion
-  
+
   Features:
-  
+
   * 12 distortion modes
   * Multi-segment envelope editor
   * 12 midi triggable envelope patterns
@@ -251,8 +251,8 @@ while (midirecv(offset, msg1, note, vel)) (
     pattern = note % 12 + 1;
     on_slider();
   );
-  trigger_mode == 2 && event == 0x90 && vel && 
-  channel != trigger_channel - 1 && 
+  trigger_mode == 2 && event == 0x90 && vel &&
+  channel != trigger_channel - 1 &&
   (
     midi_trigger = 1;
     xpos = phase;
@@ -269,11 +269,11 @@ lretrigger = retrigger;
 
 value = -1;
 
-function process_pos(xpos) 
+function process_pos(xpos)
 (
   nextv = get_curve_y(xpos);
   value = value.smooth2(nextv, nextv > value);
-  
+
   winpos = floor(xpos * winw);
   lwinpos != winpos ? (
     pre_samples[winpos] = 0;
@@ -821,7 +821,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
     oversampling = choice;
     on_slider(); // re-init filters
   );
-  
+
   choice > 0+4 && choice <= 18+4 ? (
     trigger_channel = choice - 1 - 4;
   );
@@ -1008,7 +1008,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "DIST-R 1.0.0\nTilr 2024\n\n");
+  strcpy(txt, "DIST-R 1.0.1\nTilr 2024\n\n");
   strcat(txt, "DIST-R is an envelope generator for distortion.\n\n");
   strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 7 (default)\n");
   strcat(txt, "Left click - move points or set tension\n");
