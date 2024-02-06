@@ -1,6 +1,6 @@
 desc:DIST-R
 author:tilr
-
+version: 1.0.0
 provides:
   distr/distr.squashman_upsamplers.jsfx-inc
   distr/distr.curvelib.jsfx-inc
@@ -397,6 +397,10 @@ winh = gfx_h - winy - 10;
 gridx = winw / gridsegs;
 gridy = winh / gridsegs;
 
+function is_snapping() (
+  (snap && !mouse.control) || (!snap && mouse.control);
+);
+
 function set_color(color) (
   gfx_r = (color & 0xFF0000) / 0xFF0000;
   gfx_g = (color & 0x00FF00) / 0x00FF00;
@@ -480,7 +484,7 @@ function on_point_move()
 local(point, prev, next, xx, yy)
 (
   point = curve.points.array_get(selected_point);
-  snap || mouse.control ? (
+  is_snapping() ? (
     xx = round((mouse.x - winx) / gridx) * gridx + winx;
     yy = round((mouse.y - winy) / gridy) * gridy + winy;
   ) : (
@@ -558,7 +562,7 @@ local (found, seg, px, py, i, point, x, y, coolinear)
   !found ? (
     px = mouse.x;
     py = mouse.y;
-    snap || mouse.control ? (
+    is_snapping() ? (
       px = round((mouse.x - winx) / gridx) * gridx + winx;
       py = round((mouse.y - winy) / gridy) * gridy + winy;
     );
@@ -580,7 +584,7 @@ local (seg, mousex, mousey)
 (
   mousex = (mouse.x - winx) / winw;
   mousey = (mouse.y - winy) / winh;
-  snap || mouse.control ? (
+  is_snapping() ? (
     mousey = round(mousey * gridsegs) / gridsegs;
   );
   seg = floor(mousex * gridsegs);
@@ -878,7 +882,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 50, 10+2) ? (
 );
 
 drawx -= 60;
-draw_button(drawx, drawy, 50, "Snap", snap || mouse.control);
+draw_button(drawx, drawy, 50, "Snap", is_snapping());
 mouse.left_click && mouse_in_rect(drawx, drawy-2, 50, 10+2) ? (
   snap = !snap;
 );
