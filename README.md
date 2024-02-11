@@ -172,6 +172,19 @@ A nicer interface for QuickDualDelay.
 
 ![](doc/qdelay2.png)]
 
+## QuickDist
+
+Waveshapping distortion with 12 modes.
+
+![](doc/quickdist.png)
+
+#### Feature
+
+* 12 waveshapping distortion modes
+* Dynamics control
+* Low and highpass filters
+* Oversampling
+
 ## QuickFilter
 
 Simple filter with 9 modes and smooth interpolation from ReEQ.
