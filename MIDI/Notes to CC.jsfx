@@ -1,6 +1,6 @@
 desc:Notes to CC
 author: tilr
-version: 1.1
+version: 1.1.1
 about: Sends CC events on midi notes, note pitch is mapped to CC value, useful for keytrack modulation.
 noindex: true
 
@@ -16,6 +16,7 @@ slider6:60<0,127,1{0 Bank Sel M,1 Mod Wheel M,2 Breath M,3,4 Foot P M,5 Porta M,
 slider7:sendNotes=1<0,1,1{No, Yes}>Send notes
 slider8:offNotes=0<0,1,1{Disabled,Send}>Off notes
 slider9:offNotesValue=0<0,127,1>Off notes value
+slider10:outRangeNotes=1<0,1,1{No, Yes}>Process out of range Notes
 slider20:0<0,127,1>Value (readonly)
 
 @init
@@ -36,7 +37,7 @@ while
     status = msg1 & $xF0;
     channel = msg1 & $x0F;
 
-    status == statNoteOn ? (
+    status == statNoteOn && (outRangeNotes || (note <= noteMax && note >= noteMin)) ? (
       note > noteMax ? note = noteMax;
       note < noteMin ? note = noteMin;
       // linear mapping
