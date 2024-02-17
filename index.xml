@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="353702e3c540086836d671b356774faf20cec506" name="Tilr">
+<index version="1" commit="336455e0dc55025008ef03dfe2dda236aaa5976f" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -203,6 +203,20 @@ Yutani Bass
       </metadata>
       <version name="1.0" author="tilr" time="2024-01-05T23:53:31Z">
         <source>https://github.com/tiagolr/tilr_jsfx/raw/0318daacf747847e952d7d7bfab01ff9d1b84570/MIDI/Notes%20to%2012%20channel.jsfx</source>
+      </version>
+    </reapack>
+    <reapack name="Notes to CC.jsfx" type="effect" desc="Notes to CC">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Sends CC events on midi notes, note pitch is mapped to CC value, useful for keytrack modulation.\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.1.1" author="tilr" time="2024-02-17T11:12:54Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/336455e0dc55025008ef03dfe2dda236aaa5976f/MIDI/Notes%20to%20CC.jsfx</source>
       </version>
     </reapack>
     <reapack name="Vel to CC.jsfx" type="effect" desc="Vel to CC">
