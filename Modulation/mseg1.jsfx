@@ -1,6 +1,6 @@
 desc: MSEG-1
 author: tilr
-version: 1.1.4
+version: 1.1.5
 provides:
   mseg1/mseg.array.jsfx-inc
   mseg1/mseg.curvelib.jsfx-inc
@@ -22,7 +22,7 @@ about:
 
 
 slider1:pattern=1<1,12,1>Pattern
-slider2:mode=0<0,2,1{Sync,Free,MIDI}>Trigger
+slider2:mode=0<0,2,1{Sync,Free,MIDI,Manual}>Trigger
 slider3:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider4:ratehz=1<0.01,140,.01:log>Rate (Hz)
 slider5:phase=0<0,1,.01>Phase
@@ -415,6 +415,18 @@ mode == 2 ? (
   );
 );
 
+// manual trigger mode
+mode == 3 ? (
+  xpos = phase;
+  nextv = get_curve_y(xpos);
+  value = value.smooth2(nextv, nextv > value);
+  cc ? send_value_midi_cc();
+  output_audio ? ( // output audio for CV racks/plugins
+    spl0 += value;
+    spl1 += value;
+  );
+);
+
 samples_offset += 1;
 
 @gfx 600 350
@@ -692,7 +704,8 @@ function draw_seek ()
 always_playing ||
 (play_state & 1 && mode == 0) ||
 mode == 1 ||
-(mode == 2 && midi_trigger) ?
+(mode == 2 && midi_trigger) || 
+mode == 3 ?
 (
   draw_seek();
 );
@@ -1008,7 +1021,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "MSEG-1 1.1.4\nTilr 2024\n\n");
+  strcpy(txt, "MSEG-1 1.1.5\nTilr 2024\n\n");
   strcat(txt, "MSEG-1 is a multi-segment envelope/LFO generator.\n");
   strcat(txt, "Link params to value slider for modulation.\n\n");
   strcat(txt, "Left click - move points or set tension\n");
