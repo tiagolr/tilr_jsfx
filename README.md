@@ -1,6 +1,6 @@
 # Install
 
-1. Install [SWS extensions](https://www.sws-extension.org/)
+1. Install [ReaPack](https://reapack.com/)
 2. Go to reaper `Extensions > ReaPack > Import repositories`
 3. Paste the following address
 
