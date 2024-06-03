@@ -1,6 +1,6 @@
 desc: Vel to CC
 author: tilr
-version: 1.0.1
+version: 1.0.2
 about: Maps midi notes velocity to CC automation
 
 in_pin:none
@@ -10,7 +10,7 @@ slider1:0<0, 127, 1>Note min
 slider2:127<0, 127, 1>Note max
 slider3:0<0, 127, 1>Param min
 slider4:127<0, 127, 1>Param max
-slider5:0<0, 1, 1{No, Yes}>Ignore zero vel
+slider5:0<0, 1, 1{No,Yes}>Ignore zero vel
 slider7:0<0, 127, 1>Value
 
 ////////////////////////////////////////////////////////////////////////////////
