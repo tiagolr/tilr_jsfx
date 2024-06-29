@@ -1,10 +1,8 @@
 desc: JS3Osc
 author: tilr
-version: 1.1
+version: 1.1.1
 changelog:
-  Normalize slider values
-  Remove clicking from vol and phase_offset knobs
-  Replace zdf with rbj filters
+  Account for midi offset
 provides:
   js3osc/3o.adsr.jsfx-inc
   js3osc/3o.array.jsfx-inc
@@ -87,7 +85,7 @@ options:gfx_hz=60 no_meter
 
 gfx_sel_envelope = 0;
 
-poly.array_init(0, 128, 9); // [note, velocity, freq, phase-left, phase-right, ph2l, ph2r, ph3l, ph3r]
+poly.array_init(0, 128, 9+2); // [note, velocity, freq, phase-left, phase-right, ph2l, ph2r, ph3l, ph3r, note_on_offset, note_off_offset]
 envelope = 2000; // 128 * 7 buffer for keys adsr
 remove_ptrs.array_init(4000, 128, 1);
 pitch_env = 5000; // 128 * 7 buffer for pitch adsr
@@ -249,6 +247,8 @@ while (midirecv(offset, msg1, note, vel)) (
     ptr[6] = note_repeat ? last_phase_2r : rand_phase * (rand() - 0.5); // osc 2
     ptr[7] = note_repeat ? last_phase_3l : rand_phase * (rand() - 0.5); // osc 3
     ptr[8] = note_repeat ? last_phase_3r : rand_phase * (rand() - 0.5); // osc 3
+    ptr[9] = offset;
+    ptr[10] = 0; // note_off offset
 
     env = envelope + note * 7;
     adsr_seta(env_att * 0.001, env);
@@ -276,9 +276,7 @@ while (midirecv(offset, msg1, note, vel)) (
   event == 0x80 || (event == 0x90 && !vel) ? (
     ptr = poly.array_find(note);
     ptr >= 0 ? (
-      adsr_r(envelope + note * 7);
-      adsr_r(pitch_env + note * 7);
-      adsr_r(filter_env + note * 7);
+      ptr[10] = offset + 1;
     );
   );
 
@@ -302,81 +300,95 @@ osc3_phase_offset.smooth();
 remove_ptrs.array_clear();
 ptr = poly.array_first();
 while(ptr >= 0) ( // for each note/voice
-  out_l = 0;
-  out_r = 0;
-  envbuf = envelope + ptr[0] * 7;
-  env_state = adsr_process(envbuf);
-  pitch_amt ? (
-    pitchbuf = pitch_env + ptr[0] * 7;
-    adsr_process(pitchbuf);
-    osc_pitch_det = pow(2, pitchbuf[0] * (pitch_amt | 0) / 12);
-  ) : (
-    osc_pitch_det = 1;
-  );
 
-  // OSC1
-  osc1_vol > -60 ? (
-    osc_det = osc1_coarse_det * osc1_fine_det * osc_pitch_det;
-    ptr[3] = wrap(ptr[3] + ptr[2] * osc1_st_det * osc_det); // phase left
-    ptr[4] = wrap(ptr[4] + ptr[2] / osc1_st_det * osc_det); // phase right
-    wave_l = make_wave(osc1_wave, wrap(ptr[3] + osc1_phase_offset.smooth * 0.25));
-    wave_r = make_wave(osc1_wave, wrap(ptr[4] - osc1_phase_offset.smooth * 0.25));
-    out_l += wave_l * (1 - osc1_pan) * envbuf[] * osc1_gain.smooth * (osc1_inv ? -1 : 1);
-    out_r += wave_r * (1 + osc1_pan) * envbuf[] * osc1_gain.smooth * (osc1_inv ? -1 : 1);
-  );
-
-  // OSC2
-  osc2_vol > -60 ? (
-    osc_det = osc2_coarse_det * osc2_fine_det * osc_pitch_det;
-    ptr[5] = wrap(ptr[5] + ptr[2] * osc2_st_det * osc_det); // phase left
-    ptr[6] = wrap(ptr[6] + ptr[2] / osc2_st_det * osc_det); // phase right
-    wave_l = make_wave(osc2_wave, wrap(ptr[5] + osc2_phase_offset.smooth * 0.25));
-    wave_r = make_wave(osc2_wave, wrap(ptr[6] - osc2_phase_offset.smooth * 0.25));
-    out_l += wave_l * (1 - osc2_pan) * envbuf[] * osc2_gain.smooth * (osc2_inv ? -1 : 1);
-    out_r += wave_r * (1 + osc2_pan) * envbuf[] * osc2_gain.smooth * (osc2_inv ? -1 : 1);
-  );
-
-  // OSC3
-  osc3_vol > -60 ? (
-    osc_det = osc3_coarse_det * osc3_fine_det * osc_pitch_det;
-    ptr[7] = wrap(ptr[7] + ptr[2] * osc3_st_det * osc_det); // phase left
-    ptr[8] = wrap(ptr[8] + ptr[2] / osc3_st_det * osc_det); // phase right
-    wave_l = make_wave(osc3_wave, wrap(ptr[7] + osc3_phase_offset.smooth * 0.25));
-    wave_r = make_wave(osc3_wave, wrap(ptr[8] - osc3_phase_offset.smooth * 0.25));
-    out_l += wave_l * (1 - osc3_pan) * envbuf[] * osc3_gain.smooth * (osc3_inv ? -1 : 1);
-    out_r += wave_r * (1 + osc3_pan) * envbuf[] * osc3_gain.smooth * (osc3_inv ? -1 : 1);
-  );
-
-  // Apply filter
-  filter_shape != 0 ? (
-    filterbuf = filter_env + ptr[0] * 7; // envelope buffer
-    adsr_process(filterbuf);
-    multiplier = pow(20000/filter_freq, filterbuf[0] * filter_adsr_amt / 100);
-
-    filterbuf_l = filter_arr_l + ptr[0] * 11; // filter buffer left
-    filterbuf_r = filter_arr_r + ptr[0] * 11; // filter buffer left
-
-    filter_shape == 1 ? (
-      rbj_lp(filterbuf_l, filter_freq * multiplier, filter_q);
-    ) : filter_shape == 2 ? (
-      rbj_bp(filterbuf_l, filter_freq * multiplier, filter_q);
-    ) : (
-      rbj_hp(filterbuf_l, filter_freq * multiplier, filter_q);
+  // Note_off offset check
+  ptr[10] > 0 ? (
+    ptr[10] == 1 ? ( // note_off offset has reached zero
+      adsr_r(envelope + ptr[0] * 7);
+      adsr_r(pitch_env + ptr[0] * 7);
+      adsr_r(filter_env + ptr[0] * 7);
     );
-    copy_filter_coefs(filterbuf_l, filterbuf_r);
-    out_l = rbj_df1(filterbuf_l, out_l);
-    out_r = rbj_df1(filterbuf_r, out_r);
+    ptr[10] -= 1;
   );
 
-  spl0 += out_l;
-  spl1 += out_r;
+  ptr[9] == 0 ? (
+    out_l = 0;
+    out_r = 0;
+    envbuf = envelope + ptr[0] * 7;
+    env_state = adsr_process(envbuf);
+    pitch_amt ? (
+      pitchbuf = pitch_env + ptr[0] * 7;
+      adsr_process(pitchbuf);
+      osc_pitch_det = pow(2, pitchbuf[0] * (pitch_amt | 0) / 12);
+    ) : (
+      osc_pitch_det = 1;
+    );
 
-  // mark note for deletion
-  env_state == 0 ? (
-    p = remove_ptrs.array_add();
-    p[0] = ptr[0];
+    // OSC1
+    osc1_vol > -60 ? (
+      osc_det = osc1_coarse_det * osc1_fine_det * osc_pitch_det;
+      ptr[3] = wrap(ptr[3] + ptr[2] * osc1_st_det * osc_det); // phase left
+      ptr[4] = wrap(ptr[4] + ptr[2] / osc1_st_det * osc_det); // phase right
+      wave_l = make_wave(osc1_wave, wrap(ptr[3] + osc1_phase_offset.smooth * 0.25));
+      wave_r = make_wave(osc1_wave, wrap(ptr[4] - osc1_phase_offset.smooth * 0.25));
+      out_l += wave_l * (1 - osc1_pan) * envbuf[] * osc1_gain.smooth * (osc1_inv ? -1 : 1);
+      out_r += wave_r * (1 + osc1_pan) * envbuf[] * osc1_gain.smooth * (osc1_inv ? -1 : 1);
+    );
+
+    // OSC2
+    osc2_vol > -60 ? (
+      osc_det = osc2_coarse_det * osc2_fine_det * osc_pitch_det;
+      ptr[5] = wrap(ptr[5] + ptr[2] * osc2_st_det * osc_det); // phase left
+      ptr[6] = wrap(ptr[6] + ptr[2] / osc2_st_det * osc_det); // phase right
+      wave_l = make_wave(osc2_wave, wrap(ptr[5] + osc2_phase_offset.smooth * 0.25));
+      wave_r = make_wave(osc2_wave, wrap(ptr[6] - osc2_phase_offset.smooth * 0.25));
+      out_l += wave_l * (1 - osc2_pan) * envbuf[] * osc2_gain.smooth * (osc2_inv ? -1 : 1);
+      out_r += wave_r * (1 + osc2_pan) * envbuf[] * osc2_gain.smooth * (osc2_inv ? -1 : 1);
+    );
+
+    // OSC3
+    osc3_vol > -60 ? (
+      osc_det = osc3_coarse_det * osc3_fine_det * osc_pitch_det;
+      ptr[7] = wrap(ptr[7] + ptr[2] * osc3_st_det * osc_det); // phase left
+      ptr[8] = wrap(ptr[8] + ptr[2] / osc3_st_det * osc_det); // phase right
+      wave_l = make_wave(osc3_wave, wrap(ptr[7] + osc3_phase_offset.smooth * 0.25));
+      wave_r = make_wave(osc3_wave, wrap(ptr[8] - osc3_phase_offset.smooth * 0.25));
+      out_l += wave_l * (1 - osc3_pan) * envbuf[] * osc3_gain.smooth * (osc3_inv ? -1 : 1);
+      out_r += wave_r * (1 + osc3_pan) * envbuf[] * osc3_gain.smooth * (osc3_inv ? -1 : 1);
+    );
+
+    // Apply filter
+    filter_shape != 0 ? (
+      filterbuf = filter_env + ptr[0] * 7; // envelope buffer
+      adsr_process(filterbuf);
+      multiplier = pow(20000/filter_freq, filterbuf[0] * filter_adsr_amt / 100);
+
+      filterbuf_l = filter_arr_l + ptr[0] * 11; // filter buffer left
+      filterbuf_r = filter_arr_r + ptr[0] * 11; // filter buffer left
+
+      filter_shape == 1 ? (
+        rbj_lp(filterbuf_l, filter_freq * multiplier, filter_q);
+      ) : filter_shape == 2 ? (
+        rbj_bp(filterbuf_l, filter_freq * multiplier, filter_q);
+      ) : (
+        rbj_hp(filterbuf_l, filter_freq * multiplier, filter_q);
+      );
+      copy_filter_coefs(filterbuf_l, filterbuf_r);
+      out_l = rbj_df1(filterbuf_l, out_l);
+      out_r = rbj_df1(filterbuf_r, out_r);
+    );
+
+    spl0 += out_l;
+    spl1 += out_r;
+
+    // mark note for deletion
+    env_state == 0 ? (
+      p = remove_ptrs.array_add();
+      p[0] = ptr[0];
+    );
   );
 
+  ptr[9] > 0 ? ptr[9] -= 1; // midi offset
   ptr = poly.array_next(ptr);
 );
 
