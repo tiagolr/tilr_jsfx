@@ -1,6 +1,7 @@
 desc: JSDrumsynth
 author: tilr
-version: 1.0
+version: 1.0.1
+changelog: Account for midi offset
 provides:
   jsdrumsynth.jsfx.RPL
   jsdrumsynth/ds.envlib.jsfx-inc
@@ -414,13 +415,13 @@ while (midirecv(offset, msg1, note, vel)) (
   channel = msg1 & 0x0F;
 
   event == 0x90 && vel > 0 ? (
-    note % 12 == 0 ? pad1.pad_on_note(vel);
-    note % 12 == 2 ? pad2.pad_on_note(vel);
-    note % 12 == 4 ? pad3.pad_on_note(vel);
-    note % 12 == 5 ? pad4.pad_on_note(vel);
-    note % 12 == 7 ? pad5.pad_on_note(vel);
-    note % 12 == 9 ? pad6.pad_on_note(vel);
-    note % 12 == 11 ? pad7.pad_on_note(vel);
+    note % 12 == 0 ? pad1.pad_on_note(offset, vel);
+    note % 12 == 2 ? pad2.pad_on_note(offset, vel);
+    note % 12 == 4 ? pad3.pad_on_note(offset, vel);
+    note % 12 == 5 ? pad4.pad_on_note(offset, vel);
+    note % 12 == 7 ? pad5.pad_on_note(offset, vel);
+    note % 12 == 9 ? pad6.pad_on_note(offset, vel);
+    note % 12 == 11 ? pad7.pad_on_note(offset, vel);
   );
   midisend(offset, msg1, note, vel);
 );
@@ -492,7 +493,7 @@ draw_pad_button(20, 20, btnw, 20, "Pad 1C", pad == 0, pad1.note_on);
 mouse_in_rect(20, 20, btnw, 20) ? (
   mouse.left_click ? (
     pad = 0;
-    pad1.pad_on_note(127);
+    pad1.pad_on_note(0, 127);
   );
   mouse.right_click ? (
     gfx_x = mouse.x; gfx_y = mouse.y;
@@ -505,7 +506,7 @@ draw_pad_button(20 + btnw * 1, 20, btnw, 20, "Pad 2D", pad == 1, pad2.note_on);
 mouse_in_rect(20 + btnw * 1, 20, btnw, 20) ? (
   mouse.left_click ? (
     pad = 1;
-    pad2.pad_on_note(127);
+    pad2.pad_on_note(0, 127);
   );
   mouse.right_click ? (
     gfx_x = mouse.x; gfx_y = mouse.y;
@@ -518,7 +519,7 @@ draw_pad_button(20 + btnw * 2, 20, btnw, 20, "Pad 3E", pad == 2, pad3.note_on);
 mouse_in_rect(20 + btnw * 2, 20, btnw, 20) ? (
   mouse.left_click ? (
     pad = 2;
-    pad3.pad_on_note(127);
+    pad3.pad_on_note(0, 127);
   );
   mouse.right_click ? (
     gfx_x = mouse.x; gfx_y = mouse.y;
@@ -531,7 +532,7 @@ draw_pad_button(20 + btnw * 3, 20, btnw, 20, "Pad 4F", pad == 3, pad4.note_on);
 mouse_in_rect(20 + btnw * 3, 20, btnw, 20) ? (
   mouse.left_click ? (
     pad = 3;
-    pad4.pad_on_note(127);
+    pad4.pad_on_note(0, 127);
   );
   mouse.right_click ? (
     gfx_x = mouse.x; gfx_y = mouse.y;
@@ -544,7 +545,7 @@ draw_pad_button(20 + btnw * 4, 20, btnw, 20, "Pad 5G", pad == 4, pad5.note_on);
 mouse_in_rect(20 + btnw * 4, 20, btnw, 20) ? (
   mouse.left_click ? (
     pad = 4;
-    pad5.pad_on_note(127);
+    pad5.pad_on_note(0, 127);
   );
   mouse.right_click ? (
     gfx_x = mouse.x; gfx_y = mouse.y;
@@ -557,7 +558,7 @@ draw_pad_button(20 + btnw * 5, 20, btnw, 20, "Pad 6A", pad == 5, pad6.note_on);
 mouse_in_rect(20 + btnw * 5, 20, btnw, 20) ? (
   mouse.left_click ? (
     pad = 5;
-    pad6.pad_on_note(127);
+    pad6.pad_on_note(0, 127);
   );
   mouse.right_click ? (
     gfx_x = mouse.x; gfx_y = mouse.y;
@@ -570,7 +571,7 @@ draw_pad_button(20 + btnw * 6, 20, btnw, 20, "Pad 7B", pad == 6, pad7.note_on);
 mouse_in_rect(20 + btnw * 6, 20, btnw, 20) ? (
   mouse.left_click ? (
     pad = 6;
-    pad7.pad_on_note(127);
+    pad7.pad_on_note(0, 127);
   );
   mouse.right_click ? (
     gfx_x = mouse.x; gfx_y = mouse.y;

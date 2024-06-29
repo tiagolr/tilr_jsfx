@@ -70,8 +70,9 @@ function pad_init(npad)
   this.vel_mult.smooth = 1;
 );
 
-function pad_on_note(vel)
+function pad_on_note(offset, vel)
 (
+  this.offset = offset;
   this.note_on = 1;
   this.note_vel = vel / 127;
   this.note_counter = 0;
@@ -171,13 +172,13 @@ instance(eq, noise_filter, noise_lowpass)
 );
 
 function pad_process()
-instance(npad, out_r, out_l, note_on, note_vel, note_counter, osc_cycle, osc_freq, osc_wave,
+instance(npad, out_r, out_l, note_on, offset, note_vel, note_counter, osc_cycle, osc_freq, osc_wave,
         osc_att, osc_dec, noise_att, noise_dec, envelope, pitch_envelope, noise_envelope,
         pitch_amt, noise_lowpass, noise_cutoff, noise_filter, filter_freq, filter_q, filter_shape,
         filter_sel, mix, pan, eq, eq_gain, vel_vol, gain, vel_mult, distortion, tube, noise_stereo)
 local (wave_l, wave_r, noise_l, noise_r, signal_merged, mult)
 (
-  note_on ? (
+  note_on && offset <= 0 ? (
     note_counter += 1 / srate * 1000;
     note_counter > osc_att + osc_dec && note_counter > noise_att + noise_dec ? (
       note_on = 0;
@@ -264,4 +265,6 @@ local (wave_l, wave_r, noise_l, noise_r, signal_merged, mult)
     out_l *= gain * vel_mult.smooth();
     out_r *= gain * vel_mult.smooth();
   );
+  
+  offset > 0 ? offset -= 1;
 );
