@@ -1,10 +1,8 @@
 desc: JSAdditiv
 author: tilr
-version: 1.3
+version: 1.3.1
 changelog:
-  replace zdf with rbj filters
-  fix note clicking
-  fix volume knob clicking
+  Account for midi offset
 provides:
   jsadditiv/add.adsr.jsfx-inc
   jsadditiv/add.array.jsfx-inc
@@ -103,7 +101,7 @@ edit_mode = 0;
 phase_mode = 0;
 harm_index = 0; // index of harmonics displayed, 0 displays first 34 harmonics
 
-poly.array_init(0, 128, 4+8); // [0note, 1velocity, 2freq, 3phase, 4..12 phase_unison]
+poly.array_init(0, 128, 4+8+2); // [0note, 1velocity, 2freq, 3phase, 4..12 phase_unison, note_on_offset, note_off_offset]
 envelope = 2000; // 129 * 7 buffer (where 129 buffer is the mono envelope)
 pitch_env = 3000; // 128 * 7 buffer
 filter_arr_l = 4000; // 128 * 11 buffer for filters one per key left channel
@@ -323,6 +321,8 @@ while (midirecv(offset, msg1, note, vel)) (
       ptr[i] = note_repeat ? last_phase[i-3] : osc_free ? rand(2) - 1 : 0; // unison start phase
       i += 1;
     );
+    ptr[12] = offset;
+    ptr[13] = 0;
 
     env = envelope + note * 7;
     adsr_seta(osc_att * 0.001, env);
@@ -350,9 +350,7 @@ while (midirecv(offset, msg1, note, vel)) (
   event == 0x80 || (event == 0x90 && !vel) ? (
     ptr = poly.array_find(note);
     ptr >= 0 ? (
-      adsr_r(envelope + note * 7);
-      adsr_r(pitch_env + note * 7);
-      adsr_r(filter_env + note * 7);
+      ptr[13] = offset + 1; // 1 means off_note offset has reached the end and offnote is pressed
     );
   );
 
@@ -369,58 +367,72 @@ gain.smooth();
 
 ptr = poly.array_first();
 while(ptr >= 0) ( // for each note/voice
-  outl = 0;
-  outr = 0;
-  envbuf = envelope + ptr[0] * 7;
-  env_state = adsr_process(envbuf);
-  osc_pitch_det = 1;
-  pitch_amt ? (
-    pitchbuf = pitch_env + ptr[0] * 7;
-    adsr_process(pitchbuf);
-    osc_pitch_det = pow(2, pitchbuf[0] * pitch_amt / 12);
-  );
-  loop(i = 0; uni_voices, // for each unison voice
-    imod2 = i & 1;
-    pos = i == 0 && odd_voices ? 0 : imod2 ? -1 : 1; // center, left or right position
-    detune = !odd_voices
-      ? pos * detune_amt * (i + 1 - imod2) / uni_voices
-      : pos * detune_amt * (i + imod2) / uni_voices;
-    osc.wave_setdt(ptr[2] * osc_pitch_det + detune);
-    osc.wave_sync(ptr[i + 3]);
-    wave = osc.wave_spline3();
-    pan = !odd_voices
-      ? pos * uni_pan * (i + 1 - imod2) / uni_voices
-      : pos * uni_pan * (i + imod2) / uni_voices;
-    outl += wave * (1 + pan) * envbuf[];
-    outr += wave * (1 - pan) * envbuf[];
-    ptr[i + 3] = osc.t; // update osc phase
-    i += 1;
-  );
 
-  // Apply filter
-  flt_shape != 0 ? (
-    filterbuf = filter_env + ptr[0] * 7; // envelope buffer
-    adsr_process(filterbuf);
-    multiplier = pow(20000/flt_freq, filterbuf[0] * flt_amt / 100);
-
-    filterbuf_l = filter_arr_l + ptr[0] * 11; // filter buffer left
-    filterbuf_r = filter_arr_r + ptr[0] * 11; // filter buffer left
-
-    flt_shape == 1 ? (
-      rbj_lp(filterbuf_l, flt_freq * multiplier, flt_q);
-    ) : flt_shape == 2 ? (
-      rbj_bp(filterbuf_l, flt_freq * multiplier, flt_q);
-    ) : (
-      rbj_hp(filterbuf_l, flt_freq * multiplier, flt_q);
+  // Note_off offset check
+  ptr[13] > 0 ? (
+    ptr[13] == 1 ? ( // note_off offset has reached zero
+      adsr_r(envelope + ptr[0] * 7);
+      adsr_r(pitch_env + ptr[0] * 7);
+      adsr_r(filter_env + ptr[0] * 7);
     );
-    copy_filter_coefs(filterbuf_l, filterbuf_r);
-    outl = rbj_df1(filterbuf_l, outl);
-    outr = rbj_df1(filterbuf_r, outr);
+    ptr[13] -= 1;
   );
 
-  spl0 += outl * gain.smooth;
-  spl1 += outr * gain.smooth;
+  ptr[12] == 0 ? ( // midi offset
+    outl = 0;
+    outr = 0;
+    envbuf = envelope + ptr[0] * 7;
+    env_state = adsr_process(envbuf);
+    osc_pitch_det = 1;
+    pitch_amt ? (
+      pitchbuf = pitch_env + ptr[0] * 7;
+      adsr_process(pitchbuf);
+      osc_pitch_det = pow(2, pitchbuf[0] * pitch_amt / 12);
+    );
+    loop(i = 0; uni_voices, // for each unison voice
+      imod2 = i & 1;
+      pos = i == 0 && odd_voices ? 0 : imod2 ? -1 : 1; // center, left or right position
+      detune = !odd_voices
+        ? pos * detune_amt * (i + 1 - imod2) / uni_voices
+        : pos * detune_amt * (i + imod2) / uni_voices;
+      osc.wave_setdt(ptr[2] * osc_pitch_det + detune);
+      osc.wave_sync(ptr[i + 3]);
+      wave = osc.wave_spline3();
+      pan = !odd_voices
+        ? pos * uni_pan * (i + 1 - imod2) / uni_voices
+        : pos * uni_pan * (i + imod2) / uni_voices;
+      outl += wave * (1 + pan) * envbuf[];
+      outr += wave * (1 - pan) * envbuf[];
+      ptr[i + 3] = osc.t; // update osc phase
+      i += 1;
+    );
 
+    // Apply filter
+    flt_shape != 0 ? (
+      filterbuf = filter_env + ptr[0] * 7; // envelope buffer
+      adsr_process(filterbuf);
+      multiplier = pow(20000/flt_freq, filterbuf[0] * flt_amt / 100);
+
+      filterbuf_l = filter_arr_l + ptr[0] * 11; // filter buffer left
+      filterbuf_r = filter_arr_r + ptr[0] * 11; // filter buffer left
+
+      flt_shape == 1 ? (
+        rbj_lp(filterbuf_l, flt_freq * multiplier, flt_q);
+      ) : flt_shape == 2 ? (
+        rbj_bp(filterbuf_l, flt_freq * multiplier, flt_q);
+      ) : (
+        rbj_hp(filterbuf_l, flt_freq * multiplier, flt_q);
+      );
+      copy_filter_coefs(filterbuf_l, filterbuf_r);
+      outl = rbj_df1(filterbuf_l, outl);
+      outr = rbj_df1(filterbuf_r, outr);
+    );
+
+    spl0 += outl * gain.smooth;
+    spl1 += outr * gain.smooth;
+  );
+
+  ptr[12] > 0 ? ptr[12] -= 1; // midi offset
   ptr = poly.array_next(ptr);
 );
 
