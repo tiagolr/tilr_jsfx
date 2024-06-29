@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="49d0119bf01b3cf760067046b02295ddd80267b1" name="Tilr">
+<index version="1" commit="90b69493918c1c8d58e2a36973a7daa73082108f" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -733,6 +733,15 @@ Replace zdf with rbj filters]]></changelog>
         <source file="js3osc/3o.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/46d993c8731b9d543c3867a848d9b128aead19f1/Synth/js3osc/3o.gfxlib.jsfx-inc</source>
         <source file="js3osc/3o.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/46d993c8731b9d543c3867a848d9b128aead19f1/Synth/js3osc/3o.mouselib.jsfx-inc</source>
         <source file="js3osc/3o.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/46d993c8731b9d543c3867a848d9b128aead19f1/Synth/js3osc/3o.rbj_filter.jsfx-inc</source>
+      </version>
+      <version name="1.1.1" author="tilr" time="2024-06-29T11:55:07Z">
+        <changelog><![CDATA[Account for midi offset]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/90b69493918c1c8d58e2a36973a7daa73082108f/Synth/js3osc.jsfx</source>
+        <source file="js3osc/3o.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/90b69493918c1c8d58e2a36973a7daa73082108f/Synth/js3osc/3o.adsr.jsfx-inc</source>
+        <source file="js3osc/3o.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/90b69493918c1c8d58e2a36973a7daa73082108f/Synth/js3osc/3o.array.jsfx-inc</source>
+        <source file="js3osc/3o.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/90b69493918c1c8d58e2a36973a7daa73082108f/Synth/js3osc/3o.gfxlib.jsfx-inc</source>
+        <source file="js3osc/3o.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/90b69493918c1c8d58e2a36973a7daa73082108f/Synth/js3osc/3o.mouselib.jsfx-inc</source>
+        <source file="js3osc/3o.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/90b69493918c1c8d58e2a36973a7daa73082108f/Synth/js3osc/3o.rbj_filter.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="jsadditiv.jsfx" type="effect" desc="JSAdditiv">
