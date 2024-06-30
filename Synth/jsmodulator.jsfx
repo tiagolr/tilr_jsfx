@@ -1,8 +1,8 @@
 desc: JSModulator
 author: tilr
-version: 1.1.1
+version: 1.1.2
 changelog:
-  Account for midi offset
+  Revert midi offset
 provides:
   jsmodulator/mod.array.jsfx-inc
   jsmodulator/mod.envlib.jsfx-inc
@@ -174,7 +174,7 @@ file_var(0, osc4.wavenum);
 
 @init
 ext_noinit = 1;
-poly.array_init(1000, 127, 11+2); // [note, freq, ph1, ph2, ph3, ph4, signal1, signal2, signal3, signal4, note_repeat_flag, note_on_offset, note_off_offset]
+poly.array_init(1000, 127, 11); // [note, freq, ph1, ph2, ph3, ph4, signal1, signal2, signal3, signal4, note_repeat_flag]
 remove_notes.array_init(5000, 127, 1); // remove notes array
 envelope = 10000; // 18 * 127 - master envelope per key
 envelope_o1 = 15000; // 18 * 127
@@ -404,11 +404,8 @@ while (midirecv(offset, msg1, note, vel)) (
     ptr >= 0 ? (
       env_r(envelope + note * 18);
       ptr[10] = 1; // note repeat flag
-      ptr[11] = offset; // note_on offset
     ) : (
       on_note(note);
-      ptr[11] = offset; // note_on offset
-      ptr[12] = 0; // note_off offset
     );
   );
 
@@ -416,7 +413,12 @@ while (midirecv(offset, msg1, note, vel)) (
   event == 0x80 || (event == 0x90 && !vel) ? (
     ptr = poly.array_find(note);
     ptr >= 0 ? (
-      ptr[12] = offset + 1;
+      env_r(envelope + note * 18);
+      env_r(envelope_o1 + note * 18);
+      env_r(envelope_o2 + note * 18);
+      env_r(envelope_o3 + note * 18);
+      env_r(envelope_o4 + note * 18);
+      env_r(envelope_flt + note * 18);
     );
   );
 
@@ -440,120 +442,103 @@ _flt_freq.smooth();
 remove_notes.array_clear();
 ptr = poly.array_first();
 while(ptr >= 0) ( // for each note/voice
+  envbuf = envelope + ptr[0] * 18;
+  env_state = env_process(envbuf);
 
-  // Note_off offset check
-  ptr[12] > 0 ? (
-    ptr[12] == 1 ? ( // note_off offset has reached zero
-      env_r(envelope + ptr[0] * 18);
-      env_r(envelope_o1 + ptr[0] * 18);
-      env_r(envelope_o2 + ptr[0] * 18);
-      env_r(envelope_o3 + ptr[0] * 18);
-      env_r(envelope_o4 + ptr[0] * 18);
-      env_r(envelope_flt + ptr[0] * 18);
+  env_o1 = envelope_o1 + ptr[0] * 18;
+  env_o2 = envelope_o2 + ptr[0] * 18;
+  env_o3 = envelope_o3 + ptr[0] * 18;
+  env_o4 = envelope_o4 + ptr[0] * 18;
+
+  env_process(env_o1);
+  env_process(env_o2);
+  env_process(env_o3);
+  env_process(env_o4);
+
+  freq = ptr[1];
+  ph1 = ptr[2];
+  ph2 = ptr[3];
+  ph3 = ptr[4];
+  ph4 = ptr[5];
+  s1 = ptr[6];
+  s2 = ptr[7];
+  s3 = ptr[8];
+  s4 = ptr[9];
+
+  osc1.wave_sync(ph1 + s1 * fm11 + s2 * fm21 + s3 * fm31 + s4 * fm41);
+  osc1.wave_setdt(freq * o1_fine * o1_semi);
+  s1 = osc1.wave_spline3() * env_o1[];
+  ph1 += osc1.dt;
+  ph1 > 1 ? ph1 -= 1;
+
+  osc2.wave_sync(ph2 + s1 * fm12 + s2 * fm22 + s3 * fm32 + s4 * fm42);
+  osc2.wave_setdt(freq * o2_fine * o2_semi);
+  s2 = osc2.wave_spline3() * env_o2[];
+  ph2 += osc2.dt;
+  ph2 > 1 ? ph2 -= 1;
+
+  osc3.wave_sync(ph3 + s1 * fm13 + s2 * fm23 + s3 * fm33 + s4 * fm43);
+  osc3.wave_setdt(freq * o3_fine * o3_semi);
+  s3 = osc3.wave_spline3() * env_o3[];
+  ph3 += osc3.dt;
+  ph3 > 1 ? ph3 -= 1;
+
+  osc4.wave_sync(ph4 + s1 * fm14 + s2 * fm24 + s3 * fm34 + s4 * fm44);
+  osc4.wave_setdt(freq * o4_fine * o4_semi);
+  s4 = osc4.wave_spline3() * env_o4[];
+  ph4 += osc4.dt;
+  ph4 > 1 ? ph4 -= 1;
+
+  ptr[2] = ph1;
+  ptr[3] = ph2;
+  ptr[4] = ph3;
+  ptr[5] = ph4;
+  ptr[6] = s1;
+  ptr[7] = s2;
+  ptr[8] = s3;
+  ptr[9] = s4;
+
+  sl = s1 * o1_gain.smooth * (1 - o1_pan) + s2 * o2_gain.smooth * (1 - o2_pan) + s3 * o3_gain.smooth * (1 - o3_pan) + s4 * o4_gain.smooth * (1 - o4_pan);
+  sr = s1 * o1_gain.smooth * (1 + o1_pan) + s2 * o2_gain.smooth * (1 + o2_pan) + s3 * o3_gain.smooth * (1 + o3_pan) + s4 * o4_gain.smooth * (1 + o4_pan);
+
+  // Apply filter
+  _flt_type != 0 ? (
+    filterbuf = envelope_flt + ptr[0] * 18; // envelope buffer
+    env_process(filterbuf);
+    multiplier = pow(22000/_flt_freq.smooth, filterbuf[0] * _flt_adsr_amt / 100);
+
+    filterbuf_l = filter_arr_l + ptr[0] * 11; // filter buffer left
+    filterbuf_r = filter_arr_r + ptr[0] * 11; // filter buffer left
+
+    _flt_type == 1 ? (
+      rbj_lp(filterbuf_l, _flt_freq.smooth * multiplier, _flt_q);
+    ) : _flt_type == 2 ? (
+      rbj_bp(filterbuf_l, _flt_freq.smooth * multiplier, _flt_q);
+    ) : (
+      rbj_hp(filterbuf_l, _flt_freq.smooth * multiplier, _flt_q);
     );
-    ptr[12] -= 1;
+    copy_filter_coefs(filterbuf_l, filterbuf_r);
+    sl = rbj_df1(filterbuf_l, sl);
+    sr = rbj_df1(filterbuf_r, sr);
   );
 
-  ptr[11] == 0 ? ( // midi offset is finished
-    envbuf = envelope + ptr[0] * 18;
-    env_state = env_process(envbuf);
+  spl0 += sl * gain.smooth * envbuf[];
+  spl1 += sr * gain.smooth * envbuf[];
 
-    env_o1 = envelope_o1 + ptr[0] * 18;
-    env_o2 = envelope_o2 + ptr[0] * 18;
-    env_o3 = envelope_o3 + ptr[0] * 18;
-    env_o4 = envelope_o4 + ptr[0] * 18;
-
-    env_process(env_o1);
-    env_process(env_o2);
-    env_process(env_o3);
-    env_process(env_o4);
-
-    freq = ptr[1];
-    ph1 = ptr[2];
-    ph2 = ptr[3];
-    ph3 = ptr[4];
-    ph4 = ptr[5];
-    s1 = ptr[6];
-    s2 = ptr[7];
-    s3 = ptr[8];
-    s4 = ptr[9];
-
-    osc1.wave_sync(ph1 + s1 * fm11 + s2 * fm21 + s3 * fm31 + s4 * fm41);
-    osc1.wave_setdt(freq * o1_fine * o1_semi);
-    s1 = osc1.wave_spline3() * env_o1[];
-    ph1 += osc1.dt;
-    ph1 > 1 ? ph1 -= 1;
-
-    osc2.wave_sync(ph2 + s1 * fm12 + s2 * fm22 + s3 * fm32 + s4 * fm42);
-    osc2.wave_setdt(freq * o2_fine * o2_semi);
-    s2 = osc2.wave_spline3() * env_o2[];
-    ph2 += osc2.dt;
-    ph2 > 1 ? ph2 -= 1;
-
-    osc3.wave_sync(ph3 + s1 * fm13 + s2 * fm23 + s3 * fm33 + s4 * fm43);
-    osc3.wave_setdt(freq * o3_fine * o3_semi);
-    s3 = osc3.wave_spline3() * env_o3[];
-    ph3 += osc3.dt;
-    ph3 > 1 ? ph3 -= 1;
-
-    osc4.wave_sync(ph4 + s1 * fm14 + s2 * fm24 + s3 * fm34 + s4 * fm44);
-    osc4.wave_setdt(freq * o4_fine * o4_semi);
-    s4 = osc4.wave_spline3() * env_o4[];
-    ph4 += osc4.dt;
-    ph4 > 1 ? ph4 -= 1;
-
-    ptr[2] = ph1;
-    ptr[3] = ph2;
-    ptr[4] = ph3;
-    ptr[5] = ph4;
-    ptr[6] = s1;
-    ptr[7] = s2;
-    ptr[8] = s3;
-    ptr[9] = s4;
-
-    sl = s1 * o1_gain.smooth * (1 - o1_pan) + s2 * o2_gain.smooth * (1 - o2_pan) + s3 * o3_gain.smooth * (1 - o3_pan) + s4 * o4_gain.smooth * (1 - o4_pan);
-    sr = s1 * o1_gain.smooth * (1 + o1_pan) + s2 * o2_gain.smooth * (1 + o2_pan) + s3 * o3_gain.smooth * (1 + o3_pan) + s4 * o4_gain.smooth * (1 + o4_pan);
-
-    // Apply filter
-    _flt_type != 0 ? (
-      filterbuf = envelope_flt + ptr[0] * 18; // envelope buffer
-      env_process(filterbuf);
-      multiplier = pow(22000/_flt_freq.smooth, filterbuf[0] * _flt_adsr_amt / 100);
-
-      filterbuf_l = filter_arr_l + ptr[0] * 11; // filter buffer left
-      filterbuf_r = filter_arr_r + ptr[0] * 11; // filter buffer left
-
-      _flt_type == 1 ? (
-        rbj_lp(filterbuf_l, _flt_freq.smooth * multiplier, _flt_q);
-      ) : _flt_type == 2 ? (
-        rbj_bp(filterbuf_l, _flt_freq.smooth * multiplier, _flt_q);
-      ) : (
-        rbj_hp(filterbuf_l, _flt_freq.smooth * multiplier, _flt_q);
-      );
-      copy_filter_coefs(filterbuf_l, filterbuf_r);
-      sl = rbj_df1(filterbuf_l, sl);
-      sr = rbj_df1(filterbuf_r, sr);
-    );
-
-    spl0 += sl * gain.smooth * envbuf[];
-    spl1 += sr * gain.smooth * envbuf[];
-
-    // Note repeat, trigger fast release
-    ptr[10] ? (
-      envbuf[0] -= 0.01;
-      envbuf[0] < 0 ? (
-        envbuf[0] = 0;
-      )
-    );
-
-    // mark note for deletion
-    env_state == 0 ? (
-      p = remove_notes.array_add();
-      p[0] = ptr[0];
-    );
+  // Note repeat, trigger fast release
+  ptr[10] ? (
+    envbuf[0] -= 0.01;
+    envbuf[0] < 0 ? (
+      envbuf[0] = 0;
+    )
   );
 
-  ptr[11] > 0 ? ptr[11] -= 1;
+  // mark note for deletion
+  env_state == 0 ? (
+    p = remove_notes.array_add();
+    p[0] = ptr[0];
+  );
+
   ptr = poly.array_next(ptr);
 );
 

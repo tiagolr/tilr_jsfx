@@ -1,7 +1,7 @@
 desc: JSDrumpad
 author: tilr
-version: 1.1.2
-changelog: Reset phase on note
+version: 1.1.3
+changelog: Revert midi offset and phase reset
 provides:
   jsdrumpad.jsfx.RPL
   jsdrumpad/dp.envlib.jsfx-inc
@@ -69,7 +69,6 @@ options:gfx_hz=60 no_meter
 
 osc_cycle = 0;
 note_on = 0;
-note_ofs = 0;
 note_vel = 0;
 note_counter = 0;
 notes = 0;
@@ -195,8 +194,6 @@ while (midirecv(offset, msg1, note, vel)) (
   channel = msg1 & 0x0F;
 
   event == 0x90 && vel > 0 ? ( // NOTEON
-    osc_cycle = 0; // reset phase
-    note_ofs = offset;
     note_on = 1;
     note_vel = vel / 127;
     note_counter = 0;
@@ -218,7 +215,7 @@ last_play_state == 0 && play_state ? (
 );
 last_play_state = play_state;
 
-note_on && note_ofs <= 0 ? (
+note_on ? (
   note_counter += 1 / srate * 1000;
   note_counter > osc_att + osc_dec && note_counter > noise_att + noise_dec ? (
     note_on = 0;
@@ -305,8 +302,6 @@ note_on && note_ofs <= 0 ? (
   spl0 += outl * gain * vel_mult.smooth();
   spl1 += outr * gain * vel_mult.smooth();
 );
-
-note_ofs > 0 ? note_ofs -= 1;
 
 @gfx 700 280
 
