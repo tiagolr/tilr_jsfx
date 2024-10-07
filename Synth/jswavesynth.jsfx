@@ -1,6 +1,6 @@
 desc: JSWavesynth
 author: tilr
-version: 1.2.2
+version: 1.3.0
 changelog:
   Revert midi offset
 provides:
@@ -10,31 +10,31 @@ provides:
   jswavesynth/ws.mouselib.jsfx-inc
   jswavesynth/ws.wavetable.jsfx-inc
   jswavesynth/ws.rbj_filter.jsfx-inc
-  [data] tilr_JSWavesynth/Complex 1.wav
-  [data] tilr_JSWavesynth/Complex 2.wav
-  [data] tilr_JSWavesynth/Complex 3.wav
-  [data] tilr_JSWavesynth/Complex 4.wav
-  [data] tilr_JSWavesynth/Complex 5.wav
-  [data] tilr_JSWavesynth/Organ 1.wav
-  [data] tilr_JSWavesynth/Organ 2.wav
-  [data] tilr_JSWavesynth/Organ 3.wav
-  [data] tilr_JSWavesynth/Organ 4.wav
-  [data] tilr_JSWavesynth/Organ 5.wav
-  [data] tilr_JSWavesynth/Organ 6.wav
-  [data] tilr_JSWavesynth/Organ 7.wav
-  [data] tilr_JSWavesynth/Saw 1.wav
-  [data] tilr_JSWavesynth/Saw 2.wav
-  [data] tilr_JSWavesynth/Saw 3.wav
-  [data] tilr_JSWavesynth/Sine 1.wav
-  [data] tilr_JSWavesynth/Sine 2.wav
-  [data] tilr_JSWavesynth/Sine 3.wav
-  [data] tilr_JSWavesynth/Sine 4.wav
-  [data] tilr_JSWavesynth/Sine 5.wav
-  [data] tilr_JSWavesynth/Spectral.wav
-  [data] tilr_JSWavesynth/Square 1.wav
-  [data] tilr_JSWavesynth/Square 2.wav
-  [data] tilr_JSWavesynth/Stairs.wav
-  [data] tilr_JSWavesynth/Triangle.wav
+  [data] tilr8_JSWavesynth/Complex 1.wav
+  [data] tilr8_JSWavesynth/Complex 2.wav
+  [data] tilr8_JSWavesynth/Complex 3.wav
+  [data] tilr8_JSWavesynth/Complex 4.wav
+  [data] tilr8_JSWavesynth/Complex 5.wav
+  [data] tilr8_JSWavesynth/Organ 1.wav
+  [data] tilr8_JSWavesynth/Organ 2.wav
+  [data] tilr8_JSWavesynth/Organ 3.wav
+  [data] tilr8_JSWavesynth/Organ 4.wav
+  [data] tilr8_JSWavesynth/Organ 5.wav
+  [data] tilr8_JSWavesynth/Organ 6.wav
+  [data] tilr8_JSWavesynth/Organ 7.wav
+  [data] tilr8_JSWavesynth/Saw 1.wav
+  [data] tilr8_JSWavesynth/Saw 2.wav
+  [data] tilr8_JSWavesynth/Saw 3.wav
+  [data] tilr8_JSWavesynth/Sine 1.wav
+  [data] tilr8_JSWavesynth/Sine 2.wav
+  [data] tilr8_JSWavesynth/Sine 3.wav
+  [data] tilr8_JSWavesynth/Sine 4.wav
+  [data] tilr8_JSWavesynth/Sine 5.wav
+  [data] tilr8_JSWavesynth/Spectral.wav
+  [data] tilr8_JSWavesynth/Square 1.wav
+  [data] tilr8_JSWavesynth/Square 2.wav
+  [data] tilr8_JSWavesynth/Stairs.wav
+  [data] tilr8_JSWavesynth/Triangle.wav
 screenshot: https://raw.githubusercontent.com/tiagolr/jswavesynth/master/doc/ss.png
 about:
   # JSWavesynth
@@ -48,7 +48,7 @@ about:
   * ADSR for volume pitch and filter
 tags: synth, instrument
 
-slider1:/tilr_JSWavesynth:none:Wave
+slider1:/tilr8_JSWavesynth:none:Wave
 slider2:vol=80<0, 100, .01>-Volume
 slider4:_uni_voices=1<1, 8, 1>-Unison voices
 slider5:uni_detune=15<0, 100, 0.1>-Unison detune
@@ -195,7 +195,7 @@ function on_slider() (
 );
 
 // FIX - read initial wave from string instead of slider
-read_file_string("tilr_JSWavesynth/Sine 1.wav");
+read_file_string("tilr8_JSWavesynth/Sine 1.wav");
 
 // init smooth
 gain.rc_set(0.0033);

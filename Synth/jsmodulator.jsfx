@@ -1,6 +1,6 @@
 desc: JSModulator
 author: tilr
-version: 1.1.2
+version: 1.2.0
 changelog:
   Revert midi offset
 provides:
@@ -12,31 +12,31 @@ provides:
   jsmodulator/mod.osc.jsfx-inc
   jsmodulator/mod.wavetable.jsfx-inc
   jsmodulator/mod.rbj_filter.jsfx-inc
-  [data] tilr_JSModulator/Complex 2.wav
-  [data] tilr_JSModulator/Complex 3.wav
-  [data] tilr_JSModulator/Complex 4.wav
-  [data] tilr_JSModulator/Complex 5.wav
-  [data] tilr_JSModulator/Complex.wav
-  [data] tilr_JSModulator/Organ 2.wav
-  [data] tilr_JSModulator/Organ 3.wav
-  [data] tilr_JSModulator/Organ 4.wav
-  [data] tilr_JSModulator/Organ 5.wav
-  [data] tilr_JSModulator/Organ 6.wav
-  [data] tilr_JSModulator/Organ 7.wav
-  [data] tilr_JSModulator/Organ.wav
-  [data] tilr_JSModulator/Saw 2.wav
-  [data] tilr_JSModulator/Saw 3.wav
-  [data] tilr_JSModulator/Saw.wav
-  [data] tilr_JSModulator/Sine 2.wav
-  [data] tilr_JSModulator/Sine 3.wav
-  [data] tilr_JSModulator/Sine 4.wav
-  [data] tilr_JSModulator/Sine 5.wav
-  [data] tilr_JSModulator/Sine.wav
-  [data] tilr_JSModulator/Spectral.wav
-  [data] tilr_JSModulator/Square 2.wav
-  [data] tilr_JSModulator/Square.wav
-  [data] tilr_JSModulator/Stairs.wav
-  [data] tilr_JSModulator/Triangle.wav
+  [data] tilr8_JSModulator/Complex 2.wav
+  [data] tilr8_JSModulator/Complex 3.wav
+  [data] tilr8_JSModulator/Complex 4.wav
+  [data] tilr8_JSModulator/Complex 5.wav
+  [data] tilr8_JSModulator/Complex.wav
+  [data] tilr8_JSModulator/Organ 2.wav
+  [data] tilr8_JSModulator/Organ 3.wav
+  [data] tilr8_JSModulator/Organ 4.wav
+  [data] tilr8_JSModulator/Organ 5.wav
+  [data] tilr8_JSModulator/Organ 6.wav
+  [data] tilr8_JSModulator/Organ 7.wav
+  [data] tilr8_JSModulator/Organ.wav
+  [data] tilr8_JSModulator/Saw 2.wav
+  [data] tilr8_JSModulator/Saw 3.wav
+  [data] tilr8_JSModulator/Saw.wav
+  [data] tilr8_JSModulator/Sine 2.wav
+  [data] tilr8_JSModulator/Sine 3.wav
+  [data] tilr8_JSModulator/Sine 4.wav
+  [data] tilr8_JSModulator/Sine 5.wav
+  [data] tilr8_JSModulator/Sine.wav
+  [data] tilr8_JSModulator/Spectral.wav
+  [data] tilr8_JSModulator/Square 2.wav
+  [data] tilr8_JSModulator/Square.wav
+  [data] tilr8_JSModulator/Stairs.wav
+  [data] tilr8_JSModulator/Triangle.wav
 screenshot: https://raw.githubusercontent.com/tiagolr/jsmodulator/master/doc/ss.png
 about:
   # JSModulator
@@ -239,7 +239,7 @@ function get_wavename(wavenum) (
 function load_wave(osc*, wavenum) (
   wavename = get_wavename(wavenum);
   osc.wavenum = wavenum;
-  osc.open_file(sprintf(#, "tilr_JSModulator/%s.wav", wavename), osc.four);
+  osc.open_file(sprintf(#, "tilr8_JSModulator/%s.wav", wavename), osc.four);
   osc.wave_init(osc.buf, osc.len);
 );
 
