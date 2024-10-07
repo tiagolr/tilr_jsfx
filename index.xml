@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="818a86cde6609e515a9e294899e732c69edb03c2" name="Tilr">
+<index version="1" commit="0eb486340b7db60c5ff2d6021268c9c75fdb757f" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -978,6 +978,16 @@ fix volume knob clicking]]></changelog>
         <source file="jsdrumsynth/ds.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/818a86cde6609e515a9e294899e732c69edb03c2/Synth/jsdrumsynth/ds.mouselib.jsfx-inc</source>
         <source file="jsdrumsynth/ds.pad.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/818a86cde6609e515a9e294899e732c69edb03c2/Synth/jsdrumsynth/ds.pad.jsfx-inc</source>
         <source file="jsdrumsynth/ds.svf_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/818a86cde6609e515a9e294899e732c69edb03c2/Synth/jsdrumsynth/ds.svf_filter.jsfx-inc</source>
+      </version>
+      <version name="1.0.3" author="tilr" time="2024-10-07T13:27:04Z">
+        <changelog><![CDATA[Revert midi offset]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/0eb486340b7db60c5ff2d6021268c9c75fdb757f/Synth/jsdrumsynth.jsfx</source>
+        <source file="jsdrumsynth.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/0eb486340b7db60c5ff2d6021268c9c75fdb757f/Synth/jsdrumsynth.jsfx.RPL</source>
+        <source file="jsdrumsynth/ds.envlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0eb486340b7db60c5ff2d6021268c9c75fdb757f/Synth/jsdrumsynth/ds.envlib.jsfx-inc</source>
+        <source file="jsdrumsynth/ds.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0eb486340b7db60c5ff2d6021268c9c75fdb757f/Synth/jsdrumsynth/ds.gfxlib.jsfx-inc</source>
+        <source file="jsdrumsynth/ds.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0eb486340b7db60c5ff2d6021268c9c75fdb757f/Synth/jsdrumsynth/ds.mouselib.jsfx-inc</source>
+        <source file="jsdrumsynth/ds.pad.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0eb486340b7db60c5ff2d6021268c9c75fdb757f/Synth/jsdrumsynth/ds.pad.jsfx-inc</source>
+        <source file="jsdrumsynth/ds.svf_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0eb486340b7db60c5ff2d6021268c9c75fdb757f/Synth/jsdrumsynth/ds.svf_filter.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="jsmodulator.jsfx" type="effect" desc="JSModulator">
