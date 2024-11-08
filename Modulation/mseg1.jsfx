@@ -308,7 +308,7 @@ local(mptr, sa, sb, newvel)
 (
   mptr = midi_buf.array_first();
   while(mptr >= 0) ( // for each midi note
-  mptr[0] == 0 ? ( // midi offset reached
+    mptr[0] == 0 ? ( // midi offset reached
       sa = value;
       sb = mptr[3] / 127;
       // crossfade the node velocity with modulator signal
