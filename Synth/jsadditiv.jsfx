@@ -1,8 +1,8 @@
 desc: JSAdditiv
 author: tilr
-version: 1.4.0
+version: 1.4.1
 changelog:
-  Revert midi offset
+  Partials using exponential scale instead of linear
 provides:
   jsadditiv/add.adsr.jsfx-inc
   jsadditiv/add.array.jsfx-inc

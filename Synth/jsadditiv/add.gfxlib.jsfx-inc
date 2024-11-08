@@ -178,10 +178,12 @@ local (harm_w, amp, i, mouse_active, hx, ph, yamp, phase, real, img, yphase)
   loop(i=0; nharm,
     amp = harmonic_amplitude(buf[i], buf[i+1]);
     amp > 1 ? amp = 1;
+    amp = pow(amp, 1/2); // reverse exponential when drawing amplitude, see yamp = pow(yamp,2) below
     hx = x + harm_w * i / 2; // harmonic x
     gfx_rect(hx, y + h - floor(amp * h), harm_w - 1, amp * h);
     !phase_mode && mouse_active && mouse_in_rect(hx, y, harm_w, h) ? (
       yamp = mouse.control ? 0 : 1 - (mouse.y - y) / h;
+      yamp = pow(yamp, 2); // amplitude calculated as exponential curve [0..1] for more sensitivity at lower end
       phase = harmonic_phase(buf[i], buf[i+1]);
       buf[i+1] = yamp * cos(phase); // real = r * cos(p)
       buf[i] = yamp * sin(phase); // img = r * sin(p)

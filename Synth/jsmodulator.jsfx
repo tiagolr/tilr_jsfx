@@ -1,8 +1,8 @@
 desc: JSModulator
 author: tilr
-version: 1.2.0
+version: 1.2.1
 changelog:
-  Revert midi offset
+  Partials using exponential scale instead of linear
 provides:
   jsmodulator/mod.array.jsfx-inc
   jsmodulator/mod.envlib.jsfx-inc
