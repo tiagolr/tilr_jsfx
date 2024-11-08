@@ -1,13 +1,13 @@
 desc: MSEG-1
 author: tilr
-version: 1.1.5
+version: 1.2.0
 provides:
   mseg1/mseg.array.jsfx-inc
   mseg1/mseg.curvelib.jsfx-inc
   mseg1/mseg.mouselib.jsfx-inc
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/mseg1.png
 changelog:
-  Snap toggle when pressing control
+  Add midi velocity modulation
 about:
   # MSEG-1
 
@@ -19,7 +19,6 @@ about:
   * Sync, Free and MIDI trigger modes
   * Paint mode - erase, line, saw up, saw down
   * Output smooth and attack-release smooth
-
 
 slider1:pattern=1<1,12,1>Pattern
 slider2:mode=0<0,2,1{Sync,Free,MIDI,Manual}>Trigger
@@ -37,7 +36,9 @@ slider20:value=0.5<0,1,0.01>Value
 slider21:cc=0<0,160,1{Off,00/32 Bank Sel HR,01/33 Mod Wheel HR,02/34 Breath HR,03/35 HR,04/36 Foot P HR,05/37 Porta HR,06/38 Data Entry HR,07/39 Vol HR,08/40 Balance HR,09/41 HR,10/42 Pan HR,11/43 Expression HR,12/44 Ctrl 1 HR,13/45 Ctrl 2 HR,14/46 HR,15/47 HR,16/48 GP Slider HR,17/49 GP Slider HR,18/50 GP Slider HR,19/51 GP Slider HR,20/52 HR,21/53 HR,22/54 HR,23/55 HR,24/56 HR,25/57 HR,26/58 HR,27/59 HR,28/60 HR,29/61 HR,30/62 HR,31/63 HR,0 Bank Sel M,1 Mod Wheel M,2 Breath M,3,4 Foot P M,5 Porta M,6 Data Entry M,7 Vol M,8 Balance M,9,10 Pan M,11 Expression M,12 Ctrl 1 M,13 Ctrl 2 M,14,15,16 GP Slider 1,17 GP Slider 2,18 GP Slider 3,19 GP Slider 4,20,21,22,23,24,25,26,27,28,29,30,31,32 Bank Sel L,33 Mod Wheel L,34 Breath L,35,36 Foot P L,37 Porta L,38 Data Entry L,39 Vol L,40 Balance L,41,42 Pan L,43 Expression L,44 Ctrl 1 L,45 Ctrl 2 L,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64 Hold P sw,65 Porta sw,66 Sustenuto sw,67 Soft P sw,68 Legato P sw,69 Hold 2 P sw,70 S.Variation,71 S.Timbre,72 S.Release,73 S.Attack,74 S.Brightness,75 S.Ctrl 6,76 S.Ctrl 7,77 S.Ctrl 8,78 S.Ctrl 9,79 S.Ctrl 10,80 GP B.1 sw,81 GP B.2 sw,82 GP B.3 sw,83 GP B.4 sw,84,85,86,87,88,89,90,91 Effects Lv,92 Trem Lv,93 Chorus Lv,94 Celeste Lv,95 Phaser Lv,96 Data B. Inc,97 Data B. Dec,98 NRP L,99 NRP M,100 RP L,101 RP M,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127}>-CC Output
 slider22:cc_channel=0<0,15,1{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}>-CC Channel
 slider23:retrigger=0<0,1,1>-Retrigger
+slider24:velmod=1<0,1,0.01>Vel modulation
 
+import mseg.array.jsfx-inc
 import mseg.curvelib.jsfx-inc
 import mseg.mouselib.jsfx-inc
 
@@ -56,8 +57,10 @@ file_var(0, show_retrigger_slider);
 file_var(0, link_edge_points);
 file_var(0, trigger_channel);
 file_var(0, output_audio);
-file_var(0, modulate_volume);
+file_var(0, modulate_vol);
 file_var(0, modulate_pan);
+file_var(0, modulate_stereo);
+file_var(0, modulate_vel);
 
 file_avail(0) >= 0 ? (
   lpattern = -1; // force load current pattern
@@ -84,10 +87,12 @@ show_value_slider = 1;
 show_cc_slider = 0;
 show_retrigger_slider = 0;
 link_edge_points = 1;
-modulate_volume = 0;
+modulate_vol = 0;
 modulate_pan = 0;
 modulate_stereo = 0;
+modulate_vel = 1;
 patterns = 1000000; // buffer to store patterns 12 * (1 + 4 * 1000)
+midi_buf.array_init(1100000, 1024, 4); // 1024 * [offset, msg1, note, vel]
 
 function store_pattern(pattern)
 local(buf)
@@ -189,6 +194,7 @@ function on_slider() (
   slider_show(cc, show_cc_slider);
   slider_show(cc_channel, show_cc_slider);
   slider_show(retrigger, show_retrigger_slider);
+  slider_show(velmod, modulate_vel);
   //slider_show(phase, sync);
   _lfomin > _lfomax ? _lfomin = _lfomax;
   lfomin = _lfomin / 100;
@@ -258,7 +264,21 @@ while (midirecv(offset, msg1, note, vel)) (
     xpos = phase;
     //value.smooth = get_curve_y(xpos);
   );
-  midisend(offset, msg1, note, vel);
+
+  modulate_vel && (always_playing ||
+  (mode == 0 && play_state & 1) ||
+  mode == 1 ||
+  (mode == 2 && midi_trigger) ||
+  mode == 3) ? (
+    midi_buf.size == 1024 ? midi_buf.array_remove(midi_buf.array_first()); // overflow protect
+    midi_ptr = midi_buf.array_add();
+    midi_ptr[0] = offset;
+    midi_ptr[1] = msg1;
+    midi_ptr[2] = note;
+    midi_ptr[3] = vel;
+  ) : (
+    midisend(offset, msg1, note, vel); // midithrough
+  );
 );
 
 can_retrigger() && (retrigger && !lretrigger) ? (
@@ -281,6 +301,43 @@ local(hr, msb, lsb)
     midisend(samples_offset, 0xB0+cc_channel, cc-1, msb);
     midisend(samples_offset, 0xB0+cc_channel, cc-1+32, lsb);
   );
+);
+
+function modulate_velocity()
+local(mptr, sa, sb, newvel)
+(
+  mptr = midi_buf.array_first();
+  while(mptr >= 0) ( // for each midi note
+  mptr[0] == 0 ? ( // midi offset reached
+      sa = value;
+      sb = mptr[3] / 127;
+      // crossfade the node velocity with modulator signal
+      velmod < 0.5 ? (
+        newvel = (1 - 2 * velmod) * sb + (2 * velmod) * (sa * sb);
+      ) : (
+        newvel = (2 - 2 * velmod) * (sa * sb) + (2 * velmod - 1) * sa;
+      );
+      midisend(samples_offset, mptr[1], mptr[2], (newvel * 127) | 0);
+    );
+    mptr[0] -= 1;
+    mptr = midi_buf.array_next(mptr);
+  );
+  // remove sent notes (offset == -1)
+  mptr = midi_buf.array_first();
+  while(mptr >= 0) (
+    mptr[0] < 0 ? (
+      midi_buf.array_remove(mptr);
+      mptr = midi_buf.array_first();
+    ) : (
+      mptr = midi_buf.array_next(mptr);
+    );
+  );
+);
+
+// send all notes off when modulating velocity on playback stop
+// fixes hanging notes
+modulate_vel && (lplay_state & 1) && (!play_state & 1) ? (
+  midisend(samples_offset, 0xB0, 123, 0);
 );
 
 // when playback starts and sync mode reset smooth
@@ -307,7 +364,7 @@ mode == 0 && (always_playing || play_state & 1) ? (
     spl0 += value;
     spl1 += value;
   );
-  modulate_volume ? (
+  modulate_vol ? (
     spl0 *= value;
     spl1 *= value;
   );
@@ -318,9 +375,12 @@ mode == 0 && (always_playing || play_state & 1) ? (
   modulate_stereo ? (
     mono = (spl0 + spl1) * 0.5;
     stereo = (spl0 - spl1);
-    
+
     spl0 = (mono + stereo * value);
     spl1 = (mono - stereo * value);
+  );
+  modulate_vel ? (
+    modulate_velocity();
   );
 );
 
@@ -341,7 +401,7 @@ mode == 1 ? (
     spl0 += value;
     spl1 += value;
   );
-  modulate_volume ? (
+  modulate_vol ? (
     spl0 *= value;
     spl1 *= value;
   );
@@ -352,9 +412,12 @@ mode == 1 ? (
   modulate_stereo ? (
     mono = (spl0 + spl1) * 0.5;
     stereo = (spl0 - spl1);
-    
+
     spl0 = (mono + stereo * value);
     spl1 = (mono - stereo * value);
+  );
+  modulate_vel ? (
+    modulate_velocity();
   );
 );
 
@@ -394,11 +457,14 @@ mode == 2 && always_playing ? (
     spl0 += value;
     spl1 += value;
   );
+  modulate_vel ? (
+    modulate_velocity();
+  );
 );
 
 // In midi mode keep processing audio modulation even if not triggering
 mode == 2 ? (
-  modulate_volume ? (
+  modulate_vol ? (
     spl0 *= value;
     spl1 *= value;
   );
@@ -409,11 +475,12 @@ mode == 2 ? (
   modulate_stereo ? (
     mono = (spl0 + spl1) * 0.5;
     stereo = (spl0 - spl1);
-    
+
     spl0 = (mono + stereo * value);
     spl1 = (mono - stereo * value);
   );
 );
+
 
 // manual trigger mode
 mode == 3 ? (
@@ -424,6 +491,24 @@ mode == 3 ? (
   output_audio ? ( // output audio for CV racks/plugins
     spl0 += value;
     spl1 += value;
+  );
+  modulate_vol ? (
+    spl0 *= value;
+    spl1 *= value;
+  );
+  modulate_pan ? (
+    value >= 0.5 ? spl0 *= 1 - (value * 2 -1);
+    value < 0.5 ? spl1 *= value * 2;
+  );
+  modulate_stereo ? (
+    mono = (spl0 + spl1) * 0.5;
+    stereo = (spl0 - spl1);
+
+    spl0 = (mono + stereo * value);
+    spl1 = (mono - stereo * value);
+  );
+  modulate_vel ? (
+    modulate_velocity();
   );
 );
 
@@ -704,7 +789,7 @@ function draw_seek ()
 always_playing ||
 (play_state & 1 && mode == 0) ||
 mode == 1 ||
-(mode == 2 && midi_trigger) || 
+(mode == 2 && midi_trigger) ||
 mode == 3 ?
 (
   draw_seek();
@@ -814,9 +899,10 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   strcat(menu, show_retrigger_slider ? "!Show retrigger slider|" : "Show retrigger slider|");
   strcat(menu, output_audio ? "<!Output audio / CV" : "<Output audio / CV");
   strcat(menu, "|>Modulate");
-  strcat(menu, modulate_volume ? "|!Volume" : "|Volume");
+  strcat(menu, modulate_vol ? "|!Volume" : "|Volume");
   strcat(menu, modulate_pan ? "|!Pan" : "|Pan");
-  strcat(menu, modulate_stereo ? "|<!Stereo" : "|<Stereo");
+  strcat(menu, modulate_stereo ? "|!Stereo" : "|Stereo");
+  strcat(menu, modulate_vel ? "|<!Velocity" : "|<Velocity");
   strcat(menu, "||Invert|Reverse|Clear|Copy|Paste");
   strcat(menu, "||>Load");
   strcat(menu, "|Sine|Triangle|<Random");
@@ -852,7 +938,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
     output_audio = !output_audio;
   );
   choice == 8+17 ? (
-    modulate_volume = !modulate_volume;
+    modulate_vol = !modulate_vol;
   );
   choice == 9+17 ? (
     modulate_pan = !modulate_pan;
@@ -861,36 +947,40 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
     modulate_stereo = !modulate_stereo;
   );
   choice == 11+17 ? (
+    modulate_vel = !modulate_vel;
+    on_slider();
+  );
+  choice == 12+17 ? (
     curve.invert();
     curve.build_segments();
   );
-  choice == 12+17 ? (
+  choice == 13+17 ? (
     curve.reverse();
     curve.build_segments();
   );
-  choice == 13+17 ? (
+  choice == 14+17 ? (
     curve.clear();
     curve.build_segments();
   );
-  choice == 14+17 ? (
+  choice == 15+17 ? (
     copy_curve();
   );
-  choice == 15+17 ? (
+  choice == 16+17 ? (
     paste_curve();
   );
-  choice == 16+17 ? (
+  choice == 17+17 ? (
     curve.load_sine();
     curve.build_segments();
   );
-  choice == 17+17 ? (
+  choice == 18+17 ? (
     curve.load_triangle();
     curve.build_segments();
   );
-  choice == 18+17 ? (
+  choice == 19+17 ? (
     curve.load_random(gridsegs);
     curve.build_segments();
   );
-  choice == 19+17 ? (
+  choice == 20+17 ? (
     show_about = 1;
   );
 );
@@ -1021,7 +1111,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "MSEG-1 1.1.5\nTilr 2024\n\n");
+  strcpy(txt, "MSEG-1 1.2.0\nTilr 2024\n\n");
   strcat(txt, "MSEG-1 is a multi-segment envelope/LFO generator.\n");
   strcat(txt, "Link params to value slider for modulation.\n\n");
   strcat(txt, "Left click - move points or set tension\n");
