@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="e2a3e7010f75eb63cd9fe873eb63300f36333c66" name="Tilr">
+<index version="1" commit="149ffbe058c087afa28553fffb9399f1f08af543" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -633,6 +633,13 @@ Fix midi mode modulation when not triggering]]></changelog>
         <source file="mseg1/mseg.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/7d0803600aeb49c97d2710160394b3141fc24efb/Modulation/mseg1/mseg.array.jsfx-inc</source>
         <source file="mseg1/mseg.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/7d0803600aeb49c97d2710160394b3141fc24efb/Modulation/mseg1/mseg.curvelib.jsfx-inc</source>
         <source file="mseg1/mseg.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/7d0803600aeb49c97d2710160394b3141fc24efb/Modulation/mseg1/mseg.mouselib.jsfx-inc</source>
+      </version>
+      <version name="1.2.0" author="tilr" time="2024-11-08T15:24:47Z">
+        <changelog><![CDATA[Add midi velocity modulation]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/149ffbe058c087afa28553fffb9399f1f08af543/Modulation/mseg1.jsfx</source>
+        <source file="mseg1/mseg.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/149ffbe058c087afa28553fffb9399f1f08af543/Modulation/mseg1/mseg.array.jsfx-inc</source>
+        <source file="mseg1/mseg.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/149ffbe058c087afa28553fffb9399f1f08af543/Modulation/mseg1/mseg.curvelib.jsfx-inc</source>
+        <source file="mseg1/mseg.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/149ffbe058c087afa28553fffb9399f1f08af543/Modulation/mseg1/mseg.mouselib.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="time1.jsfx" type="effect" desc="TIME-1">
