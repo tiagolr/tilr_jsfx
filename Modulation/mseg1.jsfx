@@ -1,6 +1,6 @@
 desc: MSEG-1
 author: tilr
-version: 1.2.0
+version: 1.2.1
 provides:
   mseg1/mseg.array.jsfx-inc
   mseg1/mseg.curvelib.jsfx-inc
@@ -90,7 +90,7 @@ link_edge_points = 1;
 modulate_vol = 0;
 modulate_pan = 0;
 modulate_stereo = 0;
-modulate_vel = 1;
+modulate_vel = 0;
 patterns = 1000000; // buffer to store patterns 12 * (1 + 4 * 1000)
 midi_buf.array_init(1100000, 1024, 4); // 1024 * [offset, msg1, note, vel]
 
@@ -1111,7 +1111,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "MSEG-1 1.2.0\nTilr 2024\n\n");
+  strcpy(txt, "MSEG-1 1.2.1\nTilr 2024\n\n");
   strcat(txt, "MSEG-1 is a multi-segment envelope/LFO generator.\n");
   strcat(txt, "Link params to value slider for modulation.\n\n");
   strcat(txt, "Left click - move points or set tension\n");
