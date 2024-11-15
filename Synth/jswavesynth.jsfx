@@ -75,6 +75,9 @@ slider24:pitch_dec=500<1, 5000, 1:log>-Pitch Decay
 slider25:_pitch_sus=0<0, 100, 0.1>-Pitch Sustain
 slider26:pitch_rel=500<1, 5000, 1:log>-Pitch Release
 
+slider28:mono=1<0,1,1>Mono
+slider29:glide=0<0,100,.1>Glide
+
 import ws.wavetable.jsfx-inc
 import ws.array.jsfx-inc
 import ws.adsr.jsfx-inc
@@ -96,6 +99,7 @@ env_panel = 0;
 
 poly.array_init(0, 128, 4+8); // [0note, 1velocity, 2freq, 3phase, 4..12 phase_unison]
 midi.array_init(11000, 256, 4); // [offset, msg1, note, vel]
+hold.array_init(13000, 128, 1); // [note] mono hold notes array
 envelope = 2000; // 128 * 7 buffer
 pitch_env = 3000; // 128 * 7 buffer
 filter_arr_l = 4000; // 128 * 11 buffer for filters one per key left channel
@@ -185,6 +189,12 @@ function copy_filter_coefs (f1, f2) (
 function on_slider() (
   gain = db2gain(normalize_vol_slider(vol));
   lfile != slider1 ? on_file_change();
+  lmono != mono ? (
+    poly.array_clear();
+    midi.array_clear();
+    hold.array_clear();
+  );
+  lmono = mono;
   uni_pan = _uni_pan / 100;
   osc_sus = normalize_vol_slider(_osc_sus);
   uni_voices = _uni_voices | 0;
@@ -250,6 +260,7 @@ while (midirecv(offset, msg1, note, vel)) (
   // All notes off
   event == 0xB0 && note == 123 ? (
     poly.array_clear();
+    hold.array_clear();
   );
 
   midisend(offset, msg1, note, vel);
@@ -262,9 +273,18 @@ local (ptr, note_repeat, note, vel)
   note = p[2];
   vel = p[3];
   
+  mono ? (
+    hold.array_find(note) == -1 ? (
+      ptr = hold.array_insert(hold.array_get(0));
+      ptr[0] = note;
+    );
+  );
+  
   // remove note if it is already playing
   note_repeat = 0;
-  ptr = poly.array_find(note);
+  ptr = mono 
+    ? poly.array_first()
+    : poly.array_find(note);
   ptr >= 0 ? (
     note_repeat = 1;
     last_phase[0] = ptr[3];
@@ -313,14 +333,35 @@ local (ptr, note_repeat, note, vel)
 );
 
 function off_note(p)
-local(ptr, note)
+local(ptr, note, pp)
 (
   note = p[2];
-  ptr = poly.array_find(note);
-  ptr >= 0 ? (
-    adsr_r(envelope + note * 7);
-    adsr_r(pitch_env + note * 7);
-    adsr_r(filter_env + note * 7);
+  
+  mono ? (
+    ptr = hold.array_find(note);
+    ptr >= 0 ? (
+      hold.array_remove(ptr);
+    );
+    // mono if there are notes being held trigger previous held note
+    hold.array_first() >= 0 ? (
+      ptr = hold.array_first(); // last held note
+      pp = poly.array_first(); // current note being played
+      pp[2] = note2freq(ptr[0]) / srate
+    ) : (
+      ptr = poly.array_first();
+      ptr >= 0 ? (
+        adsr_r(envelope + ptr[0] * 7);
+        adsr_r(pitch_env + ptr[0] * 7);
+        adsr_r(filter_env + ptr[0] * 7);
+      );  
+    );
+  ) : (
+    ptr = poly.array_find(note);
+    ptr >= 0 ? (
+      adsr_r(envelope + note * 7);
+      adsr_r(pitch_env + note * 7);
+      adsr_r(filter_env + note * 7);
+    );
   );
 );
 
