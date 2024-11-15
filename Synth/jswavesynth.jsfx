@@ -95,6 +95,7 @@ osc_free = 1;
 env_panel = 0;
 
 poly.array_init(0, 128, 4+8); // [0note, 1velocity, 2freq, 3phase, 4..12 phase_unison]
+midi.array_init(11000, 256, 4); // [offset, msg1, note, vel]
 envelope = 2000; // 128 * 7 buffer
 pitch_env = 3000; // 128 * 7 buffer
 filter_arr_l = 4000; // 128 * 11 buffer for filters one per key left channel
@@ -206,6 +207,16 @@ gain.smooth = db2gain(normalize_vol_slider(vol));
 on_slider();
 
 @block
+// remove queued midi messages that have been processed
+ptr = midi.array_first();
+while (ptr >= 0) (
+  ptr[0] < 0 ? (
+    midi.array_remove(ptr);
+    ptr = midi.array_first();
+  ) : (
+    ptr = midi.array_next(ptr);
+  );
+);
 
 // remove notes that finished adsr
 ptr = poly.array_first();
@@ -223,67 +234,17 @@ while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
   channel = msg1 & 0x0F;
 
-  // Note on
-  event == 0x90 && vel ? (
-
-    // remove note if it is already playing
-    note_repeat = 0;
-    ptr = poly.array_find(note);
-    ptr >= 0 ? (
-      note_repeat = 1;
-      last_phase[0] = ptr[3];
-      loop(i = 1; 8,
-        last_phase[i] = ptr[3+i];
-        i += 1;
-      );
-      poly.array_remove(ptr);
+  // note on/off
+  event == 0x90 || event == 0x80 ? (
+    // prevent midi buffer overflow
+    midi.size == 256 ? (
+      midi.array_remove(midi.array_first());
     );
-
-    // if polyphony is full
-    poly.size == 127 ? (
-      poly.array_remove(poly.array_first());
-    );
-
-    ptr = poly.array_add();
-    ptr[0] = note;
-    ptr[1] = vel / 127;
-    ptr[2] = note2freq(note) / srate;
-    ptr[3] = note_repeat ? last_phase[0] : osc_free ? rand(2) - 1 : 0; // osc start phase
-    loop(i = 4; 8,
-      ptr[i] = note_repeat ? last_phase[i-3] : osc_free ? rand(2) - 1 : 0; // random unison start phase
-      i += 1;
-    );
-
-    env = envelope + note * 7;
-    adsr_seta(osc_att * 0.001, env);
-    adsr_setd(osc_dec * 0.001, env);
-    adsr_sets(exp(log(10)/20 * osc_sus), env);
-    adsr_setr(osc_rel * 0.001, env);
-    adsr_a(min(vel / 127 + (1 - osc_vel / 100), 1), env);
-
-    env = pitch_env + note * 7;
-    adsr_seta(pitch_att * 0.001, env);
-    adsr_setd(pitch_dec * 0.001, env);
-    adsr_sets(pitch_sus, env);
-    adsr_setr(pitch_rel * 0.001, env);
-    adsr_a(1, env);
-
-    env = filter_env + note * 7;
-    adsr_seta(flt_att * 0.001, env);
-    adsr_setd(flt_dec * 0.001, env);
-    adsr_sets(flt_sus, env);
-    adsr_setr(flt_rel * 0.001, env);
-    adsr_a(1, env);
-  );
-
-  // Note off
-  event == 0x80 || (event == 0x90 && !vel) ? (
-    ptr = poly.array_find(note);
-    ptr >= 0 ? (
-      adsr_r(envelope + note * 7);
-      adsr_r(pitch_env + note * 7);
-      adsr_r(filter_env + note * 7);
-    );
+    ptr = midi.array_add();
+    ptr[0] = offset;
+    ptr[1] = msg1;
+    ptr[2] = note;
+    ptr[3] = vel
   );
 
   // All notes off
@@ -295,8 +256,97 @@ while (midirecv(offset, msg1, note, vel)) (
 );
 
 @sample
+function on_note(p) 
+local (ptr, note_repeat, note, vel)
+(
+  note = p[2];
+  vel = p[3];
+  
+  // remove note if it is already playing
+  note_repeat = 0;
+  ptr = poly.array_find(note);
+  ptr >= 0 ? (
+    note_repeat = 1;
+    last_phase[0] = ptr[3];
+    loop(i = 1; 8,
+      last_phase[i] = ptr[3+i];
+      i += 1;
+    );
+    poly.array_remove(ptr);
+  );
+  
+  // if polyphony is full
+  poly.size == 127 ? (
+    poly.array_remove(poly.array_first());
+  );
+  
+  ptr = poly.array_add();
+  ptr[0] = note;
+  ptr[1] = vel / 127;
+  ptr[2] = note2freq(note) / srate;
+  ptr[3] = note_repeat ? last_phase[0] : osc_free ? rand(2) - 1 : 0; // osc start phase
+  loop(i = 4; 8,
+    ptr[i] = note_repeat ? last_phase[i-3] : osc_free ? rand(2) - 1 : 0; // random unison start phase
+    i += 1;
+  );
+  
+  env = envelope + note * 7;
+  adsr_seta(osc_att * 0.001, env);
+  adsr_setd(osc_dec * 0.001, env);
+  adsr_sets(exp(log(10)/20 * osc_sus), env);
+  adsr_setr(osc_rel * 0.001, env);
+  adsr_a(min(vel / 127 + (1 - osc_vel / 100), 1), env);
+  
+  env = pitch_env + note * 7;
+  adsr_seta(pitch_att * 0.001, env);
+  adsr_setd(pitch_dec * 0.001, env);
+  adsr_sets(pitch_sus, env);
+  adsr_setr(pitch_rel * 0.001, env);
+  adsr_a(1, env);
+  
+  env = filter_env + note * 7;
+  adsr_seta(flt_att * 0.001, env);
+  adsr_setd(flt_dec * 0.001, env);
+  adsr_sets(flt_sus, env);
+  adsr_setr(flt_rel * 0.001, env);
+  adsr_a(1, env);
+);
+
+function off_note(p)
+local(ptr, note)
+(
+  note = p[2];
+  ptr = poly.array_find(note);
+  ptr >= 0 ? (
+    adsr_r(envelope + note * 7);
+    adsr_r(pitch_env + note * 7);
+    adsr_r(filter_env + note * 7);
+  );
+);
+
+function handle_midi(p) 
+local(msg1, vel, event)
+(
+  msg1 = p[1];
+  vel = p[3];
+  event = msg1 & 0xF0;
+  event == 0x90 && vel ? on_note(p); // Note on
+  event == 0x80 || (event == 0x90 && !vel) ? off_note(p); // Note off
+);
+
 gain.smooth();
 
+// process queued midi
+ptr = midi.array_first();
+while(ptr >= 0) (
+  ptr[0] == 0 ? ( // offset has reached zero
+    handle_midi(ptr);  
+  );
+  ptr[0] -= 1;
+  ptr = midi.array_next(ptr);
+);
+
+// process notes being played
 ptr = poly.array_first();
 while(ptr >= 0) ( // for each note/voice
   outl = 0;
