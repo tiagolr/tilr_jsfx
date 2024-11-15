@@ -53,6 +53,16 @@ function adsr_reset(buf)
   buf[5] = 0;
 );
 
+function adsr_copy(from, to)
+(
+  to[0] = from[0];
+  to[1] = from[1];
+  to[2] = from[2];
+  to[3] = from[3];
+  to[4] = from[4];
+  to[5] = from[5];
+);
+
 function adsr_r(buf)
   // instance(state, r)
 (
@@ -94,6 +104,7 @@ function adsr_a(scale, buf)
 );
 
 function adsr_process(buf)
+local(env, a, s, d, r, state, scale)
   //instance(state, a, d, s, r, env, scale)
 (
   env = buf[0];
