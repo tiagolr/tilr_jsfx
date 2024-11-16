@@ -847,7 +847,7 @@ gfx_panel == 5 ? (
   draw_curve_edit(350, 155-6, 40, 10+11, 107, 0, -100, 100);
   draw_curve_edit(350, 175-6, 40, 10+11, 108, 0, -100, 100);
   draw_curve_edit(350, 195-6, 40, 10+11, 109, 0, -100, 100);
-  
+
 );
 
 function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
@@ -867,11 +867,11 @@ function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
 );
 
 wheelknob_nslider ? (
-  on_knob_move(wheelknob_nslider, wheelknob_min, wheelknob_max, wheelknob_is_log, mouse.wheel * -7);
+  on_knob_move(wheelknob_nslider, wheelknob_min, wheelknob_max, wheelknob_is_log, mouse.wheel * -7 * wheelknob_invert);
 );
 
 selknob_nslider && mouse.left && mouse.dy != 0 ? (
-  on_knob_move(selknob_nslider, selknob_min, selknob_max, selknob_is_log, mouse.dy);
+  on_knob_move(selknob_nslider, selknob_min, selknob_max, selknob_is_log, mouse.dy * selknob_invert);
 );
 
 doubleclk_nslider ? (

@@ -9,6 +9,7 @@ selknob_nslider = 0;
 selknob_min = 0;
 selknob_max = 0;
 selknob_is_log = 0;
+selknob_invert = 1;
 
 wheelknob_nslider = 0;
 wheelknob_min = 0;
@@ -125,12 +126,14 @@ local (scale)
       selknob_min = _min;
       selknob_max = _max;
       selknob_is_log = is_log;
+      selknob_invert = 1;
     );
     mouse.wheel ? (
       wheelknob_nslider = nslider;
       wheelknob_min = _min;
       wheelknob_max = _max;
       wheelknob_is_log = is_log;
+      wheelknob_invert = 1;
     );
   );
 );
@@ -174,7 +177,7 @@ local(val, _x, _y, tension)
   gfx_a = 1;
   loop(i = 0; w,
     _x = x + i;
-    _y = tension >= 0 
+    _y = tension >= 0
       ? y + h - pow((i/w),tension + 1) * h
       : y + h - pow((i/w),1/(-tension + 1)) * h;
     i == 0 ? (
@@ -197,12 +200,14 @@ local(val, _x, _y, tension)
       selknob_min = _min;
       selknob_max = _max;
       selknob_is_log = 0;
+      selknob_invert = -1;
     );
     mouse.wheel ? (
       wheelknob_nslider = nslider;
       wheelknob_min = _min;
       wheelknob_max = _max;
       wheelknob_is_log = 0;
+      wheelknob_invert = -1;
     );
   );
 );
@@ -225,12 +230,14 @@ local(val)
       selknob_min = _min;
       selknob_max = _max;
       selknob_is_log = 0;
+      selknob_invert = 1;
     );
     mouse.wheel ? (
       wheelknob_nslider = nslider;
       wheelknob_min = _min;
       wheelknob_max = _max;
       wheelknob_is_log = 0;
+      wheelknob_invert = 1;
     );
   );
 );
