@@ -466,7 +466,6 @@ while(ptr >= 0) ( // for each note/voice
     glide_samples -= 1;
   );
 
-
   spl0 += outl * gain.smooth;
   spl1 += outr * gain.smooth;
 

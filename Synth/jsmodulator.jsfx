@@ -1,8 +1,11 @@
 desc: JSModulator
 author: tilr
-version: 1.2.1
+version: 1.3.0
 changelog:
-  Partials using exponential scale instead of linear
+  Reset partials and phase using right click
+  Add midi offset support
+  Add Mono mode and note glide
+  Add presets
 provides:
   jsmodulator/mod.array.jsfx-inc
   jsmodulator/mod.envlib.jsfx-inc
@@ -62,6 +65,9 @@ slider6:_rel=500<0, 5000, 1:log>-Release
 slider7:_att_t=0<-100,100,1>-Attack Curve
 slider8:_dec_t=0<-100,100,1>-Decay Curve
 slider9:_rel_t=0<-100,100,1>-Release Curve
+
+slider11:mono=0<0,1,1>Mono
+slider12:glide=1<1,2000,1:log>Glide
 
 slider20:_o1_vol=100<0,100,1>-Osc1 Vol
 slider21:_o1_pan=0<-100,100,0.01>-Osc1 Pan
@@ -176,6 +182,8 @@ file_var(0, osc4.wavenum);
 ext_noinit = 1;
 poly.array_init(1000, 127, 11); // [note, freq, ph1, ph2, ph3, ph4, signal1, signal2, signal3, signal4, note_repeat_flag]
 remove_notes.array_init(5000, 127, 1); // remove notes array
+midi.array_init(6000, 256, 4); // [offset, msg1, note, vel]
+hold.array_init(8000, 128, 1); // [note] mono hold notes array
 envelope = 10000; // 18 * 127 - master envelope per key
 envelope_o1 = 15000; // 18 * 127
 envelope_o2 = 20000; // 18 * 127
@@ -184,6 +192,9 @@ envelope_o4 = 30000; // 18 * 127
 filter_arr_l = 35000; // 11 * 127 buffer for filters one per key left channel
 filter_arr_r = 40000; // 11 * 127 buffer for filters one per key right channel
 envelope_flt = 45000; // 18 * 127 buffer for filter adsr
+glide_freq = 1; // Hz
+glide_samples = 0;
+glide_mult = 0;
 
 gfx_panel = 1; // 0 - Global, 1 - Op1, 2 - Op2 .... 5 - Filter
 gfx_panel_osc = 0; // 0 - Envelope - 1 harm, 2 - phase
@@ -336,7 +347,90 @@ o4_gain.smooth = db2gain(normalizeVolSlider(o4_vol));
 _flt_freq.rc_set(0.0033);
 _flt_freq.smooth = _flt_freq;
 
-function on_note(note) local (ptr, env) (
+function copy_filter_coefs (f1, f2) (
+  f2[0] = f1[0]; // a1
+  f2[1] = f1[1]; // a2
+  f2[2] = f1[2]; // b0
+  f2[3] = f1[3]; // b1
+  f2[4] = f1[4]; // b2
+);
+
+@slider
+
+on_slider();
+
+@block
+
+while (midirecv(offset, msg1, note, vel)) (
+  event = msg1 & 0xF0;
+
+  // Note on
+  /*
+  event == 0x90 && vel ? (
+    // note repeat
+    // because this synth uses only one note per key
+    // key repeat triggers a fast release of the current note
+    // and retriggers the note once it completes
+    ptr = poly.array_find(note);
+    ptr >= 0 ? (
+      env_r(envelope + note * 18);
+      ptr[10] = 1; // note repeat flag
+    ) : (
+      on_note(note, velote
+  )
+  // Note off
+  /*
+  event == 0x80 || (event == 0x90 && !vel) ? (
+    ptr = poly.array_find(note);
+    ptr >= 0 ? (
+      env_r(envelope + note * 18);
+      env_r(envelope_o1 + note * 18);
+      env_r(envelope_o2 + note * 18);
+      env_r(envelope_o3 + note * 18);
+      env_r(envelope_o4 + note * 18);
+      env_r(envelope_flt + note * 18);
+    );
+  );
+  */
+
+  // note on/off
+  event == 0x90 || event == 0x80 ? (
+    midi.size == 256 ? ( // prevent midi buffer overflow
+      midi.array_remove(midi.array_first());
+    );
+    ptr = midi.array_add();
+    ptr[0] = offset;
+    ptr[1] = msg1;
+    ptr[2] = note;
+    ptr[3] = vel
+  );
+
+  // All notes off
+  event == 0xB0 && note == 123 ? (
+    poly.array_clear();
+    hold.array_clear();
+  );
+
+  midisend(offset, msg1, note, vel);
+);
+
+@sample
+
+function glide_to(note)
+(
+  glide_samples = glide * srate / 1000;
+  glide_target = note2freq(note);
+  glide_mult = pow(glide_target / glide_freq, 1 / glide_samples);
+);
+
+function on_note(note, vel)
+local (ptr, env, p)
+(
+  p = poly.array_find(note);
+  p >= 0 ? (
+    poly.array_remove(p); // remove repeated notes
+  );
+
   ptr = poly.array_add();
   ptr[0] = note;
   ptr[1] = note2freq(note) / srate;
@@ -344,7 +438,7 @@ function on_note(note) local (ptr, env) (
   ptr[3] = _o2_phase / 100;
   ptr[4] = _o3_phase / 100;
   ptr[5] = _o4_phase / 100;
-  ptr[10] = 0;
+  ptr[10] = 0; // retrigger flag, contains note velocity
 
   env = envelope + note * 18;
   memset(env, 0, 18);
@@ -377,60 +471,42 @@ function on_note(note) local (ptr, env) (
   env_a(env, 1);
 );
 
-function copy_filter_coefs (f1, f2) (
-  f2[0] = f1[0]; // a1
-  f2[1] = f1[1]; // a2
-  f2[2] = f1[2]; // b0
-  f2[3] = f1[3]; // b1
-  f2[4] = f1[4]; // b2
+function off_note(p)
+local(ptr, note)
+(
+  note = p[2];
+  ptr = poly.array_find(note);
+  ptr >= 0 ? (
+    env_r(envelope + note * 18);
+    env_r(envelope_o1 + note * 18);
+    env_r(envelope_o2 + note * 18);
+    env_r(envelope_o3 + note * 18);
+    env_r(envelope_o4 + note * 18);
+    env_r(envelope_flt + note * 18);
+  );
 );
 
-@slider
-
-on_slider();
-
-@block
-
-while (midirecv(offset, msg1, note, vel)) (
+function handle_midi(p)
+local(ptr, msg1, vel, note, event)
+(
+  msg1 = p[1];
+  vel = p[3];
+  note = p[2];
   event = msg1 & 0xF0;
-
-  // Note on
   event == 0x90 && vel ? (
-    // note repeat
-    // because this synth uses only one note per key
+    // this synth uses only one note per key
     // key repeat triggers a fast release of the current note
     // and retriggers the note once it completes
     ptr = poly.array_find(note);
     ptr >= 0 ? (
       env_r(envelope + note * 18);
-      ptr[10] = 1; // note repeat flag
+      ptr[10] = vel; // note repeat flag
     ) : (
-      on_note(note);
+      on_note(note, vel);
     );
   );
-
-  // Note off
-  event == 0x80 || (event == 0x90 && !vel) ? (
-    ptr = poly.array_find(note);
-    ptr >= 0 ? (
-      env_r(envelope + note * 18);
-      env_r(envelope_o1 + note * 18);
-      env_r(envelope_o2 + note * 18);
-      env_r(envelope_o3 + note * 18);
-      env_r(envelope_o4 + note * 18);
-      env_r(envelope_flt + note * 18);
-    );
-  );
-
-  // All notes off
-  event == 0xB0 && note == 123 ? (
-    poly.array_clear();
-  );
-
-  midisend(offset, msg1, note, vel);
+  event == 0x80 || (event == 0x90 && !vel) ? off_note(p); // Note off
 );
-
-@sample
 
 gain.smooth();
 o1_gain.smooth();
@@ -438,6 +514,16 @@ o2_gain.smooth();
 o3_gain.smooth();
 o4_gain.smooth();
 _flt_freq.smooth();
+
+// process queued midi
+ptr = midi.array_first();
+while(ptr >= 0) (
+  ptr[0] == 0 ? ( // offset has reached zero
+    handle_midi(ptr);
+  );
+  ptr[0] -= 1;
+  ptr = midi.array_next(ptr);
+);
 
 remove_notes.array_clear();
 ptr = poly.array_first();
@@ -548,8 +634,7 @@ while(ptr >= 0) (
   p = poly.array_find(ptr[0]);
   p >= 0 ? (
     p[10] ? ( // Note repeat, release has finished, retrigger note
-      poly.array_remove(p);
-      on_note(ptr[0]);
+      on_note(p[0], p[10]);
     ) : (
       poly.array_remove(p);
     );

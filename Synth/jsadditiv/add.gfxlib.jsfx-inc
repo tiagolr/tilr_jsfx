@@ -172,7 +172,7 @@ local (harm_w, amp, i, mouse_active, hx, ph, yamp, phase, real, img, yphase)
   gfx_rect(x - 1, y - 1, w + 2, h + 2);
   set_color(COLOR_ACTIVE);
   harm_w = (w / nharm) | 0;
-  mouse_active = edit_mode && mouse.left && mouse_in_rect(x,y,w,h);
+  mouse_active = edit_mode && (mouse.left || mouse.right) && mouse_in_rect(x,y,w,h);
 
   phase_mode ? gfx_a = 0.3;
   loop(i=0; nharm,
@@ -182,7 +182,7 @@ local (harm_w, amp, i, mouse_active, hx, ph, yamp, phase, real, img, yphase)
     hx = x + harm_w * i / 2; // harmonic x
     gfx_rect(hx, y + h - floor(amp * h), harm_w - 1, amp * h);
     !phase_mode && mouse_active && mouse_in_rect(hx, y, harm_w, h) ? (
-      yamp = mouse.control ? 0 : 1 - (mouse.y - y) / h;
+      yamp = mouse.control || mouse.right ? 0 : 1 - (mouse.y - y) / h;
       yamp = pow(yamp, 2); // amplitude calculated as exponential curve [0..1] for more sensitivity at lower end
       phase = harmonic_phase(buf[i], buf[i+1]);
       buf[i+1] = yamp * cos(phase); // real = r * cos(p)
@@ -203,7 +203,7 @@ local (harm_w, amp, i, mouse_active, hx, ph, yamp, phase, real, img, yphase)
         gfx_rect(hx, y + h/2, harm_w-1, max(-ph, 1)|0);
       );
       phase_mode && mouse_active && mouse_in_rect(hx, y, harm_w, h) ? (
-        yphase = mouse.control ? 0 : (mouse.y - y) / h * -2 - 1;
+        yphase = mouse.control || mouse.right ? 0 : (mouse.y - y) / h * -2 - 1;
         amp = harmonic_amplitude(buf[i], buf[i+1]);
         buf[i+1] = amp * cos(yphase*$pi); // real
         buf[i] = amp * sin(yphase*$pi); // img
