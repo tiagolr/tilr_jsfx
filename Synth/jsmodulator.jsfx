@@ -420,13 +420,11 @@ local (ptr, env)
     );
   );
 
-  mono_glide_note = 0;
   ptr = mono
     ? poly.array_first()
     : poly.array_find(note);
   ptr >= 0 ? (
     mono ? (
-      mono_glide_note = 1;
       last_phase[0] = ptr[2];
       last_phase[1] = ptr[3];
       last_phase[2] = ptr[4];
@@ -444,12 +442,12 @@ local (ptr, env)
   ptr[5] = mono_glide_note ? last_phase[3] : _o4_phase / 100;
   ptr[10] = 0; // retrigger flag, contains note velocity
 
-  !mono_glide_note ? (
-    env = mono ? envelope : envelope + note * 18;
-    memset(env, 0, 18);
-    env_adsr(env, _att, _dec, sus, _rel, _att_t / 100, _dec_t / 100, _rel_t / 100);
-    env_a(env, min(vel / 127 + (1 - _vel / 100), 1));
+  env = mono ? envelope : envelope + note * 18;
+  first_mono_note ? memset(env, 0, 18);
+  env_adsr(env, _att, _dec, sus, _rel, _att_t / 100, _dec_t / 100, _rel_t / 100);
+  env_a(env, min(vel / 127 + (1 - _vel / 100), 1));
 
+  !mono || first_mono_note ? (
     env = mono ? envelope_o1 : envelope_o1 + note * 18;
     memset(env, 0, 18);
     env_adsr(env, _o1_att, _o1_dec, o1_sus, _o1_rel, _o1_att_t/100, _o1_dec_t/100, _o1_rel_t/100);
@@ -617,12 +615,12 @@ while(ptr >= 0) ( // for each note/voice
 
   // Apply filter
   _flt_type != 0 ? (
-    filterbuf = envelope_flt + ptr[0] * 18; // envelope buffer
+    filterbuf = mono ? envelope_flt : envelope_flt + ptr[0] * 18; // envelope buffer
     env_process(filterbuf);
     multiplier = pow(22000/_flt_freq.smooth, filterbuf[0] * _flt_adsr_amt / 100);
 
-    filterbuf_l = filter_arr_l + ptr[0] * 11; // filter buffer left
-    filterbuf_r = filter_arr_r + ptr[0] * 11; // filter buffer left
+    filterbuf_l = mono ? filter_arr_l : filter_arr_l + ptr[0] * 11; // filter buffer left
+    filterbuf_r = mono ? filter_arr_r : filter_arr_r + ptr[0] * 11; // filter buffer left
 
     _flt_type == 1 ? (
       rbj_lp(filterbuf_l, _flt_freq.smooth * multiplier, _flt_q);
