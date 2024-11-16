@@ -1,9 +1,12 @@
 desc: JSWavesynth
 author: tilr
-version: 1.3.0
+version: 1.4.0
 changelog:
-  Revert midi offset
+  Support midi notes offset
+  Added mono mode and glide
+  Added presets
 provides:
+  jswavesynth.jsfx.RPL
   jswavesynth/ws.adsr.jsfx-inc
   jswavesynth/ws.array.jsfx-inc
   jswavesynth/ws.gfxlib.jsfx-inc
@@ -75,8 +78,8 @@ slider24:pitch_dec=500<1, 5000, 1:log>-Pitch Decay
 slider25:_pitch_sus=0<0, 100, 0.1>-Pitch Sustain
 slider26:pitch_rel=500<1, 5000, 1:log>-Pitch Release
 
-slider28:mono=1<0,1,1>Mono
-slider29:glide=1<1,2000,1:log>Glide
+slider28:mono=0<0,1,1>-Mono
+slider29:glide=1<1,2000,1:log>-Glide
 
 import ws.wavetable.jsfx-inc
 import ws.array.jsfx-inc
@@ -234,7 +237,7 @@ while (ptr >= 0) (
 // remove notes that finished adsr
 ptr = poly.array_first();
 while (ptr >= 0) (
-  env = envelope + ptr[0] * 7;
+  env = mono ? envelope : envelope + ptr[0] * 7;
   env[5] == 0 ? (
     poly.array_remove(ptr);
     ptr = poly.array_first();
@@ -270,20 +273,22 @@ while (midirecv(offset, msg1, note, vel)) (
 );
 
 @sample
-function glide_to(note) 
+function glide_to(note)
 (
   glide_samples = glide * srate / 1000;
   glide_target = note2freq(note);
   glide_mult = pow(glide_target / glide_freq, 1 / glide_samples);
 );
 
-function on_note(p) 
+function on_note(p)
 local (ptr, note_repeat, note, vel, env)
 (
   note = p[2];
   vel = p[3];
-  
+
+  first_mono_note = 0;
   mono ? (
+    !hold.size ? first_mono_note = 1;
     !poly.size ? glide_freq = note2freq(note);
     glide_to(note);
     hold.array_find(note) == -1 ? (
@@ -291,10 +296,10 @@ local (ptr, note_repeat, note, vel, env)
       ptr[0] = note;
     );
   );
-  
+
   // remove note if it is already playing
   note_repeat = 0;
-  ptr = mono 
+  ptr = mono
     ? poly.array_first()
     : poly.array_find(note);
   ptr >= 0 ? (
@@ -304,20 +309,14 @@ local (ptr, note_repeat, note, vel, env)
       last_phase[i] = ptr[3+i];
       i += 1;
     );
-    // FIX clicks
-    mono && note != ptr[0] ? (
-      LAST = last_phase[0];
-      adsr_copy(envelope + ptr[0] * 7, envelope + note * 7);
-      adsr_reset(envelope + ptr[0] * 7);
-    );
     poly.array_remove(ptr);
   );
-  
+
   // if polyphony is full
   poly.size == 127 ? (
     poly.array_remove(poly.array_first());
   );
-  
+
   ptr = poly.array_add();
   ptr[0] = note;
   ptr[1] = vel / 127;
@@ -328,33 +327,35 @@ local (ptr, note_repeat, note, vel, env)
     i += 1;
   );
 
-  env = envelope + note * 7;
+  env = mono ? envelope : envelope + note * 7;
   adsr_seta(osc_att * 0.001, env);
   adsr_setd(osc_dec * 0.001, env);
   adsr_sets(exp(log(10)/20 * osc_sus), env);
   adsr_setr(osc_rel * 0.001, env);
   adsr_a(min(vel / 127 + (1 - osc_vel / 100), 1), env);
-  
-  env = pitch_env + note * 7;
-  adsr_seta(pitch_att * 0.001, env);
-  adsr_setd(pitch_dec * 0.001, env);
-  adsr_sets(pitch_sus, env);
-  adsr_setr(pitch_rel * 0.001, env);
-  adsr_a(1, env);
-  
-  env = filter_env + note * 7;
-  adsr_seta(flt_att * 0.001, env);
-  adsr_setd(flt_dec * 0.001, env);
-  adsr_sets(flt_sus, env);
-  adsr_setr(flt_rel * 0.001, env);
-  adsr_a(1, env);
+
+  !mono || first_mono_note ? (
+    env = mono ? pitch_env : pitch_env + note * 7;
+    adsr_seta(pitch_att * 0.001, env);
+    adsr_setd(pitch_dec * 0.001, env);
+    adsr_sets(pitch_sus, env);
+    adsr_setr(pitch_rel * 0.001, env);
+    adsr_a(1, env);
+
+    env = mono ? filter_env : filter_env + note * 7;
+    adsr_seta(flt_att * 0.001, env);
+    adsr_setd(flt_dec * 0.001, env);
+    adsr_sets(flt_sus, env);
+    adsr_setr(flt_rel * 0.001, env);
+    adsr_a(1, env);
+  );
 );
 
 function off_note(p)
 local(ptr, note, pp)
 (
   note = p[2];
-  
+
   mono ? (
     ptr = hold.array_find(note);
     ptr >= 0 ? (
@@ -367,10 +368,10 @@ local(ptr, note, pp)
     ) : (
       ptr = poly.array_first();
       ptr >= 0 ? (
-        adsr_r(envelope + ptr[0] * 7);
-        adsr_r(pitch_env + ptr[0] * 7);
-        adsr_r(filter_env + ptr[0] * 7);
-      );  
+        adsr_r(envelope);
+        adsr_r(pitch_env);
+        adsr_r(filter_env);
+      );
     );
   ) : (
     ptr = poly.array_find(note);
@@ -382,7 +383,7 @@ local(ptr, note, pp)
   );
 );
 
-function handle_midi(p) 
+function handle_midi(p)
 local(msg1, vel, event)
 (
   msg1 = p[1];
@@ -398,7 +399,7 @@ gain.smooth();
 ptr = midi.array_first();
 while(ptr >= 0) (
   ptr[0] == 0 ? ( // offset has reached zero
-    handle_midi(ptr);  
+    handle_midi(ptr);
   );
   ptr[0] -= 1;
   ptr = midi.array_next(ptr);
@@ -409,11 +410,11 @@ ptr = poly.array_first();
 while(ptr >= 0) ( // for each note/voice
   outl = 0;
   outr = 0;
-  envbuf = envelope + ptr[0] * 7;
+  envbuf = mono ? envelope : envelope + ptr[0] * 7;
   adsr_process(envbuf);
   osc_pitch_det = 1;
   pitch_amt ? (
-    pitchbuf = pitch_env + ptr[0] * 7;
+    pitchbuf = mono ? pitch_env : pitch_env + ptr[0] * 7;
     adsr_process(pitchbuf);
     osc_pitch_det = pow(2, pitchbuf[0] * pitch_amt / 12);
   );
@@ -438,12 +439,12 @@ while(ptr >= 0) ( // for each note/voice
 
   // Apply filter
   flt_shape != 0 ? (
-    filterbuf = filter_env + ptr[0] * 7; // envelope buffer
+    filterbuf = mono ? filter_env : filter_env + ptr[0] * 7; // envelope buffer
     adsr_process(filterbuf);
     multiplier = pow(20000/flt_freq, filterbuf[0] * flt_amt / 100);
 
-    filterbuf_l = filter_arr_l + ptr[0] * 11; // filter buffer left
-    filterbuf_r = filter_arr_r + ptr[0] * 11; // filter buffer left
+    filterbuf_l = mono ? filter_arr_l : filter_arr_l + ptr[0] * 11; // filter buffer left
+    filterbuf_r = mono ? filter_arr_r : filter_arr_r + ptr[0] * 11; // filter buffer right
 
     flt_shape == 1 ? (
       rbj_lp(filterbuf_l, flt_freq * multiplier, flt_q);
@@ -455,13 +456,16 @@ while(ptr >= 0) ( // for each note/voice
     copy_filter_coefs(filterbuf_l, filterbuf_r);
     outl = rbj_df1(filterbuf_l, outl);
     outr = rbj_df1(filterbuf_r, outr);
+
+
   );
-  
+
   // glide processing
   mono && glide_samples >= 0 ? (
     glide_freq *= glide_mult;
     glide_samples -= 1;
   );
+
 
   spl0 += outl * gain.smooth;
   spl1 += outr * gain.smooth;
@@ -477,6 +481,11 @@ mouse.update_mouse_state();
 draw_wave(20, 20, 120, 70, wavebuf, wavelen);
 
 draw_knob(20, 130, 2, "Vol", 80, 0, 100, 0, 0, sprintf(#, "%i%%", slider(2)));
+draw_button(80, 110, 60, "Mono", mono == 1);
+mouse.left_click && mouse_in_rect(80, 110-2, 60, 14) ? mono = !mono;
+mono ? (
+  draw_knob(90, 130, 29, "Glide", 1, 1, 2000, 1, 0, sprintf(#, "%i ms", slider(29)));
+);
 
 set_color(0x666666);
 gfx_x = 160; gfx_y = 20;
