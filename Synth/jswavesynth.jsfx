@@ -1,6 +1,6 @@
 desc: JSWavesynth
 author: tilr
-version: 1.4.1
+version: 1.4.2
 changelog:
   Fix glide processing
 provides:
@@ -258,7 +258,7 @@ while (midirecv(offset, msg1, note, vel)) (
     ptr[0] = offset;
     ptr[1] = msg1;
     ptr[2] = note;
-    ptr[3] = vel
+    ptr[3] = vel;
   );
 
   // All notes off

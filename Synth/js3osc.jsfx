@@ -1,8 +1,10 @@
 desc: JS3Osc
 author: tilr
-version: 1.1.2
+version: 1.2.0
 changelog:
-  Revert midi offset
+  Add MIDI offset support
+  Add Mono and glide
+  Add presets
 provides:
   js3osc/3o.adsr.jsfx-inc
   js3osc/3o.array.jsfx-inc
@@ -21,8 +23,6 @@ about:
   * Three oscillators with 6 wave types
   * Oscillator phase stereo detuning and offset
 tags: synth, instrument
-
-slider1:maxpoly=16<2, 32, 1>-Polyphony
 
 slider2:osc1_vol=80<0, 100, .01>-Osc1 Volume
 slider3:osc1_wave=0<0, 5, 1{Sine,Triangle,Saw,Square,Pulse,Noise}>-Osc1 Wave
@@ -54,7 +54,7 @@ slider27:osc3_inv=0<0, 1, 1{No, Yes}>-Osc3 Invert phase
 slider30:env_att=5<1, 10000, 1:log>-Attack
 slider31:env_dec=1<1, 10000, 1:log>-Decay
 slider32:_env_sus=100<0, 100, 1>-Sustain
-slider33:env_rel=500<1, 10000, 1:log>-Release
+slider33:env_rel=500<1, 10000, 1:log>-Release 
 
 slider35:pitch_amt=0<-24,24,0.1>-Pitch amount
 slider36:pitch_att=1<1, 10000, 1:log>-Pitch Attack
@@ -73,6 +73,9 @@ slider47:filter_rel=500<1, 10000, 1:log>-Filter Release
 
 slider50:_rand_phase=0<0,100,1>-Rand phase
 
+slider60:mono=0<0,1,1>-Mono
+slider61:glide=1<1,2000,1:log>-Glide
+
 import 3o.adsr.jsfx-inc
 import 3o.array.jsfx-inc
 import 3o.rbj_filter.jsfx-inc
@@ -86,12 +89,16 @@ options:gfx_hz=60 no_meter
 gfx_sel_envelope = 0;
 
 poly.array_init(0, 128, 9); // [note, velocity, freq, phase-left, phase-right, ph2l, ph2r, ph3l, ph3r]
+midi.array_init(20000, 256, 4); // [offset, msg1, note, vel]
+hold.array_init(22000, 128, 1); // [note] mono hold notes array
 envelope = 2000; // 128 * 7 buffer for keys adsr
-remove_ptrs.array_init(4000, 128, 1);
 pitch_env = 5000; // 128 * 7 buffer for pitch adsr
 filter_arr_l = 6000; // 128 * 11 buffer for filters one per key left channel
 filter_arr_r = 8000; // 128 * 11 buffer for filters one per key right channel
 filter_env = 10000; // 128 * 7 buffer for filter adsr
+glide_freq = 1; // Hz
+glide_samples = 0;
+glide_mult = 0;
 
 function wrap(number) (number <= 1 ? number : number - 1;);
 function sine_wave(cycle) (sin(cycle * 2 * $pi););
@@ -165,6 +172,12 @@ function copy_filter_coefs (f1, f2) (
 );
 
 function on_slider() (
+  lmono != mono ? (
+    poly.array_clear();
+    midi.array_clear();
+    hold.array_clear();
+  );
+  lmono = mono;
   osc1_gain = db2gain(normalize_vol_slider(osc1_vol));
   osc1_st_det = pow(2, osc1_phase_det / 1200); // stereo detune
   osc1_fine_det = pow(2, osc1_fine / 1200);
@@ -210,68 +223,156 @@ osc3_phase_offset.smooth = _osc3_phase_offset / 100;
 on_slider();
 
 @block
+// remove queued midi messages that have been processed
+ptr = midi.array_first();
+while (ptr >= 0) (
+  ptr[0] < 0 ? (
+    midi.array_remove(ptr);
+    ptr = midi.array_first();
+  ) : (
+    ptr = midi.array_next(ptr);
+  );
+);
+
+// remove notes that finished adsr
+ptr = poly.array_first();
+while (ptr >= 0) (
+  env = mono ? envelope : envelope + ptr[0] * 7;
+  env[5] == 0 ? (
+    poly.array_remove(ptr);
+    ptr = poly.array_first();
+  ) : (
+    ptr = poly.array_next(ptr);
+  );
+);
 
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
   channel = msg1 & 0x0F;
 
-  // Note on
-  event == 0x90 && vel ? (
+  // note on/off
+  event == 0x90 || event == 0x80 ? (
+    midi.size == 256 ? midi.array_remove(midi.array_first()); // prevent midi buffer overflow
+    ptr = midi.array_add();
+    ptr[0] = offset;
+    ptr[1] = msg1;
+    ptr[2] = note;
+    ptr[3] = vel;
+  );
 
-    // remove note if it is already playing
-    note_repeat = 0;
-    ptr = poly.array_find(note);
-    ptr >= 0 ? (
-      note_repeat = 1;
-      last_phase_1l = ptr[3];
-      last_phase_1r = ptr[4];
-      last_phase_2l = ptr[5];
-      last_phase_2r = ptr[6];
-      last_phase_3l = ptr[7];
-      last_phase_3r = ptr[8];
-      poly.array_remove(ptr);
+  // All notes off
+  event == 0xB0 && note == 123 ? (
+    poly.array_clear();
+    hold.array_clear();
+  );
+
+  midisend(offset, msg1, note, vel);
+);
+
+@sample
+function glide_to(note)
+(
+  glide_samples = glide * srate / 1000;
+  glide_target = note2freq(note);
+  glide_mult = pow(glide_target / glide_freq, 1 / glide_samples);
+);
+
+function on_note(p)
+local (ptr, note_repeat, note, vel, env)
+(
+  note = p[2];
+  vel = p[3];
+
+  first_mono_note = 0;
+  mono ? (
+    !hold.size ? first_mono_note = 1;
+    !poly.size ? glide_freq = note2freq(note);
+    glide_to(note);
+    hold.array_find(note) == -1 ? (
+      ptr = hold.array_insert(hold.array_get(0));
+      ptr[0] = note;
     );
+  );
 
-    // if polyphony is full and not mono remove first element
-    poly.size == maxpoly && maxpoly != 0 ? (
-      poly.array_remove(poly.array_first());
-    );
+  // remove note if it is already playing
+  note_repeat = 0;
+  ptr = mono
+    ? poly.array_first()
+    : poly.array_find(note);
+  ptr >= 0 ? (
+    note_repeat = 1;
+    last_phase_1l = ptr[3];
+    last_phase_1r = ptr[4];
+    last_phase_2l = ptr[5];
+    last_phase_2r = ptr[6];
+    last_phase_3l = ptr[7];
+    last_phase_3r = ptr[8];
+    poly.array_remove(ptr);
+  );
 
-    ptr = poly.array_add();
-    ptr[0] = note;
-    ptr[1] = vel / 127;
-    ptr[2] = note2freq(note) / srate;
-    ptr[3] = note_repeat ? last_phase_1l : rand_phase * (rand() - 0.5); // osc start phase left
-    ptr[4] = note_repeat ? last_phase_1r : rand_phase * (rand() - 0.5); // osc start phase right
-    ptr[5] = note_repeat ? last_phase_2l : rand_phase * (rand() - 0.5); // osc 2 start phase left
-    ptr[6] = note_repeat ? last_phase_2r : rand_phase * (rand() - 0.5); // osc 2
-    ptr[7] = note_repeat ? last_phase_3l : rand_phase * (rand() - 0.5); // osc 3
-    ptr[8] = note_repeat ? last_phase_3r : rand_phase * (rand() - 0.5); // osc 3
+  // if polyphony is full
+  poly.size == 127 ? (
+    poly.array_remove(poly.array_first());
+  );
 
-    env = envelope + note * 7;
-    adsr_seta(env_att * 0.001, env);
-    adsr_setd(env_dec * 0.001, env);
-    adsr_sets(exp(log(10)/20 * env_sus), env);
-    adsr_setr(env_rel * 0.001, env);
-    adsr_a(vel / 127, env);
+  ptr = poly.array_add();
+  ptr[0] = note;
+  ptr[1] = vel / 127;
+  ptr[2] = note2freq(note) / srate;
+  ptr[3] = note_repeat ? last_phase_1l : rand_phase * (rand() - 0.5); // osc start phase left
+  ptr[4] = note_repeat ? last_phase_1r : rand_phase * (rand() - 0.5); // osc start phase right
+  ptr[5] = note_repeat ? last_phase_2l : rand_phase * (rand() - 0.5); // osc 2 start phase left
+  ptr[6] = note_repeat ? last_phase_2r : rand_phase * (rand() - 0.5); // osc 2
+  ptr[7] = note_repeat ? last_phase_3l : rand_phase * (rand() - 0.5); // osc 3
+  ptr[8] = note_repeat ? last_phase_3r : rand_phase * (rand() - 0.5); // osc 3
 
-    env = pitch_env + note * 7;
+  env = mono ? envelope : envelope + note * 7;
+  adsr_seta(env_att * 0.001, env);
+  adsr_setd(env_dec * 0.001, env);
+  adsr_sets(exp(log(10)/20 * env_sus), env);
+  adsr_setr(env_rel * 0.001, env);
+  adsr_a(vel / 127, env);
+
+  !mono || first_mono_note ? (
+    env = mono ? pitch_env : pitch_env + note * 7;
     adsr_seta(pitch_att * 0.001, env);
     adsr_setd(pitch_dec * 0.001, env);
     adsr_sets(pitch_sus / 100, env);
     adsr_setr(pitch_rel * 0.001, env);
     adsr_a(1, env);
 
-    env = filter_env + note * 7;
+    env = mono ? filter_env : filter_env + note * 7;
     adsr_seta(filter_att * 0.001, env);
     adsr_setd(filter_dec * 0.001, env);
     adsr_sets(filter_sus / 100, env);
     adsr_setr(filter_rel * 0.001, env);
     adsr_a(1, env);
   );
+);
 
-  // Note off
-  event == 0x80 || (event == 0x90 && !vel) ? (
+function off_note(p)
+local(ptr, note, pp)
+(
+  note = p[2];
+
+  mono ? (
+    ptr = hold.array_find(note);
+    ptr >= 0 ? (
+      hold.array_remove(ptr);
+    );
+    // if there are notes being held trigger previous held note
+    hold.array_first() >= 0 ? (
+      ptr = hold.array_first(); // last held note
+      glide_to(ptr[0]);
+    ) : (
+      ptr = poly.array_first();
+      ptr >= 0 ? (
+        adsr_r(envelope);
+        adsr_r(pitch_env);
+        adsr_r(filter_env);
+      );
+    );
+  ) : (
     ptr = poly.array_find(note);
     ptr >= 0 ? (
       adsr_r(envelope + note * 7);
@@ -279,16 +380,27 @@ while (midirecv(offset, msg1, note, vel)) (
       adsr_r(filter_env + note * 7);
     );
   );
-
-  // All notes off
-  event == 0xB0 && note == 123 ? (
-    poly.array_clear();
-  );
-
-  midisend(offset, msg1, note, vel);
 );
 
-@sample
+function handle_midi(p)
+local(msg1, vel, event)
+(
+  msg1 = p[1];
+  vel = p[3];
+  event = msg1 & 0xF0;
+  event == 0x90 && vel ? on_note(p); // Note on
+  event == 0x80 || (event == 0x90 && !vel) ? off_note(p); // Note off
+);
+
+// process queued midi
+ptr = midi.array_first();
+while(ptr >= 0) (
+  ptr[0] == 0 ? ( // offset has reached zero
+    handle_midi(ptr);
+  );
+  ptr[0] -= 1;
+  ptr = midi.array_next(ptr);
+);
 
 osc1_gain.smooth();
 osc2_gain.smooth();
@@ -297,15 +409,14 @@ osc1_phase_offset.smooth();
 osc2_phase_offset.smooth();
 osc3_phase_offset.smooth();
 
-remove_ptrs.array_clear();
 ptr = poly.array_first();
 while(ptr >= 0) ( // for each note/voice
   out_l = 0;
   out_r = 0;
-  envbuf = envelope + ptr[0] * 7;
+  envbuf = mono ? envelope : envelope + ptr[0] * 7;
   env_state = adsr_process(envbuf);
   pitch_amt ? (
-    pitchbuf = pitch_env + ptr[0] * 7;
+    pitchbuf = mono ? pitch_env : pitch_env + ptr[0] * 7;
     adsr_process(pitchbuf);
     osc_pitch_det = pow(2, pitchbuf[0] * (pitch_amt | 0) / 12);
   ) : (
@@ -315,8 +426,8 @@ while(ptr >= 0) ( // for each note/voice
   // OSC1
   osc1_vol > -60 ? (
     osc_det = osc1_coarse_det * osc1_fine_det * osc_pitch_det;
-    ptr[3] = wrap(ptr[3] + ptr[2] * osc1_st_det * osc_det); // phase left
-    ptr[4] = wrap(ptr[4] + ptr[2] / osc1_st_det * osc_det); // phase right
+    ptr[3] = wrap(ptr[3] + (mono ? glide_freq / srate : ptr[2]) * osc1_st_det * osc_det); // phase left
+    ptr[4] = wrap(ptr[4] + (mono ? glide_freq / srate : ptr[2]) / osc1_st_det * osc_det); // phase right
     wave_l = make_wave(osc1_wave, wrap(ptr[3] + osc1_phase_offset.smooth * 0.25));
     wave_r = make_wave(osc1_wave, wrap(ptr[4] - osc1_phase_offset.smooth * 0.25));
     out_l += wave_l * (1 - osc1_pan) * envbuf[] * osc1_gain.smooth * (osc1_inv ? -1 : 1);
@@ -326,8 +437,8 @@ while(ptr >= 0) ( // for each note/voice
   // OSC2
   osc2_vol > -60 ? (
     osc_det = osc2_coarse_det * osc2_fine_det * osc_pitch_det;
-    ptr[5] = wrap(ptr[5] + ptr[2] * osc2_st_det * osc_det); // phase left
-    ptr[6] = wrap(ptr[6] + ptr[2] / osc2_st_det * osc_det); // phase right
+    ptr[5] = wrap(ptr[5] + (mono ? glide_freq / srate : ptr[2]) * osc2_st_det * osc_det); // phase left
+    ptr[6] = wrap(ptr[6] + (mono ? glide_freq / srate : ptr[2]) / osc2_st_det * osc_det); // phase right
     wave_l = make_wave(osc2_wave, wrap(ptr[5] + osc2_phase_offset.smooth * 0.25));
     wave_r = make_wave(osc2_wave, wrap(ptr[6] - osc2_phase_offset.smooth * 0.25));
     out_l += wave_l * (1 - osc2_pan) * envbuf[] * osc2_gain.smooth * (osc2_inv ? -1 : 1);
@@ -337,8 +448,8 @@ while(ptr >= 0) ( // for each note/voice
   // OSC3
   osc3_vol > -60 ? (
     osc_det = osc3_coarse_det * osc3_fine_det * osc_pitch_det;
-    ptr[7] = wrap(ptr[7] + ptr[2] * osc3_st_det * osc_det); // phase left
-    ptr[8] = wrap(ptr[8] + ptr[2] / osc3_st_det * osc_det); // phase right
+    ptr[7] = wrap(ptr[7] + (mono ? glide_freq / srate : ptr[2]) * osc3_st_det * osc_det); // phase left
+    ptr[8] = wrap(ptr[8] + (mono ? glide_freq / srate : ptr[2]) / osc3_st_det * osc_det); // phase right
     wave_l = make_wave(osc3_wave, wrap(ptr[7] + osc3_phase_offset.smooth * 0.25));
     wave_r = make_wave(osc3_wave, wrap(ptr[8] - osc3_phase_offset.smooth * 0.25));
     out_l += wave_l * (1 - osc3_pan) * envbuf[] * osc3_gain.smooth * (osc3_inv ? -1 : 1);
@@ -347,12 +458,12 @@ while(ptr >= 0) ( // for each note/voice
 
   // Apply filter
   filter_shape != 0 ? (
-    filterbuf = filter_env + ptr[0] * 7; // envelope buffer
+    filterbuf = mono ? filter_env : filter_env + ptr[0] * 7; // envelope buffer
     adsr_process(filterbuf);
     multiplier = pow(20000/filter_freq, filterbuf[0] * filter_adsr_amt / 100);
 
-    filterbuf_l = filter_arr_l + ptr[0] * 11; // filter buffer left
-    filterbuf_r = filter_arr_r + ptr[0] * 11; // filter buffer left
+    filterbuf_l = mono ? filter_arr_l : filter_arr_l + ptr[0] * 11; // filter buffer left
+    filterbuf_r = mono ? filter_arr_r : filter_arr_r + ptr[0] * 11; // filter buffer left
 
     filter_shape == 1 ? (
       rbj_lp(filterbuf_l, filter_freq * multiplier, filter_q);
@@ -369,21 +480,13 @@ while(ptr >= 0) ( // for each note/voice
   spl0 += out_l;
   spl1 += out_r;
 
-  // mark note for deletion
-  env_state == 0 ? (
-    p = remove_ptrs.array_add();
-    p[0] = ptr[0];
-  );
-
   ptr = poly.array_next(ptr);
 );
 
-// remove notes that finished adsr
-ptr = remove_ptrs.array_first();
-while(ptr >= 0) (
-  p = poly.array_find(ptr[0]);
-  p >= 0 ? poly.array_remove(p);
-  ptr = remove_ptrs.array_next(ptr);
+// glide processing
+mono && glide_samples >= 0 ? (
+  glide_freq *= glide_mult;
+  glide_samples -= 1;
 );
 
 @gfx 440 380
@@ -555,8 +658,13 @@ set_color(0x666666);
 gfx_line(370, 20, 370, 260);
 gfx_x = 380; gfx_y = 20;
 gfx_drawstr("PHASE");
-
 draw_knob(380, 40, 50, "Rand", 0, 0, 100, 0, 0, sprintf(#, "%i %%", slider(50)));
+
+draw_button(380, 110, 40, "Mono", mono == 1);
+mouse.left_click && mouse_in_rect(380, 110-2, 40, 14) ? mono = !mono;
+mono ? (
+  draw_knob(380, 130, 61, "Glide", 1, 1, 2000, 1, 0, sprintf(#, "%i ms", slider(61)));
+);
 
 function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
   factor *= mouse.control ? 0.05 : 1;
