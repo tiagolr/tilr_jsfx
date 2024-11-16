@@ -184,6 +184,7 @@ poly.array_init(1000, 127, 11); // [note, freq, ph1, ph2, ph3, ph4, signal1, sig
 remove_notes.array_init(5000, 127, 1); // remove notes array
 midi.array_init(6000, 256, 4); // [offset, msg1, note, vel]
 hold.array_init(8000, 128, 1); // [note] mono hold notes array
+last_phase = 9000; // last phase buffer for o1..o4
 envelope = 10000; // 18 * 127 - master envelope per key
 envelope_o1 = 15000; // 18 * 127
 envelope_o2 = 20000; // 18 * 127
@@ -406,65 +407,110 @@ function glide_to(note)
 );
 
 function on_note(note, vel)
-local (ptr, env, p)
+local (ptr, env)
 (
-  p = poly.array_find(note);
-  p >= 0 ? (
-    poly.array_remove(p); // remove repeated notes
+  first_mono_note = 0;
+  mono ? (
+    !hold.size ? first_mono_note = 1;
+    !poly.size ? glide_freq = note2freq(note);
+    glide_to(note);
+    hold.array_find(note) == -1 ? (
+      ptr = hold.array_insert(hold.array_get(0));
+      ptr[0] = note;
+    );
+  );
+
+  mono_glide_note = 0;
+  ptr = mono
+    ? poly.array_first()
+    : poly.array_find(note);
+  ptr >= 0 ? (
+    mono ? (
+      mono_glide_note = 1;
+      last_phase[0] = ptr[2];
+      last_phase[1] = ptr[3];
+      last_phase[2] = ptr[4];
+      last_phase[3] = ptr[5];
+    );
+    poly.array_remove(ptr); // remove repeated notes
   );
 
   ptr = poly.array_add();
   ptr[0] = note;
   ptr[1] = note2freq(note) / srate;
-  ptr[2] = _o1_phase / 100;
-  ptr[3] = _o2_phase / 100;
-  ptr[4] = _o3_phase / 100;
-  ptr[5] = _o4_phase / 100;
+  ptr[2] = mono_glide_note ? last_phase[0] : _o1_phase / 100;
+  ptr[3] = mono_glide_note ? last_phase[1] : _o2_phase / 100;
+  ptr[4] = mono_glide_note ? last_phase[2] : _o3_phase / 100;
+  ptr[5] = mono_glide_note ? last_phase[3] : _o4_phase / 100;
   ptr[10] = 0; // retrigger flag, contains note velocity
 
-  env = envelope + note * 18;
-  memset(env, 0, 18);
-  env_adsr(env, _att, _dec, sus, _rel, _att_t / 100, _dec_t / 100, _rel_t / 100);
-  env_a(env, min(vel / 127 + (1 - _vel / 100), 1));
+  !mono_glide_note ? (
+    env = mono ? envelope : envelope + note * 18;
+    memset(env, 0, 18);
+    env_adsr(env, _att, _dec, sus, _rel, _att_t / 100, _dec_t / 100, _rel_t / 100);
+    env_a(env, min(vel / 127 + (1 - _vel / 100), 1));
 
-  env = envelope_o1 + note * 18;
-  memset(env, 0, 18);
-  env_adsr(env, _o1_att, _o1_dec, o1_sus, _o1_rel, _o1_att_t/100, _o1_dec_t/100, _o1_rel_t/100);
-  env_a(env, min(vel / 127 + (1 - _o1_vel / 100), 1));
+    env = mono ? envelope_o1 : envelope_o1 + note * 18;
+    memset(env, 0, 18);
+    env_adsr(env, _o1_att, _o1_dec, o1_sus, _o1_rel, _o1_att_t/100, _o1_dec_t/100, _o1_rel_t/100);
+    env_a(env, min(vel / 127 + (1 - _o1_vel / 100), 1));
 
-  env = envelope_o2 + note * 18;
-  memset(env, 0, 18);
-  env_adsr(env, _o2_att, _o2_dec, o2_sus, _o2_rel, _o2_att_t/100, _o2_dec_t/100, _o2_rel_t/100);
-  env_a(env, min(vel / 127 + (1 - _o2_vel / 100), 1));
+    env = mono ? envelope_o2 : envelope_o2 + note * 18;
+    memset(env, 0, 18);
+    env_adsr(env, _o2_att, _o2_dec, o2_sus, _o2_rel, _o2_att_t/100, _o2_dec_t/100, _o2_rel_t/100);
+    env_a(env, min(vel / 127 + (1 - _o2_vel / 100), 1));
 
-  env = envelope_o3 + note * 18;
-  memset(env, 0, 18);
-  env_adsr(env, _o3_att, _o3_dec, o3_sus, _o3_rel, _o3_att_t/100, _o3_dec_t/100, _o3_rel_t/100);
-  env_a(env, min(vel / 127 + (1 - _o3_vel / 100), 1));
+    env = mono ? envelope_o3 : envelope_o3 + note * 18;
+    memset(env, 0, 18);
+    env_adsr(env, _o3_att, _o3_dec, o3_sus, _o3_rel, _o3_att_t/100, _o3_dec_t/100, _o3_rel_t/100);
+    env_a(env, min(vel / 127 + (1 - _o3_vel / 100), 1));
 
-  env = envelope_o4 + note * 18;
-  memset(env, 0, 18);
-  env_adsr(env, _o4_att, _o4_dec, o4_sus, _o4_rel, _o4_att_t/100, _o4_dec_t/100, _o4_rel_t/100);
-  env_a(env, min(vel / 127 + (1 - _o4_vel / 100), 1));
+    env = mono ? envelope_o4 : envelope_o4 + note * 18;
+    memset(env, 0, 18);
+    env_adsr(env, _o4_att, _o4_dec, o4_sus, _o4_rel, _o4_att_t/100, _o4_dec_t/100, _o4_rel_t/100);
+    env_a(env, min(vel / 127 + (1 - _o4_vel / 100), 1));
 
-  env = envelope_flt + note * 18;
-  memset(env, 0, 18);
-  env_adsr(env, _flt_att, _flt_dec, flt_sus, _flt_rel, _flt_att_t/100, _flt_dec_t/100, _flt_rel_t/100);
-  env_a(env, 1);
+    env = mono ? envelope_flt : envelope_flt + note * 18;
+    memset(env, 0, 18);
+    env_adsr(env, _flt_att, _flt_dec, flt_sus, _flt_rel, _flt_att_t/100, _flt_dec_t/100, _flt_rel_t/100);
+    env_a(env, 1);
+  );
 );
 
 function off_note(p)
 local(ptr, note)
 (
   note = p[2];
-  ptr = poly.array_find(note);
-  ptr >= 0 ? (
-    env_r(envelope + note * 18);
-    env_r(envelope_o1 + note * 18);
-    env_r(envelope_o2 + note * 18);
-    env_r(envelope_o3 + note * 18);
-    env_r(envelope_o4 + note * 18);
-    env_r(envelope_flt + note * 18);
+  mono ? (
+    ptr = hold.array_find(note);
+    ptr >= 0 ? (
+      hold.array_remove(ptr);
+    );
+    // if there are notes being held trigger previous held note
+    hold.array_first() >= 0 ? (
+      ptr = hold.array_first(); // last held note
+      glide_to(ptr[0]);
+    ) : (
+      ptr = poly.array_first();
+      ptr >= 0 ? (
+        env_r(envelope);
+        env_r(envelope_o1);
+        env_r(envelope_o2);
+        env_r(envelope_o3);
+        env_r(envelope_o4);
+        env_r(envelope_flt);
+      );
+    );
+  ) : (
+    ptr = poly.array_find(note);
+    ptr >= 0 ? (
+      env_r(envelope + note * 18);
+      env_r(envelope_o1 + note * 18);
+      env_r(envelope_o2 + note * 18);
+      env_r(envelope_o3 + note * 18);
+      env_r(envelope_o4 + note * 18);
+      env_r(envelope_flt + note * 18);
+    );
   );
 );
 
@@ -480,7 +526,7 @@ local(ptr, msg1, vel, note, event)
     // key repeat triggers a fast release of the current note
     // and retriggers the note once it completes
     ptr = poly.array_find(note);
-    ptr >= 0 ? (
+    !mono && ptr >= 0 ? (
       env_r(envelope + note * 18);
       ptr[10] = vel; // note repeat flag
     ) : (
@@ -510,20 +556,20 @@ while(ptr >= 0) (
 remove_notes.array_clear();
 ptr = poly.array_first();
 while(ptr >= 0) ( // for each note/voice
-  envbuf = envelope + ptr[0] * 18;
+  envbuf = mono ? envelope : envelope + ptr[0] * 18;
   env_state = env_process(envbuf);
 
-  env_o1 = envelope_o1 + ptr[0] * 18;
-  env_o2 = envelope_o2 + ptr[0] * 18;
-  env_o3 = envelope_o3 + ptr[0] * 18;
-  env_o4 = envelope_o4 + ptr[0] * 18;
+  env_o1 = mono ? envelope_o1 : envelope_o1 + ptr[0] * 18;
+  env_o2 = mono ? envelope_o2 : envelope_o2 + ptr[0] * 18;
+  env_o3 = mono ? envelope_o3 : envelope_o3 + ptr[0] * 18;
+  env_o4 = mono ? envelope_o4 : envelope_o4 + ptr[0] * 18;
 
   env_process(env_o1);
   env_process(env_o2);
   env_process(env_o3);
   env_process(env_o4);
 
-  freq = ptr[1];
+  freq = mono ? glide_freq / srate : ptr[1];
   ph1 = ptr[2];
   ph2 = ptr[3];
   ph3 = ptr[4];
