@@ -6,6 +6,7 @@ changelog:
   Add midi offset support
   Add Mono mode and note glide
   Add presets
+  Improve envelope curves display
 provides:
   jsmodulator/mod.array.jsfx-inc
   jsmodulator/mod.envlib.jsfx-inc
@@ -62,12 +63,12 @@ slider3:_att=1<1, 5000, 1:log>-Attack
 slider4:_dec=1<1, 5000, 1:log>-Decay
 slider5:_sus=100<0, 100, 0.1>-Sustain
 slider6:_rel=500<0, 5000, 1:log>-Release
-slider7:_att_t=0<-100,100,1>-Attack Curve
-slider8:_dec_t=0<-100,100,1>-Decay Curve
-slider9:_rel_t=0<-100,100,1>-Release Curve
+slider7:_att_t=40<-100,100,1>-Attack Curve
+slider8:_dec_t=40<-100,100,1>-Decay Curve
+slider9:_rel_t=40<-100,100,1>-Release Curve
 
-slider11:mono=0<0,1,1>Mono
-slider12:glide=1<1,2000,1:log>Glide
+slider11:mono=0<0,1,1>-Mono
+slider12:glide=1<1,2000,1:log>-Glide
 
 slider20:_o1_vol=100<0,100,1>-Osc1 Vol
 slider21:_o1_pan=0<-100,100,0.01>-Osc1 Pan
@@ -79,9 +80,9 @@ slider26:_o1_att=1<1, 5000, 1:log>-Osc1 Attack
 slider27:_o1_dec=1<1, 5000, 1:log>-Osc1 Decay
 slider28:_o1_sus=100<0, 100, 0.1>-Osc1 Sustain
 slider29:_o1_rel=5000<0, 5000, 1:log>-Osc1 Release
-slider30:_o1_att_t=0<-100,100,1>-Osc1 Attack Curve
-slider31:_o1_dec_t=0<-100,100,1>-Osc1 Decay Curve
-slider32:_o1_rel_t=0<-100,100,1>-Osc1 Release Curve
+slider30:_o1_att_t=40<-100,100,1>-Osc1 Attack Curve
+slider31:_o1_dec_t=40<-100,100,1>-Osc1 Decay Curve
+slider32:_o1_rel_t=40<-100,100,1>-Osc1 Release Curve
 
 slider40:_o2_vol=0<0,100,1>-Osc2 Vol
 slider41:_o2_pan=0<-100,100,0.01>-Osc2 Pan
@@ -93,9 +94,9 @@ slider46:_o2_att=1<1, 5000, 1:log>-Osc2 Attack
 slider47:_o2_dec=1<1, 5000, 1:log>-Osc2 Decay
 slider48:_o2_sus=100<0, 100, 0.1>-Osc2 Sustain
 slider49:_o2_rel=5000<0, 5000, 1:log>-Osc2 Release
-slider50:_o2_att_t=0<-100,100,1>-Osc2 Attack Curve
-slider51:_o2_dec_t=0<-100,100,1>-Osc2 Decay Curve
-slider52:_o2_rel_t=0<-100,100,1>-Osc2 Release Curve
+slider50:_o2_att_t=40<-100,100,1>-Osc2 Attack Curve
+slider51:_o2_dec_t=40<-100,100,1>-Osc2 Decay Curve
+slider52:_o2_rel_t=40<-100,100,1>-Osc2 Release Curve
 
 slider60:_o3_vol=0<0,100,1>-Osc3 Vol
 slider61:_o3_pan=0<-100,100,0.01>-Osc3 Pan
@@ -107,9 +108,9 @@ slider66:_o3_att=1<1, 5000, 1:log>-Osc3 Attack
 slider67:_o3_dec=1<1, 5000, 1:log>-Osc3 Decay
 slider68:_o3_sus=100<0, 100, 0.1>-Osc3 Sustain
 slider69:_o3_rel=5000<0, 5000, 1:log>-Osc3 Release
-slider70:_o3_att_t=0<-100,100,1>-Osc3 Attack Curve
-slider71:_o3_dec_t=0<-100,100,1>-Osc3 Decay Curve
-slider72:_o3_rel_t=0<-100,100,1>-Osc3 Release Curve
+slider70:_o3_att_t=40<-100,100,1>-Osc3 Attack Curve
+slider71:_o3_dec_t=40<-100,100,1>-Osc3 Decay Curve
+slider72:_o3_rel_t=40<-100,100,1>-Osc3 Release Curve
 
 slider80:_o4_vol=0<0,100,1>-Osc4 Vol
 slider81:_o4_pan=0<-100,100,0.01>-Osc4 Pan
@@ -121,9 +122,9 @@ slider86:_o4_att=1<1, 5000, 1:log>-Osc4 Attack
 slider87:_o4_dec=1<1, 5000, 1:log>-Osc4 Decay
 slider88:_o4_sus=100<0, 100, 0.1>-Osc4 Sustain
 slider89:_o4_rel=5000<0, 5000, 1:log>-Osc4 Release
-slider90:_o4_att_t=0<-100,100,1>-Osc4 Attack Curve
-slider91:_o4_dec_t=0<-100,100,1>-Osc4 Decay Curve
-slider92:_o4_rel_t=0<-100,100,1>-Osc4 Release Curve
+slider90:_o4_att_t=40<-100,100,1>-Osc4 Attack Curve
+slider91:_o4_dec_t=40<-100,100,1>-Osc4 Decay Curve
+slider92:_o4_rel_t=40<-100,100,1>-Osc4 Release Curve
 
 slider100:_flt_type=0<0,3,1{Off,LP,BP,HP}>-Filter type
 slider101:_flt_freq=10000<20, 22000, 1:log>-Filter freq
@@ -132,9 +133,9 @@ slider103:_flt_att=1<1, 5000, 1:log>-Filter Attack
 slider104:_flt_dec=500<1, 5000, 1:log>-Filter Decay
 slider105:_flt_sus=0<0, 100, 0.1>-Filter Sustain
 slider106:_flt_rel=500<1, 5000, 1:log>-Filter Release
-slider107:_flt_att_t=0<-100,100,1>-Filter Attack Curve
-slider108:_flt_dec_t=0<-100,100,1>-Filter Decay Curve
-slider109:_flt_rel_t=0<-100,100,1>-Filter Release Curve
+slider107:_flt_att_t=40<-100,100,1>-Filter Attack Curve
+slider108:_flt_dec_t=40<-100,100,1>-Filter Decay Curve
+slider109:_flt_rel_t=40<-100,100,1>-Filter Release Curve
 slider110:_flt_adsr_amt=0<-100, 100, 0.01>-Filter ASDR amt.
 
 slider240:_fm11=0<0,100,.1>-Fm11
@@ -197,7 +198,7 @@ glide_freq = 1; // Hz
 glide_samples = 0;
 glide_mult = 0;
 
-gfx_panel = 1; // 0 - Global, 1 - Op1, 2 - Op2 .... 5 - Filter
+gfx_panel = 0; // 0 - Global, 1 - Op1, 2 - Op2 .... 5 - Filter
 gfx_panel_osc = 0; // 0 - Envelope - 1 harm, 2 - phase
 
 function db2gain (db) local (val) (
@@ -698,6 +699,11 @@ mouse.left_click && mouse_in_rect(270,20-2,50,10+4) ? gfx_panel = 5;
 // GLOBAL
 gfx_panel == 0 ? (
   draw_knob(20,50, 1, "Vol", 100, 0, 100, 0, 0, sprintf(#, "%d", slider(1)), 0);
+  draw_button(75, 65, 50, "Mono", mono == 1);
+  mouse.left_click && mouse_in_rect(75, 65-2, 50, 14) ? mono = !mono;
+  mono ? (
+    draw_knob(140, 50, 12, "Glide", 1, 1, 2000, 1, 0, sprintf(#, "%i ms", slider(12)), 0);
+  );
   draw_knob(20,150, 2, "Vel", 100, 0, 100, 0, 0, sprintf(#, "%d", slider(2)), 0);
   draw_knob(80,150, 3, "Att", 1, 1, 5000, 1, 0, sprintf(#, "%d", slider(3)), 0);
   draw_knob(140,150, 4, "Dec", 1, 1, 5000, 1, 0, sprintf(#, "%d", slider(4)), 0);
@@ -714,9 +720,9 @@ gfx_panel == 0 ? (
   gfx_drawstr("Dec");
   gfx_x = 320; gfx_y = 195;
   gfx_drawstr("Rel");
-  draw_number(350, 155, 40, 10, 7, 0, -100, 100);
-  draw_number(350, 175, 40, 10, 8, 0, -100, 100);
-  draw_number(350, 195, 40, 10, 9, 0, -100, 100);
+  draw_curve_edit(350, 155-6, 40, 10+11, 7, 0, -100, 100);
+  draw_curve_edit(350, 175-6, 40, 10+11, 8, 0, -100, 100);
+  draw_curve_edit(350, 195-6, 40, 10+11, 9, 0, -100, 100);
 );
 
 // OPERATORS
@@ -785,16 +791,16 @@ gfx_panel > 0 && gfx_panel < 5 ? (
     gfx_drawstr("Dec");
     gfx_x = 320; gfx_y = 195;
     gfx_drawstr("Rel");
-    draw_number(350, 155, 40, 10, 30+(gfx_panel-1)*20, 0, -100, 100);
-    draw_number(350, 175, 40, 10, 31+(gfx_panel-1)*20, 0, -100, 100);
-    draw_number(350, 195, 40, 10, 32+(gfx_panel-1)*20, 0, -100, 100);
+    draw_curve_edit(350, 155-6, 40, 10+11, 30+(gfx_panel-1)*20, 0, -100, 100);
+    draw_curve_edit(350, 175-6, 40, 10+11, 31+(gfx_panel-1)*20, 0, -100, 100);
+    draw_curve_edit(350, 195-6, 40, 10+11, 32+(gfx_panel-1)*20, 0, -100, 100);
   );
 
   gfx_panel_osc > 0 ? (
-    mouse.left_click && mouse_in_rect(20, 150, 320, 60) ? (
+    (mouse.left_click || mouse.right_click) && mouse_in_rect(20, 150, 320, 60) ? (
       edit_mode = 1;
     );
-    edit_mode && !mouse.left ? (
+    edit_mode && !mouse.left && !mouse.right ? (
       edit_mode = 0;
       gfx_panel == 1 ? resynthesize(osc1.buf, osc1.len, osc1.four)
       : gfx_panel == 2 ? resynthesize(osc2.buf, osc2.len, osc2.four)
@@ -838,9 +844,10 @@ gfx_panel == 5 ? (
   gfx_drawstr("Dec");
   gfx_x = 320; gfx_y = 195;
   gfx_drawstr("Rel");
-  draw_number(350, 155, 40, 10, 107, 0, -100, 100);
-  draw_number(350, 175, 40, 10, 108, 0, -100, 100);
-  draw_number(350, 195, 40, 10, 109, 0, -100, 100);
+  draw_curve_edit(350, 155-6, 40, 10+11, 107, 0, -100, 100);
+  draw_curve_edit(350, 175-6, 40, 10+11, 108, 0, -100, 100);
+  draw_curve_edit(350, 195-6, 40, 10+11, 109, 0, -100, 100);
+  
 );
 
 function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
