@@ -361,37 +361,19 @@ on_slider();
 
 @block
 
+// remove queued midi messages that have been processed
+ptr = midi.array_first();
+while (ptr >= 0) (
+  ptr[0] < 0 ? (
+    midi.array_remove(ptr);
+    ptr = midi.array_first();
+  ) : (
+    ptr = midi.array_next(ptr);
+  );
+);
+
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
-
-  // Note on
-  /*
-  event == 0x90 && vel ? (
-    // note repeat
-    // because this synth uses only one note per key
-    // key repeat triggers a fast release of the current note
-    // and retriggers the note once it completes
-    ptr = poly.array_find(note);
-    ptr >= 0 ? (
-      env_r(envelope + note * 18);
-      ptr[10] = 1; // note repeat flag
-    ) : (
-      on_note(note, velote
-  )
-  // Note off
-  /*
-  event == 0x80 || (event == 0x90 && !vel) ? (
-    ptr = poly.array_find(note);
-    ptr >= 0 ? (
-      env_r(envelope + note * 18);
-      env_r(envelope_o1 + note * 18);
-      env_r(envelope_o2 + note * 18);
-      env_r(envelope_o3 + note * 18);
-      env_r(envelope_o4 + note * 18);
-      env_r(envelope_flt + note * 18);
-    );
-  );
-  */
 
   // note on/off
   event == 0x90 || event == 0x80 ? (
@@ -640,6 +622,12 @@ while(ptr >= 0) (
     );
   );
   ptr = remove_notes.array_next(ptr);
+);
+
+// glide processing
+mono && glide_samples >= 0 ? (
+  glide_freq *= glide_mult;
+  glide_samples -= 1;
 );
 
 @gfx 760 240

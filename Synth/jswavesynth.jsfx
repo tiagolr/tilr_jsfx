@@ -1,10 +1,8 @@
 desc: JSWavesynth
 author: tilr
-version: 1.4.0
+version: 1.4.1
 changelog:
-  Support midi notes offset
-  Added mono mode and glide
-  Added presets
+  Fix glide processing
 provides:
   jswavesynth.jsfx.RPL
   jswavesynth/ws.adsr.jsfx-inc
@@ -460,16 +458,16 @@ while(ptr >= 0) ( // for each note/voice
 
   );
 
-  // glide processing
-  mono && glide_samples >= 0 ? (
-    glide_freq *= glide_mult;
-    glide_samples -= 1;
-  );
-
   spl0 += outl * gain.smooth;
   spl1 += outr * gain.smooth;
 
   ptr = poly.array_next(ptr);
+);
+
+// glide processing
+mono && glide_samples >= 0 ? (
+  glide_freq *= glide_mult;
+  glide_samples -= 1;
 );
 
 @gfx 520 200

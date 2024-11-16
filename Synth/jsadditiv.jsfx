@@ -1,11 +1,8 @@
 desc: JSAdditiv
 author: tilr
-version: 1.5.0
+version: 1.5.1
 changelog:
-  Reset partials and phase using right click
-  Add midi offset support
-  Add Mono mode and note glide
-  Add presets
+  Fix glide processing
 provides:
   jsadditiv/add.adsr.jsfx-inc
   jsadditiv/add.array.jsfx-inc
@@ -521,16 +518,16 @@ while(ptr >= 0) ( // for each note/voice
     outr = rbj_df1(filterbuf_r, outr);
   );
 
-  // glide processing
-  mono && glide_samples >= 0 ? (
-    glide_freq *= glide_mult;
-    glide_samples -= 1;
-  );
-
   spl0 += outl * gain.smooth;
   spl1 += outr * gain.smooth;
 
   ptr = poly.array_next(ptr);
+);
+
+// glide processing
+mono && glide_samples >= 0 ? (
+  glide_freq *= glide_mult;
+  glide_samples -= 1;
 );
 
 @gfx 520 270
