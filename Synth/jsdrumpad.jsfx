@@ -1,7 +1,8 @@
-desc: JSDrumpad
+ desc: JSDrumpad
 author: tilr
-version: 1.1.3
-changelog: Revert midi offset and phase reset
+version: 1.2.0
+changelog:
+  Add midi offset support
 provides:
   jsdrumpad.jsfx.RPL
   jsdrumpad/dp.envlib.jsfx-inc
@@ -72,6 +73,8 @@ note_on = 0;
 note_vel = 0;
 note_counter = 0;
 notes = 0;
+midi = 1000; // midi buffer [offset, note, vel]
+midi_size = 0;
 notes[0]="C";notes[1]="C#";notes[2]="D";notes[3]="D#";
 notes[4]="E";notes[5]="F";notes[6]="F#";notes[7]="G";
 notes[8]="G#";notes[9]="A";notes[10]="A#";notes[11]="B";
@@ -86,6 +89,23 @@ function db2gain(db) (10^(db / 20););
 function round(in) (floor(in + 0.5 * sign(in)););
 function note2freq(n) (440 * pow(2, (n - 69) / 12););
 function freq2note(f) ( round(12*(log(f/440)/log(2))+69); );
+
+function midi_add(offset, note, vel)
+local(ptr)
+(
+  ptr = midi + midi_size * 3;
+  ptr[0] = offset;
+  ptr[1] = note;
+  ptr[2] = vel;
+  midi_size += 1;
+);
+
+function midi_remove(ptr)
+local(end)
+(
+  end = midi + (midi_size -= 1) * 3;
+  ptr < end ? memcpy(ptr, ptr + 3, end - ptr);
+);
 
 function make_wave(cycle) (
   osc_wave == 0 ? sine_wave(cycle)
@@ -189,11 +209,36 @@ on_slider();
 
 @block
 
+// remove queued midi messages that have been processed
+i = 0;
+while (i < midi_size) (
+  ptr = midi + i * 3;
+  ptr[0] < 0 ? ( // offset is zero
+    midi_remove(ptr);
+    ptr = midi;
+  ) : (
+    ptr += 3;
+  );
+);
+
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
   channel = msg1 & 0x0F;
 
   event == 0x90 && vel > 0 ? ( // NOTEON
+    midi_add(offset, note, vel);
+  );
+
+  midisend(offset, msg1, note, vel);
+);
+
+@sample
+
+// process queued midi
+i = 0;
+while(i < midi_size) (
+  ptr = midi + i * 3;
+  ptr[0] == 0 ? ( // offset has reached zero
     note_on = 1;
     note_vel = vel / 127;
     note_counter = 0;
@@ -202,11 +247,9 @@ while (midirecv(offset, msg1, note, vel)) (
     pitch_envelope.zen_trigger(1);
     noise_envelope.zen_trigger(1);
   );
-
-  midisend(offset, msg1, note, vel);
+  ptr[0] -= 1;
+  i += 1;
 );
-
-@sample
 
 last_play_state == 0 && play_state ? (
   eq.svf_single_set_to_target();

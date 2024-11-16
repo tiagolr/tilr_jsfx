@@ -1,7 +1,8 @@
 desc: JSDrumsynth
 author: tilr
-version: 1.0.3
-changelog: Revert midi offset
+version: 1.1.0
+changelog:
+  Add midi offset support
 provides:
   jsdrumsynth.jsfx.RPL
   jsdrumsynth/ds.envlib.jsfx-inc
@@ -282,6 +283,8 @@ slider219:0<0, 1, 0.01>-Pad6 Velocity volume
 
 // pad = 0; -- global var init as zero
 notes = 0;
+midi = 1000; // midi buffer [offset, note, vel]
+midi_size = 0;
 notes[0]="C";notes[1]="C#";notes[2]="D";notes[3]="D#";
 notes[4]="E";notes[5]="F";notes[6]="F#";notes[7]="G";
 notes[8]="G#";notes[9]="A";notes[10]="A#";notes[11]="B";
@@ -299,6 +302,23 @@ function setslider(n, val) (
 function get_note_name() (
   note = freq2note(getslider(5));
   sprintf(#, "%s%i", notes[note % 12], floor(note / 12) - 1);
+);
+
+function midi_add(offset, note, vel)
+local(ptr)
+(
+  ptr = midi + midi_size * 3;
+  ptr[0] = offset;
+  ptr[1] = note;
+  ptr[2] = vel;
+  midi_size += 1;
+);
+
+function midi_remove(ptr)
+local(end)
+(
+  end = midi + (midi_size -= 1) * 3;
+  ptr < end ? memcpy(ptr, ptr + 3, end - ptr);
 );
 
 function on_slider () (
@@ -410,11 +430,37 @@ pad7.pad_on_slider();
 
 @block
 
+// remove queued midi messages that have been processed
+i = 0;
+while (i < midi_size) (
+  ptr = midi + i * 3;
+  ptr[0] < 0 ? ( // offset is zero
+    midi_remove(ptr);
+    ptr = midi;
+  ) : (
+    ptr += 3;
+  );
+);
+
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
   channel = msg1 & 0x0F;
 
   event == 0x90 && vel > 0 ? (
+    midi_add(offset, note, vel);
+  );
+  midisend(offset, msg1, note, vel);
+);
+
+@sample
+
+// process queued midi
+i = 0;
+while(i < midi_size) (
+  ptr = midi + i * 3;
+  ptr[0] == 0 ? ( // offset has reached zero
+    note = ptr[1];
+    vel = ptr[2];
     note % 12 == 0 ? pad1.pad_on_note(vel);
     note % 12 == 2 ? pad2.pad_on_note(vel);
     note % 12 == 4 ? pad3.pad_on_note(vel);
@@ -423,10 +469,9 @@ while (midirecv(offset, msg1, note, vel)) (
     note % 12 == 9 ? pad6.pad_on_note(vel);
     note % 12 == 11 ? pad7.pad_on_note(vel);
   );
-  midisend(offset, msg1, note, vel);
+  ptr[0] -= 1;
+  i += 1;
 );
-
-@sample
 
 last_play_state == 0 && play_state ? (
   pad1.reset_filters();
