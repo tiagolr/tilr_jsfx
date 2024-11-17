@@ -1,10 +1,8 @@
 desc: JS3Osc
 author: tilr
-version: 1.2.0
+version: 1.2.1
 changelog:
-  Add MIDI offset support
-  Add Mono and glide
-  Add presets
+  Fix mono toggling clear
 provides:
   js3osc/3o.adsr.jsfx-inc
   js3osc/3o.array.jsfx-inc
@@ -661,7 +659,10 @@ gfx_drawstr("PHASE");
 draw_knob(380, 40, 50, "Rand", 0, 0, 100, 0, 0, sprintf(#, "%i %%", slider(50)));
 
 draw_button(380, 110, 40, "Mono", mono == 1);
-mouse.left_click && mouse_in_rect(380, 110-2, 40, 14) ? mono = !mono;
+mouse.left_click && mouse_in_rect(380, 110-2, 40, 14) ? (
+  mono = !mono;
+  on_slider();
+);
 mono ? (
   draw_knob(380, 130, 61, "Glide", 1, 1, 2000, 1, 0, sprintf(#, "%i ms", slider(61)));
 );

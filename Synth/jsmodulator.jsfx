@@ -1,12 +1,8 @@
 desc: JSModulator
 author: tilr
-version: 1.3.0
+version: 1.3.1
 changelog:
-  Reset partials and phase using right click
-  Add midi offset support
-  Add Mono mode and note glide
-  Add presets
-  Improve envelope curves display
+  Fix mono toggle clear
 provides:
   jsmodulator/mod.array.jsfx-inc
   jsmodulator/mod.envlib.jsfx-inc
@@ -283,6 +279,13 @@ osc4.buf = 400000;
 load_wave(osc4, 0);
 
 function on_slider() (
+  lmono !== mono ? (
+    midi.array_clear();
+    hold.array_clear();
+    poly.array_clear();
+  );
+  lmono = mono;
+
   fm11 = normalizeFMSlider(_fm11);
   fm12 = normalizeFMSlider(_fm12);
   fm13 = normalizeFMSlider(_fm13);
@@ -700,7 +703,10 @@ mouse.left_click && mouse_in_rect(270,20-2,50,10+4) ? gfx_panel = 5;
 gfx_panel == 0 ? (
   draw_knob(20,50, 1, "Vol", 100, 0, 100, 0, 0, sprintf(#, "%d", slider(1)), 0);
   draw_button(75, 65, 50, "Mono", mono == 1);
-  mouse.left_click && mouse_in_rect(75, 65-2, 50, 14) ? mono = !mono;
+  mouse.left_click && mouse_in_rect(75, 65-2, 50, 14) ? (
+    mono = !mono;
+    on_slider();
+  );
   mono ? (
     draw_knob(140, 50, 12, "Glide", 1, 1, 2000, 1, 0, sprintf(#, "%i ms", slider(12)), 0);
   );

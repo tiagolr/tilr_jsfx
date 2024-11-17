@@ -1,8 +1,8 @@
 desc: JSWavesynth
 author: tilr
-version: 1.4.2
+version: 1.4.3
 changelog:
-  Fix glide processing
+  Fix mono toggling clear
 provides:
   jswavesynth.jsfx.RPL
   jswavesynth/ws.adsr.jsfx-inc
@@ -479,7 +479,10 @@ draw_wave(20, 20, 120, 70, wavebuf, wavelen);
 
 draw_knob(20, 130, 2, "Vol", 80, 0, 100, 0, 0, sprintf(#, "%i%%", slider(2)));
 draw_button(80, 110, 60, "Mono", mono == 1);
-mouse.left_click && mouse_in_rect(80, 110-2, 60, 14) ? mono = !mono;
+mouse.left_click && mouse_in_rect(80, 110-2, 60, 14) ? (
+  mono = !mono;
+  on_slider();
+);
 mono ? (
   draw_knob(90, 130, 29, "Glide", 1, 1, 2000, 1, 0, sprintf(#, "%i ms", slider(29)));
 );
