@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="81886916ad99b0fb622716b527ccd75d41876bb7" name="Tilr">
+<index version="1" commit="9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -517,6 +517,14 @@ Add link edge points option]]></changelog>
         <source file="gate1/gate.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/ae96311a256e4b08e2e638975157419ba84813c2/Modulation/gate1/gate.curvelib.jsfx-inc</source>
         <source file="gate1/gate.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/ae96311a256e4b08e2e638975157419ba84813c2/Modulation/gate1/gate.mouselib.jsfx-inc</source>
       </version>
+      <version name="1.1.4" author="tilr" time="2024-11-17T14:32:43Z">
+        <changelog><![CDATA[Add presets from Scrumpy Jack]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/gate1.jsfx</source>
+        <source file="gate1.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/gate1.jsfx.RPL</source>
+        <source file="gate1/gate.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/gate1/gate.array.jsfx-inc</source>
+        <source file="gate1/gate.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/gate1/gate.curvelib.jsfx-inc</source>
+        <source file="gate1/gate.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/gate1/gate.mouselib.jsfx-inc</source>
+      </version>
     </reapack>
     <reapack name="mseg1.jsfx" type="effect" desc="MSEG-1">
       <metadata>
@@ -717,6 +725,15 @@ Add retrigger slider]]></changelog>
         <source file="time1/time.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/ae96311a256e4b08e2e638975157419ba84813c2/Modulation/time1/time.delay.jsfx-inc</source>
         <source file="time1/time.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/ae96311a256e4b08e2e638975157419ba84813c2/Modulation/time1/time.mouselib.jsfx-inc</source>
       </version>
+      <version name="1.1.3" author="tilr" time="2024-11-17T14:32:43Z">
+        <changelog><![CDATA[Add presets from Scrumpy Jack]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/time1.jsfx</source>
+        <source file="time1.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/time1.jsfx.RPL</source>
+        <source file="time1/time.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/time1/time.array.jsfx-inc</source>
+        <source file="time1/time.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/time1/time.curvelib.jsfx-inc</source>
+        <source file="time1/time.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/time1/time.delay.jsfx-inc</source>
+        <source file="time1/time.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Modulation/time1/time.mouselib.jsfx-inc</source>
+      </version>
     </reapack>
   </category>
   <category name="Synth">
@@ -765,6 +782,36 @@ Replace zdf with rbj filters]]></changelog>
         <source file="js3osc/3o.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/818a86cde6609e515a9e294899e732c69edb03c2/Synth/js3osc/3o.gfxlib.jsfx-inc</source>
         <source file="js3osc/3o.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/818a86cde6609e515a9e294899e732c69edb03c2/Synth/js3osc/3o.mouselib.jsfx-inc</source>
         <source file="js3osc/3o.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/818a86cde6609e515a9e294899e732c69edb03c2/Synth/js3osc/3o.rbj_filter.jsfx-inc</source>
+      </version>
+      <version name="1.2.0" author="tilr" time="2024-11-16T20:16:44Z">
+        <changelog><![CDATA[Add MIDI offset support
+Add Mono and glide
+Add presets]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/js3osc.jsfx</source>
+        <source file="js3osc/3o.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/js3osc/3o.adsr.jsfx-inc</source>
+        <source file="js3osc/3o.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/js3osc/3o.array.jsfx-inc</source>
+        <source file="js3osc/3o.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/js3osc/3o.gfxlib.jsfx-inc</source>
+        <source file="js3osc/3o.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/js3osc/3o.mouselib.jsfx-inc</source>
+        <source file="js3osc/3o.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/js3osc/3o.rbj_filter.jsfx-inc</source>
+      </version>
+      <version name="1.2.1" author="tilr" time="2024-11-17T14:32:43Z">
+        <changelog><![CDATA[Fix mono toggling clear]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/js3osc.jsfx</source>
+        <source file="js3osc/3o.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/js3osc/3o.adsr.jsfx-inc</source>
+        <source file="js3osc/3o.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/js3osc/3o.array.jsfx-inc</source>
+        <source file="js3osc/3o.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/js3osc/3o.gfxlib.jsfx-inc</source>
+        <source file="js3osc/3o.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/js3osc/3o.mouselib.jsfx-inc</source>
+        <source file="js3osc/3o.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/js3osc/3o.rbj_filter.jsfx-inc</source>
+      </version>
+      <version name="1.2.2" author="tilr" time="2024-11-17T14:53:22Z">
+        <changelog><![CDATA[Add presets]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/20e585b72540128f11497e46a5948770818d38c7/Synth/js3osc.jsfx</source>
+        <source file="js3osc.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/20e585b72540128f11497e46a5948770818d38c7/Synth/js3osc.jsfx.RPL</source>
+        <source file="js3osc/3o.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/20e585b72540128f11497e46a5948770818d38c7/Synth/js3osc/3o.adsr.jsfx-inc</source>
+        <source file="js3osc/3o.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/20e585b72540128f11497e46a5948770818d38c7/Synth/js3osc/3o.array.jsfx-inc</source>
+        <source file="js3osc/3o.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/20e585b72540128f11497e46a5948770818d38c7/Synth/js3osc/3o.gfxlib.jsfx-inc</source>
+        <source file="js3osc/3o.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/20e585b72540128f11497e46a5948770818d38c7/Synth/js3osc/3o.mouselib.jsfx-inc</source>
+        <source file="js3osc/3o.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/20e585b72540128f11497e46a5948770818d38c7/Synth/js3osc/3o.rbj_filter.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="jsadditiv.jsfx" type="effect" desc="JSAdditiv">
@@ -967,6 +1014,155 @@ fix volume knob clicking]]></changelog>
         <source type="data" file="tilr8_JSAdditiv/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/85612298ffd4ea408baeb3b74a68319adb4b1c71/Synth/tilr8_JSAdditiv/Stairs.wav</source>
         <source type="data" file="tilr8_JSAdditiv/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/85612298ffd4ea408baeb3b74a68319adb4b1c71/Synth/tilr8_JSAdditiv/Triangle.wav</source>
       </version>
+      <version name="1.5.0" author="tilr" time="2024-11-16T16:38:51Z">
+        <changelog><![CDATA[Reset partials and phase using right click
+Add midi offset support
+Add Mono mode and note glide
+Add presets]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsadditiv.jsfx</source>
+        <source file="jsadditiv/add.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsadditiv/add.adsr.jsfx-inc</source>
+        <source file="jsadditiv/add.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsadditiv/add.array.jsfx-inc</source>
+        <source file="jsadditiv/add.fft_real_synth.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsadditiv/add.fft_real_synth.jsfx-inc</source>
+        <source file="jsadditiv/add.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsadditiv/add.gfxlib.jsfx-inc</source>
+        <source file="jsadditiv/add.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsadditiv/add.mouselib.jsfx-inc</source>
+        <source file="jsadditiv/add.wavetable.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsadditiv/add.wavetable.jsfx-inc</source>
+        <source file="jsadditiv/add.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsadditiv/add.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Complex%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Complex%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Complex%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Complex%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Complex%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Organ%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Organ%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Organ%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Organ%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Organ%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 6.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Organ%206.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 7.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Organ%207.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Saw%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Saw%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Saw%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Sine%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Sine%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Sine%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Sine%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Sine%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Spectral.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Spectral.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Square 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Square%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Square%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Stairs.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSAdditiv/Triangle.wav</source>
+      </version>
+      <version name="1.5.1" author="tilr" time="2024-11-16T16:52:10Z">
+        <changelog><![CDATA[Fix glide processing]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jsadditiv.jsfx</source>
+        <source file="jsadditiv/add.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jsadditiv/add.adsr.jsfx-inc</source>
+        <source file="jsadditiv/add.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jsadditiv/add.array.jsfx-inc</source>
+        <source file="jsadditiv/add.fft_real_synth.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jsadditiv/add.fft_real_synth.jsfx-inc</source>
+        <source file="jsadditiv/add.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jsadditiv/add.gfxlib.jsfx-inc</source>
+        <source file="jsadditiv/add.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jsadditiv/add.mouselib.jsfx-inc</source>
+        <source file="jsadditiv/add.wavetable.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jsadditiv/add.wavetable.jsfx-inc</source>
+        <source file="jsadditiv/add.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jsadditiv/add.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Complex%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Complex%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Complex%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Complex%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Complex%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Organ%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Organ%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Organ%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Organ%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Organ%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 6.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Organ%206.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 7.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Organ%207.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Saw%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Saw%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Saw%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Sine%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Sine%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Sine%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Sine%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Sine%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Spectral.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Spectral.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Square 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Square%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Square%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Stairs.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSAdditiv/Triangle.wav</source>
+      </version>
+      <version name="1.5.3" author="tilr" time="2024-11-17T03:00:17Z">
+        <changelog><![CDATA[Presets]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/jsadditiv.jsfx</source>
+        <source file="jsadditiv.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/jsadditiv.jsfx.RPL</source>
+        <source file="jsadditiv/add.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/jsadditiv/add.adsr.jsfx-inc</source>
+        <source file="jsadditiv/add.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/jsadditiv/add.array.jsfx-inc</source>
+        <source file="jsadditiv/add.fft_real_synth.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/jsadditiv/add.fft_real_synth.jsfx-inc</source>
+        <source file="jsadditiv/add.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/jsadditiv/add.gfxlib.jsfx-inc</source>
+        <source file="jsadditiv/add.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/jsadditiv/add.mouselib.jsfx-inc</source>
+        <source file="jsadditiv/add.wavetable.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/jsadditiv/add.wavetable.jsfx-inc</source>
+        <source file="jsadditiv/add.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/jsadditiv/add.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Complex%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Complex%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Complex%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Complex%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Complex%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Organ%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Organ%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Organ%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Organ%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Organ%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 6.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Organ%206.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 7.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Organ%207.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Saw%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Saw%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Saw%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Sine%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Sine%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Sine%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Sine%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Sine%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Spectral.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Spectral.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Square 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Square%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Square%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Stairs.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/801d41f6b2cfd83f245032facb71eae764b68cff/Synth/tilr8_JSAdditiv/Triangle.wav</source>
+      </version>
+      <version name="1.5.4" author="tilr" time="2024-11-17T14:32:43Z">
+        <changelog><![CDATA[Fix mono toggle clear]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsadditiv.jsfx</source>
+        <source file="jsadditiv.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsadditiv.jsfx.RPL</source>
+        <source file="jsadditiv/add.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsadditiv/add.adsr.jsfx-inc</source>
+        <source file="jsadditiv/add.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsadditiv/add.array.jsfx-inc</source>
+        <source file="jsadditiv/add.fft_real_synth.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsadditiv/add.fft_real_synth.jsfx-inc</source>
+        <source file="jsadditiv/add.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsadditiv/add.gfxlib.jsfx-inc</source>
+        <source file="jsadditiv/add.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsadditiv/add.mouselib.jsfx-inc</source>
+        <source file="jsadditiv/add.wavetable.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsadditiv/add.wavetable.jsfx-inc</source>
+        <source file="jsadditiv/add.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsadditiv/add.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Complex%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Complex%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Complex%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Complex%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Complex 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Complex%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Organ%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Organ%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Organ%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Organ%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Organ%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 6.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Organ%206.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Organ 7.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Organ%207.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Saw%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Saw%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Saw 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Saw%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Sine%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Sine%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Sine%203.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Sine%204.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Sine 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Sine%205.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Spectral.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Spectral.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Square 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Square%201.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Square%202.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Stairs.wav</source>
+        <source type="data" file="tilr8_JSAdditiv/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSAdditiv/Triangle.wav</source>
+      </version>
     </reapack>
     <reapack name="jsdrumpad.jsfx" type="effect" desc="JSDrumpad">
       <metadata>
@@ -1023,6 +1219,15 @@ fix volume knob clicking]]></changelog>
         <source file="jsdrumpad/dp.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/818a86cde6609e515a9e294899e732c69edb03c2/Synth/jsdrumpad/dp.mouselib.jsfx-inc</source>
         <source file="jsdrumpad/dp.svf_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/818a86cde6609e515a9e294899e732c69edb03c2/Synth/jsdrumpad/dp.svf_filter.jsfx-inc</source>
       </version>
+      <version name="1.2.0" author="tilr" time="2024-11-16T20:48:04Z">
+        <changelog><![CDATA[Add midi offset support]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumpad.jsfx</source>
+        <source file="jsdrumpad.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumpad.jsfx.RPL</source>
+        <source file="jsdrumpad/dp.envlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumpad/dp.envlib.jsfx-inc</source>
+        <source file="jsdrumpad/dp.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumpad/dp.gfxlib.jsfx-inc</source>
+        <source file="jsdrumpad/dp.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumpad/dp.mouselib.jsfx-inc</source>
+        <source file="jsdrumpad/dp.svf_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumpad/dp.svf_filter.jsfx-inc</source>
+      </version>
     </reapack>
     <reapack name="jsdrumsynth.jsfx" type="effect" desc="JSDrumsynth">
       <metadata>
@@ -1074,6 +1279,16 @@ fix volume knob clicking]]></changelog>
         <source file="jsdrumsynth/ds.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0eb486340b7db60c5ff2d6021268c9c75fdb757f/Synth/jsdrumsynth/ds.mouselib.jsfx-inc</source>
         <source file="jsdrumsynth/ds.pad.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0eb486340b7db60c5ff2d6021268c9c75fdb757f/Synth/jsdrumsynth/ds.pad.jsfx-inc</source>
         <source file="jsdrumsynth/ds.svf_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0eb486340b7db60c5ff2d6021268c9c75fdb757f/Synth/jsdrumsynth/ds.svf_filter.jsfx-inc</source>
+      </version>
+      <version name="1.1.0" author="tilr" time="2024-11-16T20:48:04Z">
+        <changelog><![CDATA[Add midi offset support]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumsynth.jsfx</source>
+        <source file="jsdrumsynth.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumsynth.jsfx.RPL</source>
+        <source file="jsdrumsynth/ds.envlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumsynth/ds.envlib.jsfx-inc</source>
+        <source file="jsdrumsynth/ds.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumsynth/ds.gfxlib.jsfx-inc</source>
+        <source file="jsdrumsynth/ds.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumsynth/ds.mouselib.jsfx-inc</source>
+        <source file="jsdrumsynth/ds.pad.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumsynth/ds.pad.jsfx-inc</source>
+        <source file="jsdrumsynth/ds.svf_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/d7966756914e979287464fe53340d07f0471e3cf/Synth/jsdrumsynth/ds.svf_filter.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="jsmodulator.jsfx" type="effect" desc="JSModulator">
@@ -1283,6 +1498,121 @@ next and prev wave buttons]]></changelog>
         <source type="data" file="tilr8_JSModulator/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/85612298ffd4ea408baeb3b74a68319adb4b1c71/Synth/tilr8_JSModulator/Stairs.wav</source>
         <source type="data" file="tilr8_JSModulator/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/85612298ffd4ea408baeb3b74a68319adb4b1c71/Synth/tilr8_JSModulator/Triangle.wav</source>
       </version>
+      <version name="1.3.0" author="tilr" time="2024-11-16T16:38:51Z">
+        <changelog><![CDATA[Reset partials and phase using right click
+Add midi offset support
+Add Mono mode and note glide
+Add presets]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsmodulator.jsfx</source>
+        <source file="jsmodulator/mod.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsmodulator/mod.array.jsfx-inc</source>
+        <source file="jsmodulator/mod.envlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsmodulator/mod.envlib.jsfx-inc</source>
+        <source file="jsmodulator/mod.fft_real_synth.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsmodulator/mod.fft_real_synth.jsfx-inc</source>
+        <source file="jsmodulator/mod.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsmodulator/mod.gfxlib.jsfx-inc</source>
+        <source file="jsmodulator/mod.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsmodulator/mod.mouselib.jsfx-inc</source>
+        <source file="jsmodulator/mod.osc.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsmodulator/mod.osc.jsfx-inc</source>
+        <source file="jsmodulator/mod.wavetable.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsmodulator/mod.wavetable.jsfx-inc</source>
+        <source file="jsmodulator/mod.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/jsmodulator/mod.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_JSModulator/Complex 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Complex%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Complex%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Complex%204.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Complex%205.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Complex.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Organ%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Organ%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Organ%204.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Organ%205.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 6.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Organ%206.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 7.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Organ%207.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Organ.wav</source>
+        <source type="data" file="tilr8_JSModulator/Saw 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Saw%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Saw 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Saw%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Saw.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Saw.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Sine%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Sine%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Sine%204.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Sine%205.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Sine.wav</source>
+        <source type="data" file="tilr8_JSModulator/Spectral.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Spectral.wav</source>
+        <source type="data" file="tilr8_JSModulator/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Square%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Square.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Square.wav</source>
+        <source type="data" file="tilr8_JSModulator/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Stairs.wav</source>
+        <source type="data" file="tilr8_JSModulator/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/a461d2609a15871d49d2b9ba4717c255b5b6c8b6/Synth/tilr8_JSModulator/Triangle.wav</source>
+      </version>
+      <version name="1.3.1" author="tilr" time="2024-11-17T14:32:43Z">
+        <changelog><![CDATA[Fix mono toggle clear]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsmodulator.jsfx</source>
+        <source file="jsmodulator/mod.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsmodulator/mod.array.jsfx-inc</source>
+        <source file="jsmodulator/mod.envlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsmodulator/mod.envlib.jsfx-inc</source>
+        <source file="jsmodulator/mod.fft_real_synth.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsmodulator/mod.fft_real_synth.jsfx-inc</source>
+        <source file="jsmodulator/mod.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsmodulator/mod.gfxlib.jsfx-inc</source>
+        <source file="jsmodulator/mod.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsmodulator/mod.mouselib.jsfx-inc</source>
+        <source file="jsmodulator/mod.osc.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsmodulator/mod.osc.jsfx-inc</source>
+        <source file="jsmodulator/mod.wavetable.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsmodulator/mod.wavetable.jsfx-inc</source>
+        <source file="jsmodulator/mod.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jsmodulator/mod.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_JSModulator/Complex 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Complex%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Complex%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Complex%204.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Complex%205.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Complex.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Organ%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Organ%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Organ%204.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Organ%205.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 6.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Organ%206.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 7.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Organ%207.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Organ.wav</source>
+        <source type="data" file="tilr8_JSModulator/Saw 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Saw%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Saw 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Saw%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Saw.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Saw.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Sine%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Sine%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Sine%204.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Sine%205.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Sine.wav</source>
+        <source type="data" file="tilr8_JSModulator/Spectral.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Spectral.wav</source>
+        <source type="data" file="tilr8_JSModulator/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Square%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Square.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Square.wav</source>
+        <source type="data" file="tilr8_JSModulator/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Stairs.wav</source>
+        <source type="data" file="tilr8_JSModulator/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSModulator/Triangle.wav</source>
+      </version>
+      <version name="1.3.2" author="tilr" time="2024-11-17T17:48:09Z">
+        <changelog><![CDATA[Add presets]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/jsmodulator.jsfx</source>
+        <source file="jsmodulator.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/jsmodulator.jsfx.RPL</source>
+        <source file="jsmodulator/mod.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/jsmodulator/mod.array.jsfx-inc</source>
+        <source file="jsmodulator/mod.envlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/jsmodulator/mod.envlib.jsfx-inc</source>
+        <source file="jsmodulator/mod.fft_real_synth.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/jsmodulator/mod.fft_real_synth.jsfx-inc</source>
+        <source file="jsmodulator/mod.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/jsmodulator/mod.gfxlib.jsfx-inc</source>
+        <source file="jsmodulator/mod.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/jsmodulator/mod.mouselib.jsfx-inc</source>
+        <source file="jsmodulator/mod.osc.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/jsmodulator/mod.osc.jsfx-inc</source>
+        <source file="jsmodulator/mod.wavetable.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/jsmodulator/mod.wavetable.jsfx-inc</source>
+        <source file="jsmodulator/mod.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/jsmodulator/mod.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_JSModulator/Complex 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Complex%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Complex%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Complex%204.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Complex%205.wav</source>
+        <source type="data" file="tilr8_JSModulator/Complex.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Complex.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Organ%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Organ%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Organ%204.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Organ%205.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 6.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Organ%206.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ 7.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Organ%207.wav</source>
+        <source type="data" file="tilr8_JSModulator/Organ.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Organ.wav</source>
+        <source type="data" file="tilr8_JSModulator/Saw 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Saw%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Saw 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Saw%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Saw.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Saw.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Sine%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Sine%203.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Sine%204.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Sine%205.wav</source>
+        <source type="data" file="tilr8_JSModulator/Sine.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Sine.wav</source>
+        <source type="data" file="tilr8_JSModulator/Spectral.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Spectral.wav</source>
+        <source type="data" file="tilr8_JSModulator/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Square%202.wav</source>
+        <source type="data" file="tilr8_JSModulator/Square.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Square.wav</source>
+        <source type="data" file="tilr8_JSModulator/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Stairs.wav</source>
+        <source type="data" file="tilr8_JSModulator/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc/Synth/tilr8_JSModulator/Triangle.wav</source>
+      </version>
     </reapack>
     <reapack name="jswavesynth.jsfx" type="effect" desc="JSWavesynth">
       <metadata>
@@ -1479,6 +1809,114 @@ Added presets]]></changelog>
         <source type="data" file="tilr8_JSWavesynth/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/81886916ad99b0fb622716b527ccd75d41876bb7/Synth/tilr8_JSWavesynth/Square%202.wav</source>
         <source type="data" file="tilr8_JSWavesynth/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/81886916ad99b0fb622716b527ccd75d41876bb7/Synth/tilr8_JSWavesynth/Stairs.wav</source>
         <source type="data" file="tilr8_JSWavesynth/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/81886916ad99b0fb622716b527ccd75d41876bb7/Synth/tilr8_JSWavesynth/Triangle.wav</source>
+      </version>
+      <version name="1.4.1" author="tilr" time="2024-11-16T16:52:10Z">
+        <changelog><![CDATA[Fix glide processing]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jswavesynth.jsfx</source>
+        <source file="jswavesynth.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jswavesynth.jsfx.RPL</source>
+        <source file="jswavesynth/ws.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jswavesynth/ws.adsr.jsfx-inc</source>
+        <source file="jswavesynth/ws.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jswavesynth/ws.array.jsfx-inc</source>
+        <source file="jswavesynth/ws.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jswavesynth/ws.gfxlib.jsfx-inc</source>
+        <source file="jswavesynth/ws.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jswavesynth/ws.mouselib.jsfx-inc</source>
+        <source file="jswavesynth/ws.wavetable.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jswavesynth/ws.wavetable.jsfx-inc</source>
+        <source file="jswavesynth/ws.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/jswavesynth/ws.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Complex%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Complex%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Complex%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Complex%204.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Complex%205.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Organ%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Organ%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Organ%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Organ%204.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Organ%205.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 6.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Organ%206.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 7.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Organ%207.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Saw 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Saw%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Saw 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Saw%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Saw 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Saw%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Sine%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Sine%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Sine%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Sine%204.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Sine%205.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Spectral.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Spectral.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Square 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Square%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Square%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Stairs.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/0b1b4ef10154a00b3d0a9fa4be4f4b7dcc64597d/Synth/tilr8_JSWavesynth/Triangle.wav</source>
+      </version>
+      <version name="1.4.2" author="tilr" time="2024-11-16T20:16:44Z">
+        <changelog><![CDATA[Fix glide processing]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/jswavesynth.jsfx</source>
+        <source file="jswavesynth.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/jswavesynth.jsfx.RPL</source>
+        <source file="jswavesynth/ws.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/jswavesynth/ws.adsr.jsfx-inc</source>
+        <source file="jswavesynth/ws.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/jswavesynth/ws.array.jsfx-inc</source>
+        <source file="jswavesynth/ws.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/jswavesynth/ws.gfxlib.jsfx-inc</source>
+        <source file="jswavesynth/ws.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/jswavesynth/ws.mouselib.jsfx-inc</source>
+        <source file="jswavesynth/ws.wavetable.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/jswavesynth/ws.wavetable.jsfx-inc</source>
+        <source file="jswavesynth/ws.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/jswavesynth/ws.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Complex%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Complex%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Complex%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Complex%204.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Complex%205.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Organ%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Organ%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Organ%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Organ%204.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Organ%205.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 6.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Organ%206.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 7.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Organ%207.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Saw 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Saw%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Saw 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Saw%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Saw 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Saw%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Sine%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Sine%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Sine%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Sine%204.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Sine%205.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Spectral.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Spectral.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Square 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Square%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Square%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Stairs.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/8c03ade064e568571171555da567c8778331f317/Synth/tilr8_JSWavesynth/Triangle.wav</source>
+      </version>
+      <version name="1.4.3" author="tilr" time="2024-11-17T14:32:43Z">
+        <changelog><![CDATA[Fix mono toggling clear]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jswavesynth.jsfx</source>
+        <source file="jswavesynth.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jswavesynth.jsfx.RPL</source>
+        <source file="jswavesynth/ws.adsr.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jswavesynth/ws.adsr.jsfx-inc</source>
+        <source file="jswavesynth/ws.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jswavesynth/ws.array.jsfx-inc</source>
+        <source file="jswavesynth/ws.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jswavesynth/ws.gfxlib.jsfx-inc</source>
+        <source file="jswavesynth/ws.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jswavesynth/ws.mouselib.jsfx-inc</source>
+        <source file="jswavesynth/ws.wavetable.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jswavesynth/ws.wavetable.jsfx-inc</source>
+        <source file="jswavesynth/ws.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/jswavesynth/ws.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Complex%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Complex%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Complex%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Complex%204.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Complex 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Complex%205.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Organ%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Organ%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Organ%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Organ%204.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Organ%205.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 6.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Organ%206.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Organ 7.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Organ%207.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Saw 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Saw%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Saw 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Saw%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Saw 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Saw%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Sine%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Sine%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 3.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Sine%203.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 4.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Sine%204.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Sine 5.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Sine%205.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Spectral.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Spectral.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Square 1.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Square%201.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Square 2.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Square%202.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Stairs.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Stairs.wav</source>
+        <source type="data" file="tilr8_JSWavesynth/Triangle.wav">https://github.com/tiagolr/tilr_jsfx/raw/47e415610e1f2e3892f3684a9d71d480811488ff/Synth/tilr8_JSWavesynth/Triangle.wav</source>
       </version>
     </reapack>
   </category>
