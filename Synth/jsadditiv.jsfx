@@ -1,9 +1,10 @@
 desc: JSAdditiv
 author: tilr
-version: 1.5.1
+version: 1.5.3
 changelog:
-  Fix glide processing
+  Presets
 provides:
+  jsadditiv.jsfx.RPL
   jsadditiv/add.adsr.jsfx-inc
   jsadditiv/add.array.jsfx-inc
   jsadditiv/add.fft_real_synth.jsfx-inc
@@ -99,7 +100,6 @@ wavelen = 0;
 wavesrate = 0;
 osc_free = 1;
 env_panel = 0;
-is_mono = 0;
 edit_mode = 0;
 phase_mode = 0;
 harm_index = 0; // index of harmonics displayed, 0 displays first 34 harmonics
@@ -110,7 +110,7 @@ glide_mult = 0;
 poly.array_init(0, 128, 4+8); // [0note, 1velocity, 2freq, 3phase, 4..12 phase_unison]
 midi.array_init(11000, 256, 4); // [offset, msg1, note, vel]
 hold.array_init(13000, 128, 1); // [note] mono hold notes array
-envelope = 2000; // 129 * 7 buffer (where 129 buffer is the mono envelope)
+envelope = 2000; // 128 * 7 buffer
 pitch_env = 3000; // 128 * 7 buffer
 filter_arr_l = 4000; // 128 * 11 buffer for filters one per key left channel
 filter_arr_r = 6000; // 128 * 11 buffer for filters one per key right channel
@@ -384,7 +384,7 @@ local (ptr, note_repeat, note, vel, env)
   ptr[0] = note;
   ptr[1] = vel / 127;
   ptr[2] = note2freq(note) / srate;
-  ptr[3] = note_repeat ? last_phase[0] : 0; // osc start phase
+  ptr[3] = note_repeat ? last_phase[0] : osc_free ? rand(2) - 1 : 0; // osc start phase
   loop(i = 4; 8,
     ptr[i] = note_repeat ? last_phase[i-3] : osc_free ? rand(2) - 1 : 0; // unison start phase
     i += 1;
@@ -472,7 +472,7 @@ while(ptr >= 0) ( // for each note/voice
   outl = 0;
   outr = 0;
   envbuf = mono ? envelope : envelope + ptr[0] * 7;
-  env_state = adsr_process(envbuf);
+  adsr_process(envbuf);
   osc_pitch_det = 1;
   pitch_amt ? (
     pitchbuf = mono ? pitch_env : pitch_env + ptr[0] * 7;
@@ -504,7 +504,7 @@ while(ptr >= 0) ( // for each note/voice
     multiplier = pow(20000/flt_freq, filterbuf[0] * flt_amt / 100);
 
     filterbuf_l = mono ? filter_arr_l : filter_arr_l + ptr[0] * 11; // filter buffer left
-    filterbuf_r = mono ? filter_arr_r : filter_arr_r + ptr[0] * 11; // filter buffer left
+    filterbuf_r = mono ? filter_arr_r : filter_arr_r + ptr[0] * 11; // filter buffer right
 
     flt_shape == 1 ? (
       rbj_lp(filterbuf_l, flt_freq * multiplier, flt_q);
@@ -542,12 +542,6 @@ gfx_getdropfile(0, dropped_file_str) ? (
   read_file_string(dropped_file_str);
   gfx_getdropfile(-1);
 );
-
-//draw_grey_button(520 - 60, 2, 40, is_mono ? "Mono" : "Poly");
-//mouse.left_click && mouse_in_rect(520 - 60, 0, 40, 10 + 2) ? (
-//  is_mono = !is_mono;
-//  on_slider();
-//);
 
 draw_button(160-2, 10-2, 50, "Harm", !phase_mode);
 draw_button(160-2+50, 10-2, 50, "Phase", phase_mode);
