@@ -1,9 +1,10 @@
 desc: JS3Osc
 author: tilr
-version: 1.2.1
+version: 1.2.2
 changelog:
-  Fix mono toggling clear
+  Add presets
 provides:
+  js3osc.jsfx.RPL
   js3osc/3o.adsr.jsfx-inc
   js3osc/3o.array.jsfx-inc
   js3osc/3o.gfxlib.jsfx-inc
