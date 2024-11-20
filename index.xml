@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="9c2ff22879f6fa53475a41a5aebe8caf05b2c9cc" name="Tilr">
+<index version="1" commit="3d3b0ce5e6f4c204dfde694c83bdbe230a1948af" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -303,6 +303,14 @@ Yutani Bass
         <source file="adsr1/adsr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/ae96311a256e4b08e2e638975157419ba84813c2/Modulation/adsr1/adsr.array.jsfx-inc</source>
         <source file="adsr1/adsr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/ae96311a256e4b08e2e638975157419ba84813c2/Modulation/adsr1/adsr.curvelib.jsfx-inc</source>
         <source file="adsr1/adsr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/ae96311a256e4b08e2e638975157419ba84813c2/Modulation/adsr1/adsr.mouselib.jsfx-inc</source>
+      </version>
+      <version name="1.3.0" author="tilr" time="2024-11-20T17:41:04Z">
+        <changelog><![CDATA[Fix multiple notes triggering
+Add midi offset support]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/3d3b0ce5e6f4c204dfde694c83bdbe230a1948af/Modulation/adsr1.jsfx</source>
+        <source file="adsr1/adsr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/3d3b0ce5e6f4c204dfde694c83bdbe230a1948af/Modulation/adsr1/adsr.array.jsfx-inc</source>
+        <source file="adsr1/adsr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/3d3b0ce5e6f4c204dfde694c83bdbe230a1948af/Modulation/adsr1/adsr.curvelib.jsfx-inc</source>
+        <source file="adsr1/adsr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/3d3b0ce5e6f4c204dfde694c83bdbe230a1948af/Modulation/adsr1/adsr.mouselib.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="distr.jsfx" type="effect" desc="DIST-R">
