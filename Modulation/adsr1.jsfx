@@ -1,12 +1,13 @@
 desc: ADSR-1
 author: tilr
-version: 1.2.1
+version: 1.3.0
 provides:
   adsr1/adsr.array.jsfx-inc
   adsr1/adsr.curvelib.jsfx-inc
   adsr1/adsr.mouselib.jsfx-inc
 changelog:
-  Snap toggle when pressing control
+  Fix multiple notes triggering
+  Add midi offset support
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/adsr1.png
 about:
   # ADSR-1
@@ -33,6 +34,7 @@ slider14:rel_t=0<-1,1,0.01>-Release Tension
 
 slider20:value=0.5<0,1,0.01>Value
 
+import adsr.array.jsfx-inc
 import adsr.curvelib.jsfx-inc
 import adsr.mouselib.jsfx-inc
 
@@ -70,6 +72,8 @@ curve.insert_point(0.25,0,-.25,1); // dec
 curve.insert_point(0.5,0,-.25,2); // sus
 curve.insert_point(1,1,0,0); // rel
 curve.build_segments();
+freemem = midi.array_init(freemem, 256, 4); // midi notes array [offset, status, note, vel]
+freemem = notes.array_init(freemem, 128, 1); // held notes array [note]
 
 // the sustain point moves up and down on key release
 // use another curve to display the envelope without those moves
@@ -158,7 +162,7 @@ local (duration, i, point, attpoint, decpoint, suspoint, relpoint, dp0, sp0, dp1
   );
 );
 
-function set_attack_tension () 
+function set_attack_tension ()
 local (dec_pt, pt, i, next_pt, is_rising)
 (
   dec_pt = get_dec_point(curve);
@@ -173,7 +177,7 @@ local (dec_pt, pt, i, next_pt, is_rising)
   );
 );
 
-function set_decay_tension() 
+function set_decay_tension()
 local (dec_pt, sus_pt, pt, i, next_pt, is_rising)
 (
   dec_pt = get_dec_point(curve);
@@ -215,23 +219,23 @@ function on_slider() (
   spoint = get_sus_point(curve);
   spoint[1] = 1 - (sus / 100);
   build_curve();
-  
+
   slider_show(att_t, show_tension_sliders);
   slider_show(dec_t, show_tension_sliders);
   slider_show(rel_t, show_tension_sliders);
-  
+
   _lfomin > _lfomax ? _lfomin = _lfomax;
   lfomin = _lfomin / 100;
   lfomax = _lfomax / 100;
-  
+
   latt_t != att_t ? set_attack_tension();
   ldec_t != dec_t ? set_decay_tension();
   lrel_t != rel_t ? set_release_tension();
-  
+
   latt_t = att_t;
   ldec_t = dec_t;
   lrel_t = rel_t;
-  
+
   curve.build_segments();
   value.rc_set(lfosmooth / 100 / 10);
 );
@@ -241,32 +245,85 @@ function on_slider() (
 on_slider();
 
 @block
+// remove queued midi messages that have been processed
+ptr = midi.array_first();
+while (ptr >= 0) (
+  ptr[0] < 0 ? (
+    midi.array_remove(ptr);
+    ptr = midi.array_first();
+  ) : (
+    ptr = midi.array_next(ptr);
+  );
+);
+
 suspoint = get_sus_point(curve);
 decpoint = get_dec_point(curve);
 
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
-  // onnote
-  event == 0x90 && vel ? (
-    midi_trigger = 1;
-    lmidi_trigger = 0;
-    release = 0;
-    xpos = 0;
-  );
-  // offnote
-  event == 0x80 && midi_trigger ? (
-    release = 1;
-    yval = curve.get_y_at(xpos);
-    rcurve.copy_from(curve);
-    rsuspoint = get_sus_point(rcurve);
-    rsuspoint[1] = yval;
-    xpos = rsuspoint[0];
-    rcurve.build_segments();
+  event == 0x90 || event == 0x80 ? ( // on note off note
+    ptr = midi.array_add();
+    ptr[0] = offset;
+    ptr[1] = msg1;
+    ptr[2] = note;
+    ptr[3] = vel;
   );
   midisend(offset, msg1, note, vel);
 );
 
 @sample
+
+function on_notes_pressed () 
+(
+  midi_trigger = 1;
+  lmidi_trigger = 0;
+  release = 0;
+  xpos = 0;
+);
+
+function on_notes_released () 
+local(rsuspoint)
+(
+  count += 1;
+  release = 1;
+  yval = curve.get_y_at(xpos);
+  rcurve.copy_from(curve);
+  rsuspoint = get_sus_point(rcurve);
+  // Important rsuspoint[1] = yval modifies the release curve
+  // and ensures a smooth transition between attack or decay and release
+  rsuspoint[1] = yval; 
+  xpos = rsuspoint[0];
+  rcurve.build_segments();
+);
+
+function process_queued_midi()
+local (ptr, pp, event, note, vel)
+(
+  ptr = midi.array_first();
+  while(ptr >= 0) (
+    ptr[0] == 0 ? ( // offset has reached zero
+      event = ptr[1] & 0xF0;
+      note = ptr[2];
+      vel = ptr[3];
+      event == 0x90 ? ( // note on
+        notes.size == 0 ? on_notes_pressed();
+        notes.array_find(note) == -1 ? (
+          pp = notes.array_add();
+          pp[0] = note;
+        );
+      );
+      event == 0x80 ? ( // note off
+        pp = notes.array_find(note);
+        pp >= 0 ? notes.array_remove(pp);
+        notes.size == 0 ? on_notes_released();
+      );
+    );
+    ptr[0] -= 1;
+    ptr = midi.array_next(ptr);
+  );
+);
+
+process_queued_midi();
 
 // when midi trigger starts reset env smooth
 //!lmidi_trigger && midi_trigger ? (
@@ -282,8 +339,8 @@ midi_trigger ? (
   );
   !release && xpos >= suspoint[0] ? (
     xpos = sus_loop
-      ? decpoint[0]
-      : suspoint[0]; // sustain
+      ? decpoint[0]  // sustain loop - x returns to decay point
+      : suspoint[0]; // sustain - x stays at sustain point
   );
   value = release
     ? value.smooth(get_curve_y(rcurve, xpos))
@@ -391,12 +448,12 @@ local (xx, yy, pt_att, pt_dec, pt_sus, pt_rel, ts)
   selected_point == i ? (
     gfx_set(1,0,0,0.5);
     gfx_circle(xx, yy, 5, 1);
-    
+
     pt_att = curve.points.array_first();
     pt_dec = get_dec_point(curve);
     pt_sus = get_sus_point(curve);
     pt_rel = curve.points.array_last();
-    
+
     point[0] <= pt_dec[0] ? (
       ts = (point[0] / pt_dec[0]) * att;
     ) : point[0] <= pt_sus[0] ? (
@@ -404,7 +461,7 @@ local (xx, yy, pt_att, pt_dec, pt_sus, pt_rel, ts)
     ) : (
       ts = (point[0] - pt_sus[0]) / (1 - pt_sus[0]) * rel + dec + att;
     );
-    
+
     gfx_set(1,1,1, 0.5);
     gfx_y = yy - 3;
     xx > gfx_w / 1.25 ? (
@@ -586,7 +643,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
     show_tension_sliders = !show_tension_sliders;
     on_slider();
   );
-  
+
 );
 
 drawx -= 60;
