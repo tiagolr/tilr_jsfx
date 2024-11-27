@@ -1,13 +1,13 @@
 desc: MSEG-1
 author: tilr
-version: 1.2.1
+version: 1.2.2
 provides:
   mseg1/mseg.array.jsfx-inc
   mseg1/mseg.curvelib.jsfx-inc
   mseg1/mseg.mouselib.jsfx-inc
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/mseg1.png
 changelog:
-  Add midi velocity modulation
+  Fix sliders range
 about:
   # MSEG-1
 
@@ -21,8 +21,8 @@ about:
   * Output smooth and attack-release smooth
 
 slider1:pattern=1<1,12,1>Pattern
-slider2:mode=0<0,2,1{Sync,Free,MIDI,Manual}>Trigger
-slider3:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
+slider2:mode=0<0,3,1{Sync,Free,MIDI,Manual}>Trigger
+slider3:sync=5<0,17,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider4:ratehz=1<0.01,140,.01:log>Rate (Hz)
 slider5:phase=0<0,1,.01>Phase
 
@@ -1111,7 +1111,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "MSEG-1 1.2.1\nTilr 2024\n\n");
+  strcpy(txt, "MSEG-1 1.2.2\nTilr 2024\n\n");
   strcat(txt, "MSEG-1 is a multi-segment envelope/LFO generator.\n");
   strcat(txt, "Link params to value slider for modulation.\n\n");
   strcat(txt, "Left click - move points or set tension\n");

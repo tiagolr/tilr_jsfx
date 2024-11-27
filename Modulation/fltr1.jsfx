@@ -1,6 +1,6 @@
 desc: FLTR-1
 author: tilr
-version: 1.1.5
+version: 1.1.6
 provides:
   fltr1/fltr.Saike_Yutani_Filters.jsfx-inc
   fltr1/fltr.Saike_Yutani_oversampling.jsfx-inc
@@ -9,7 +9,7 @@ provides:
   fltr1/fltr.curvelib.jsfx-inc
   fltr1/fltr.mouselib.jsfx-inc
 changelog:
-  Snap toggle when pressing control
+  Fix slider range
 about:
   # FLTR-1
 
@@ -29,7 +29,7 @@ about:
 
 slider1:pattern_cut=1<1,12,1>Pattern Cut
 slider2:pattern_res=1<1,12,1>Pattern Res
-slider3:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
+slider3:sync=5<0,17,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider4:ratehz=1<0.01,140,.01:log>Rate (Hz)
 slider5:phase=0<0,1,.01>Phase
 slider7:_min_cut=0<0,100,1>Min Cut
@@ -389,29 +389,29 @@ mode == 0 && !sync && (play_state & 1) && (!lplay_state & 1) ? (
 while (midirecv(offset, msg1, note, vel)) (
   event = msg1 & 0xF0;
   channel = msg1 & 0x0F;
-  
-  event == 0x90 && vel && 
-  (channel == trigger_channel_cut - 1 || trigger_channel_cut == 17) ? 
+
+  event == 0x90 && vel &&
+  (channel == trigger_channel_cut - 1 || trigger_channel_cut == 17) ?
   (
     pattern_cut = note % 12 + 1;
     on_slider();
   );
-  
-  event == 0x90 && vel && 
-  (channel == trigger_channel_res - 1 || trigger_channel_res == 17) ? 
+
+  event == 0x90 && vel &&
+  (channel == trigger_channel_res - 1 || trigger_channel_res == 17) ?
   (
     pattern_res = note % 12 + 1;
     on_slider();
   );
-  
-  mode == 2 && event == 0x90 && vel && 
-  channel != trigger_channel_cut - 1 && 
-  channel != trigger_channel_res - 1 ? 
+
+  mode == 2 && event == 0x90 && vel &&
+  channel != trigger_channel_cut - 1 &&
+  channel != trigger_channel_res - 1 ?
   (
     midi_trigger = 1;
     xpos = phase;
   );
-  
+
   midisend(offset, msg1, note, vel);
 );
 
@@ -427,13 +427,13 @@ value_cut = -1; // mark value as unprocessed
 function process_pos(xpos) (
   nextv = get_cut_y(xpos);
   value_cut = value_cut.smooth2(nextv, nextv > value_cut);
-  
+
   nextv = get_res_y(xpos);
   value_res = value_res.smooth2(nextv, nextv > value_res);
-  
+
   cutoff = value_cut;
   resonance = min_q[filter_type] + value_res * (1 - min_q[filter_type]); // linear map resonance
-  
+
   winpos = floor(xpos * winw);
   lwinpos != winpos ? (
     pre_samples[winpos] = 0;
@@ -486,7 +486,7 @@ mode == 2 && (always_playing || midi_trigger) ? (
 
 // keep processing value and filter in midi mode
 mode == 2 && !always_playing && !midi_trigger ? (
-  process_pos(xpos); 
+  process_pos(xpos);
 );
 
 check_safety();
@@ -1084,12 +1084,12 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   choice == 1 + 18+8+18 ? (
     link_edge_points = !link_edge_points;
   );
-  
+
   choice == 2 + 18+8+18 ? (
     show_filter_drive = !show_filter_drive;
     on_slider();
   );
-  
+
   choice == 3 + 18+8+18 ? (
     show_retrigger_slider = !show_retrigger_slider;
     on_slider();
@@ -1343,7 +1343,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "FLTR-1 1.1.5\nTilr 2024\n\n");
+  strcpy(txt, "FLTR-1 1.1.6\nTilr 2024\n\n");
   strcat(txt, "FLTR-1 is envelope based filter modulator.\n\n");
   strcat(txt, "Toggle patterns 1-12 sending midi notes on chn 8 and 9 (default)\n");
   strcat(txt, "Left click - move points or set tension\n");

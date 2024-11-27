@@ -1,6 +1,6 @@
 desc: TIME-1
 author: tilr
-version: 1.1.3
+version: 1.1.4
 provides:
   time1.jsfx.RPL
   time1/time.array.jsfx-inc
@@ -8,7 +8,7 @@ provides:
   time1/time.delay.jsfx-inc
   time1/time.mouselib.jsfx-inc
 changelog:
-  Add presets from Scrumpy Jack
+  Fix sliders range
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/time1.png
 about:
   # TIME-1
@@ -25,7 +25,7 @@ about:
   * Pre and post waveform display
 
 slider1:pattern=1<1,12,1>Pattern
-slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
+slider2:sync=5<0,17,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider3:ratehz=1<0.1,10,.01:log>Rate (Hz)
 slider22:retrigger=0<0,1,1>-Retrigger
 
@@ -203,8 +203,8 @@ while (midirecv(offset, msg1, note, vel)) (
     pattern = note % 12 + 1;
     on_slider();
   );
-  mode == 2 && event == 0x90 && vel && 
-  channel != trigger_channel - 1 && 
+  mode == 2 && event == 0x90 && vel &&
+  channel != trigger_channel - 1 &&
   (
     midi_trigger = 1;
     xpos = phase;
@@ -228,13 +228,13 @@ lretrigger = retrigger;
 );
 lplay_state = play_state;
 
-function process_pos(xpos) 
+function process_pos(xpos)
 (
   value = curve.get_y_at(xpos);
-  
+
   d0.delay_write(spl0);
   d1.delay_write(spl1);
-  
+
   winpos = floor(xpos * winw);
   lwinpos != winpos ? (
     pre_samples[winpos] = 0;
@@ -243,7 +243,7 @@ function process_pos(xpos)
   lwinpos = winpos;
   pre_samples[winpos] < abs((spl0 + spl1) / 2)
     ? pre_samples[winpos] = (spl0 + spl1) / 2;
-  
+
   value === prev ? (
     outl = d0.delay_read(1 + value * d0.size);
     outr = d1.delay_read(1 + value * d1.size);
@@ -252,13 +252,13 @@ function process_pos(xpos)
     outl = d0.delay_read3(1 + value * d0.size);
     outr = d1.delay_read3(1 + value * d1.size);
   );
-  
+
   // when y value jumps activate cross fade / anti-click
   abs(value - prev) > 0.001 ? (
     xfade = ansamps;
     xfadepos = 1 + prev * d0.size;
   );
-  
+
   // anti-noise cross fade
   // fades in new signal fades out old signal
   xfade ? (
@@ -266,12 +266,12 @@ function process_pos(xpos)
     outr = outr * (ansamps - xfade) / ansamps + d1.delay_read3(xfadepos + ansamps - xfade) * xfade / ansamps;
     xfade -= 1;
   );
-  
+
   spl0 = outl;
   spl1 = outr;
-  
+
   prev = value;
-  
+
   post_samples[winpos] < abs((spl0 + spl1) / 2)
     ? post_samples[winpos] = (spl0 + spl1) / 2;
 );
@@ -893,7 +893,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "TIME-1 1.1.2\nTilr 2024\n\n");
+  strcpy(txt, "TIME-1 1.1.4\nTilr 2024\n\n");
   strcat(txt, "TIME-1 is a playback/time and pitch editor.\n");
   strcat(txt, "X axis is time, Y axis controls the delay position.\n\n");
   strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 11 (default)\n");

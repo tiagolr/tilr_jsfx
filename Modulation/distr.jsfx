@@ -1,6 +1,8 @@
 desc:DIST-R
 author:tilr
-version: 1.0.2
+version: 1.0.3
+changelog:
+  Fix slider range
 provides:
   distr/distr.squashman_upsamplers.jsfx-inc
   distr/distr.curvelib.jsfx-inc
@@ -27,7 +29,7 @@ import distr.mouselib.jsfx-inc
 import distr.distortions.jsfx-inc
 
 slider1:pattern=1<1,12,1>Pattern
-slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
+slider2:sync=5<0,17,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider3:ratehz=1<0.01,140,.01:log>-Rate (Hz)
 slider4:phase=0<0,1,.01>Phase
 
@@ -1008,7 +1010,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "DIST-R 1.0.2\nTilr 2024\n\n");
+  strcpy(txt, "DIST-R 1.0.3\nTilr 2024\n\n");
   strcat(txt, "DIST-R is an envelope generator for distortion.\n\n");
   strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 7 (default)\n");
   strcat(txt, "Left click - move points or set tension\n");

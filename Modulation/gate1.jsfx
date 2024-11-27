@@ -1,13 +1,13 @@
 desc: GATE-1
 author: tilr
-version: 1.1.4
+version: 1.1.5
 provides:
   gate1.jsfx.RPL
   gate1/gate.array.jsfx-inc
   gate1/gate.curvelib.jsfx-inc
   gate1/gate.mouselib.jsfx-inc
 changelog:
-  Add presets from Scrumpy Jack
+  Fix sliders range
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/gate1.png
 about:
   # GATE-1
@@ -26,7 +26,7 @@ about:
   * Global tension control
 
 slider1:pattern=1<1,12,1>Pattern
-slider2:sync=5<0,16,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
+slider2:sync=5<0,17,1{Off,1/16,1/8,1/4,1/2,1/1,2/1,4/1,1/16t,1/8t,1/4t,1/2t,1/1t,1/16.,1/8.,1/4.,1/2.,1/1.}>Tempo sync
 slider3:ratehz=1<0.01,140,.01:log>Rate (Hz)
 slider4:phase=0<0,1,.01>Phase
 slider6:_lfomin=0<0,100,1>Min
@@ -240,8 +240,8 @@ while (midirecv(offset, msg1, note, vel)) (
     pattern = note % 12 + 1;
     on_slider();
   );
-  mode == 2 && event == 0x90 && vel && 
-  channel != trigger_channel - 1 && 
+  mode == 2 && event == 0x90 && vel &&
+  channel != trigger_channel - 1 &&
   (
     midi_trigger = 1;
     xpos = phase;
@@ -256,11 +256,11 @@ lretrigger = retrigger;
 
 @sample
 
-function process_pos(xpos) 
+function process_pos(xpos)
 (
   nextv = get_curve_y(xpos);
   value = value.smooth2(nextv, nextv > value);
-  
+
   winpos = floor(xpos * winw);
   lwinpos != winpos ? (
     pre_samples[winpos] = 0;
@@ -917,7 +917,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "GATE-1 1.1.3\nTilr 2024\n\n");
+  strcpy(txt, "GATE-1 1.1.5\nTilr 2024\n\n");
   strcat(txt, "GATE-1 is an envelope generator for gate/volume control.\n\n");
   strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 10 (default)\n");
   strcat(txt, "Left click - move points or set tension\n");
