@@ -1,13 +1,12 @@
 desc: ADSR-1
 author: tilr
-version: 1.3.0
+version: 1.3.1
 provides:
   adsr1/adsr.array.jsfx-inc
   adsr1/adsr.curvelib.jsfx-inc
   adsr1/adsr.mouselib.jsfx-inc
 changelog:
-  Fix multiple notes triggering
-  Add midi offset support
+  Add modulate volume option
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/adsr1.png
 about:
   # ADSR-1
@@ -637,9 +636,13 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   gfx_x = drawx;
   gfx_y = drawy+10;
   menu = #;
-  strcpy(menu, show_tension_sliders ? "!Show tension sliders" : "Show tension sliders");
+  strcpy(menu, modulate_volume ? "!Modulate volume" : "Modulate volume");
+  strcat(menu, show_tension_sliders ? "|!Show tension sliders" : "|Show tension sliders");
   choice = gfx_showmenu(menu);
   choice == 1 ? (
+    modulate_volume = !modulate_volume;
+  );
+  choice == 2 ? (
     show_tension_sliders = !show_tension_sliders;
     on_slider();
   );
