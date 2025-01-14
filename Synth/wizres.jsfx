@@ -1,0 +1,316 @@
+desc:WizRes
+author: tilr
+version: 1.0.0
+changelog:
+  First
+about:
+  # WizRes
+tags: synth, instrument
+
+<? npartials < 1 ? npartials = 32 ?>
+config: npartials "Partials" 32 4 16 32 64
+
+slider1:/tilr8_WizClick:none:Click
+slider2:click_vol=80<0, 100, .01>Volume
+slider3:click_pitch=0<-24,24,1>Pitch
+slider4:click_ktrack=0<0,1,1{No, Yes}>KeyTrack
+
+slider6:decay=1<0.01,100,0.01:log>Decay
+slider7:freq_damp=0<-100,100,0.1>Material
+slider8:tone=0<-100,100,0.1>Tone
+slider9:hit_position=26<2,50,0.1>Hit Position
+slider10:release=100<0,100,0.1>Release
+
+import ws.array.jsfx-inc
+
+@init
+ext_noinit = 1;
+lfile = -1;
+wavechn = 0;
+wavesrate = 0;
+wavelen = 0;
+clickl = 6000000;
+clickr = 6500000;
+wavebuf = 7000000;
+base_note = 60;
+playback_speed = 1;
+
+poly.array_init(0, 10, 5); // [note, velocity, freq, playback_speed]
+midi.array_init(100, 256, 4); // [offset, status, note, vel, nsample]
+
+function db2gain (db) local (val) (
+  val = 10^(db / 20);
+  val <= 0.001 ? 0 : val;
+);
+function rc_set(rc)
+instance(a) (
+  a = 1 / (rc * srate + 1);
+);
+function rc_lp(sample)
+instance(lp, a) (
+  lp += a * (sample - lp);
+);
+function smooth()
+instance (lp, smooth) (
+  lp = smooth;
+  smooth = this.rc_lp(this);
+);
+
+function normalize_vol_slider(val) ( val * 75 / 100 - 60 );
+function note2freq(n) ( 440 * pow(2, (n - 69) / 12); );
+
+function read_file(filehandle) 
+local(i)
+(
+  filehandle > 0 ? (
+    file_riff(filehandle, wavechn, wavesrate);
+    wavechn ? (
+      wavelen = file_avail(filehandle);
+      file_mem(filehandle,wavebuf, min(wavelen, 500000));
+    );
+    file_close(filehandle);
+    wavechn == 2 ? (
+      wavelen = (wavelen / 2) | 0;
+      i = 0; loop(wavelen, 
+        clickl[i] = wavebuf[i*2];
+        clickr[i] = wavebuf[i*2+1];
+        i += 1;
+      );
+    ) : (
+      memcpy(clickl,wavebuf,wavelen);
+      memcpy(clickr,wavebuf,wavelen);
+    );
+  );
+);
+
+function on_file_change() (
+  lfile = slider1;
+  filehandle=file_open(slider1);
+  read_file(filehandle);
+);
+
+// init smooth
+gain.rc_set(0.0033);
+gain.smooth = db2gain(normalize_vol_slider(click_vol));
+
+function on_slider() 
+(
+  lfile != slider1 ? on_file_change();
+  gain = db2gain(normalize_vol_slider(click_vol));
+  playback_speed = 2^((click_pitch / 12) | 0);
+);
+
+function res_init(f_0, k, rel)
+instance(b, a1, a2)
+local(f_k, gamma_k, wb, tone_gain, amp_k, decay_k, f_max, damp_k)
+(
+  f_k = f_0 * k * sqrt(1 + inharm * (k-1) * (k-1));
+  omega_k = 2 * $pi * f_k / srate;
+  decay_k = rel ? decay * release / 100 : decay;
+  
+  f_max = f_0 * 32;
+  damp_k = freq_damp <= 0
+    ? pow(f_0 / f_k, freq_damp / 100 * 2)
+    : pow(f_max / f_k, freq_damp / 100 * 2);
+  
+  // exp(-pi*2 / (srate*decay)) is set by hear and it approximates the decay time in seconds
+  gamma_k = exp(($pi * -2 / (srate * decay_k)) * damp_k);
+
+  (f_k < 0.48 * srate) ? (
+    tone_gain = pow(f_k / f_0, tone * 12 / 100 / 6);
+    amp_k = abs(sin($pi * k * hit_position / 100));
+    b = gamma_k * amp_k * sin(omega_k) * tone_gain * sqrt(f_k) / 500;
+    a1 = -2 * gamma_k * cos(omega_k);
+    a2 = gamma_k * gamma_k;
+    1
+  ) : (
+    b = a1 = a2 = 0;
+    0
+  );
+);
+
+function res_process(x)
+instance(b, a1, a2, y, y1, y2)
+(
+  y = b * x - a1 * y1 - a2 * y2;
+  y2 = y1;
+  y1 = y;
+  y
+);
+
+@slider
+
+inharm = 0;
+rel_pos = min(max(0.01, position / 100), 0.99);
+
+on_slider();
+
+@block
+// remove queued midi messages that have been processed
+ptr = midi.array_first();
+while (ptr >= 0) (
+  ptr[0] < 0 ? (
+    midi.array_remove(ptr);
+    ptr = midi.array_first();
+  ) : (
+    ptr = midi.array_next(ptr);
+  );
+);
+
+while (midirecv(offset, msg1, note, vel)) (
+  event = msg1 & 0xF0;
+  channel = msg1 & 0x0F;
+
+  // note on/off
+  event == 0x90 || event == 0x80 ? (
+    // prevent midi buffer overflow
+    midi.size == 256 ? (
+      midi.array_remove(midi.array_first());
+    );
+    ptr = midi.array_add();
+    ptr[0] = offset;
+    ptr[1] = msg1;
+    ptr[2] = note;
+    ptr[3] = vel;
+  );
+
+  // All notes off
+  event == 0xB0 && note == 123 ? (
+    poly.array_clear();
+    //hold.array_clear();
+  );
+
+  midisend(offset, msg1, note, vel);
+);
+
+@slider
+gain.smooth();
+
+@sample
+
+function on_note(p)
+local (ptr, note_repeat, note, vel, env, freq)
+(
+  note = p[2];
+  vel = p[3];
+
+  // remove note if it is already playing
+  ptr = poly.array_find(note);
+  ptr >= 0 ? (
+    poly.array_remove(ptr);
+  );
+
+  // if polyphony is full
+  poly.size >= 12 ? (
+    poly.array_remove(poly.array_first());
+  );
+
+  freq = note2freq(note);
+  GLOBAL_FREQ = freq;
+  ptr = poly.array_add();
+  ptr[0] = note;
+  ptr[1] = vel / 127;
+  ptr[2] = freq / srate;
+  ptr[3] = 0;
+  ptr[4] = 2 ^ ((note - base_note) / 12);
+  
+  <? 
+    loop(i=1;npartials, 
+      printf("f%02d.res_init(freq, %d, 0);\n", i, i); 
+      i += 1;
+    );
+  ?>
+);
+
+function off_note(p)
+local(ptr, note, pp, freq)
+(
+  note = p[2];
+  ptr = poly.array_find(note);
+  
+  <? 
+    loop(i=1;npartials, 
+      printf("f%02d.res_init(GLOBAL_FREQ, %d, 1);\n", i, i); 
+      i += 1;
+    );
+  ?>
+);
+
+function handle_midi(p)
+local(msg1, vel, event)
+(
+  msg1 = p[1];
+  vel = p[3];
+  event = msg1 & 0xF0;
+  event == 0x90 && vel ? on_note(p); // Note on
+  event == 0x80 || (event == 0x90 && !vel) ? off_note(p); // Note off
+);
+
+/**
+  Sample pos linear interpolation
+*/
+function wave_lerp(buf, pos)
+local(x, i, j)
+(
+  i = pos|0;
+  x = pos - i;
+  j = i + 1;
+  j >= wavelen ? j = 0;
+  (1 - x) * buf[i] + x * buf[j];
+);
+
+// process queued midi
+ptr = midi.array_first();
+while(ptr >= 0) (
+  ptr[0] == 0 ? ( // offset has reached zero
+    handle_midi(ptr);
+  );
+  ptr[0] -= 1;
+  ptr = midi.array_next(ptr);
+);
+
+// process notes being played
+outl = 0;
+outr = 0;
+ptr = poly.array_first();
+while(ptr >= 0) ( // for each note/voice
+  outl = wave_lerp(clickl, ptr[3]) * gain;
+  outr = wave_lerp(clickr, ptr[3]) * gain;
+  ptr[3] += click_ktrack // samplepos += playback_speed
+    ? ptr[4] * playback_speed 
+    : playback_speed;
+  ptr[3] > wavelen ? ptr[3] = -1;
+  ptr = poly.array_next(ptr);
+);
+
+outc = (outl + outr) / 2;
+out_res = 0;
+//outmax=0;
+
+<? 
+  loop(i=1;npartials, 
+    printf("out_res += f%02d.res_process(outc);\n", i); 
+    printf("%d == 1 ? outmax = max(out_res, outmax);\n", i);
+    i += 1;
+  );
+?>
+
+spl0 += out_res;
+spl1 = spl0;
+
+// remove notes that finish playing
+ptr = poly.array_first();
+while (ptr >= 0) (
+  ptr[3] == -1 ? (
+    poly.array_remove(ptr);
+    ptr = poly.array_first();
+  ) : (
+    ptr = poly.array_next(ptr);
+  );
+);
+
+
+
+
+
+
