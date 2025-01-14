@@ -20,11 +20,13 @@ slider7:freq_damp=0<-100,100,0.1>Material
 slider8:tone=0<-100,100,0.1>Tone
 slider9:hit_position=26<2,50,0.1>Hit Position
 slider10:release=100<0,100,0.1>Release
+slider11:inharmonic=0.01<0.01,100,0.001:log>Inharmonic
 
 import ws.array.jsfx-inc
 
 @init
 ext_noinit = 1;
+<? printf("npartials = %d;\n", npartials); ?>
 lfile = -1;
 wavechn = 0;
 wavesrate = 0;
@@ -97,18 +99,20 @@ function on_slider()
 (
   lfile != slider1 ? on_file_change();
   gain = db2gain(normalize_vol_slider(click_vol));
+  inharm = inharmonic == 0.01 ? 0 : inharmonic / 100;
   playback_speed = 2^((click_pitch / 12) | 0);
 );
 
-function res_init(f_0, k, rel)
+function modal_init(f_0, k, rel)
 instance(b, a1, a2)
-local(f_k, gamma_k, wb, tone_gain, amp_k, decay_k, f_max, damp_k)
+local(f_k, gamma_k, tone_gain, amp_k, decay_k, f_max, damp_k, inharm_k)
 (
-  f_k = f_0 * k * sqrt(1 + inharm * (k-1) * (k-1));
+  inharm_k = sqrt(1 + inharm * (k-1) * (k-1));
+  f_k = f_0 * k * inharm_k;
+  f_max = f_0 * npartials * inharm_k;
   omega_k = 2 * $pi * f_k / srate;
   decay_k = rel ? decay * release / 100 : decay;
   
-  f_max = f_0 * 32;
   damp_k = freq_damp <= 0
     ? pow(f_0 / f_k, freq_damp / 100 * 2)
     : pow(f_max / f_k, freq_damp / 100 * 2);
@@ -117,7 +121,9 @@ local(f_k, gamma_k, wb, tone_gain, amp_k, decay_k, f_max, damp_k)
   gamma_k = exp(($pi * -2 / (srate * decay_k)) * damp_k);
 
   (f_k < 0.48 * srate) ? (
-    tone_gain = pow(f_k / f_0, tone * 12 / 100 / 6);
+    tone_gain = tone <= 0
+      ? pow(f_k / f_0, tone * 12 / 100 / 6)
+      : pow(f_k / f_max, tone * 12 / 100 / 6);
     amp_k = abs(sin($pi * k * hit_position / 100));
     b = gamma_k * amp_k * sin(omega_k) * tone_gain * sqrt(f_k) / 500;
     a1 = -2 * gamma_k * cos(omega_k);
@@ -129,7 +135,7 @@ local(f_k, gamma_k, wb, tone_gain, amp_k, decay_k, f_max, damp_k)
   );
 );
 
-function res_process(x)
+function modal_process(x)
 instance(b, a1, a2, y, y1, y2)
 (
   y = b * x - a1 * y1 - a2 * y2;
@@ -140,7 +146,6 @@ instance(b, a1, a2, y, y1, y2)
 
 @slider
 
-inharm = 0;
 rel_pos = min(max(0.01, position / 100), 0.99);
 
 on_slider();
@@ -216,7 +221,7 @@ local (ptr, note_repeat, note, vel, env, freq)
   
   <? 
     loop(i=1;npartials, 
-      printf("f%02d.res_init(freq, %d, 0);\n", i, i); 
+      printf("f%02d.modal_init(freq, %d, 0);\n", i, i); 
       i += 1;
     );
   ?>
@@ -230,7 +235,7 @@ local(ptr, note, pp, freq)
   
   <? 
     loop(i=1;npartials, 
-      printf("f%02d.res_init(GLOBAL_FREQ, %d, 1);\n", i, i); 
+      printf("f%02d.modal_init(GLOBAL_FREQ, %d, 1);\n", i, i); 
       i += 1;
     );
   ?>
@@ -285,12 +290,10 @@ while(ptr >= 0) ( // for each note/voice
 
 outc = (outl + outr) / 2;
 out_res = 0;
-//outmax=0;
 
 <? 
   loop(i=1;npartials, 
-    printf("out_res += f%02d.res_process(outc);\n", i); 
-    printf("%d == 1 ? outmax = max(out_res, outmax);\n", i);
+    printf("out_res += f%02d.modal_process(outc);\n", i); 
     i += 1;
   );
 ?>
