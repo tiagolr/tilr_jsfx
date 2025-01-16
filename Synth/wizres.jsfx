@@ -36,6 +36,13 @@ clickr = 6500000;
 wavebuf = 7000000;
 base_note = 60;
 playback_speed = 1;
+// beam model: fmn = sqrt(m**4 + (0.5*Bfree[n])**4)
+// where Bfree[n] is the nth solution to cos($pi*x) = 1/cos($pi*x)
+// https://nathan.ho.name/posts/exploring-modal-synthesis
+beam = 5000200;
+beam[0] = 1.0;beam[1] = 2.742118730723096;  beam[2] = 5.372437705395023;beam[3] = 8.879796231350905;beam[4] = 13.26432297929055;beam[5] = 18.525894832548836;beam[6] = 24.664464701923304;beam[7] = 31.680011427264994;beam[8] = 39.57480167993186;beam[9] = 48.34386187557112;beam[10] = 57.98998201587341;beam[11] = 68.51312839987956;beam[12] = 79.91327932335997;beam[13] = 92.19042029669127;beam[14] = 105.34454134738507;beam[15] = 119.37563542989709;beam[16] = 134.286605658006;beam[17] = 150.07132597088105;beam[18] = 166.73305349293955;beam[19] = 184.27177735520195;beam[20] = 202.68748915580662;beam[21] = 221.9801823173097;beam[22] = 242.14985163115497;beam[23] = 263.1964929295172;beam[24] = 285.1237904740257;beam[25] = 307.92409320904443;beam[26] = 331.6013888047332;beam[27] = 356.1556713642617;beam[28] = 381.58693597293706;beam[29] = 407.89517850825996;beam[30] = 435.08039549149447;beam[31] = 463.1425839706985;beam[32] = 492.0862467609114;beam[33] = 521.9021136490643; beam[34] = 552.5949669402571; beam[35] = 584.164802709515;  beam[36] = 616.6116175480827; beam[37] = 649.9354084840451; beam[38] = 684.1361729168341; beam[39] = 719.2139085629082; beam[40] = 755.1739518807949; beam[41] = 792.0053758900387; beam[42] = 829.7137826702212; beam[43] = 868.2991693165571; beam[44] = 907.7615332399005; beam[45] = 948.1008721264657; beam[46] = 989.3171839034187; beam[47] = 1031.4104667093834;beam[48] = 1074.3868982163283;beam[49] = 1118.233875919467; beam[50] = 1162.9578340759736;beam[51] = 1208.5587703942417;beam[52] = 1255.0366827948008;beam[53] = 1302.3915693871795;beam[54] = 1350.6234284496627;beam[55] = 1399.7322584115318;beam[56] = 1449.7250824905104;beam[57] = 1500.5876119645127;beam[58] = 1552.3271202881517;beam[59] = 1604.9436055754263;beam[60] = 1658.4370660924033;beam[61] = 1712.8075002427393;beam[62] = 1768.0549065547818;beam[63] = 1824.179283670064;
+plate = 5000300;
+plate[0] = 1.0;plate[1] = 5.161853978549466;plate[2] = 14.375048440684658;plate[3] = 28.152890672572767;plate[4] = 46.53230920572664;plate[5] = 69.50830426691829;plate[6] = 97.08023069463944;plate[7] = 129.24784172992491;plate[8] = 166.01102648840657;plate[9] = 207.36972914864887;plate[10] = 253.32391912421792;plate[11] = 303.8735785162585;plate[12] = 359.02558935970507;plate[13] = 418.7651750374091;plate[14] = 483.10040357749426;plate[15] = 552.0312227216767;plate[16] = 625.557595549577;plate[17] = 703.6794953775825;plate[18] = 786.3969025326082;plate[19] = 873.7098022526609;plate[20] = 965.6181832858964;plate[21] = 1062.1220369346747;plate[22] = 1163.22135639011;plate[23] = 1268.9161362604411;plate[24] = 1379.2141476872553;plate[25] = 1494.0992383956593;plate[26] = 1613.579845276544;plate[27] = 1737.655956516581;plate[28] = 1866.3275623378397;plate[29] = 1999.5946545910206;plate[30] = 2137.4572264404546;plate[31] = 2279.9152721179616;plate[32] = 2426.968786728881;plate[33] = 2578.6177660980075;plate[34] = 2734.8622066463267;plate[35] = 2895.7021052916957;plate[36] = 3061.1468912324567;plate[37] = 3231.177202102211;plate[38] = 3405.8030022391713;plate[39] = 3585.0242860612484;plate[40] = 3768.8410486668654;plate[41] = 3957.2532857377846;plate[42] = 4150.260993457732;plate[43] = 4347.864168443979;plate[44] = 4550.062807689553;plate[45] = 4756.856908514238;plate[46] = 4968.246468522877;plate[47] = 5184.2314855697505;plate[48] = 5404.823221615787;plate[49] = 5629.998696643879;plate[50] = 5859.76964998171;plate[51] = 6094.136078177604;plate[52] = 6333.097978105449;plate[53] = 6576.655346928532;plate[54] = 6824.808182067975;plate[55] = 7077.556481175114;plate[56] = 7334.900242107275;plate[57] = 7596.839462906461;plate[58] = 7863.374141780592;plate[59] = 8134.504277086891;plate[60] = 8410.243030390626;plate[61] = 8690.563649573069;plate[62] = 8975.479741232954;plate[63] = 9264.991302930117;
 
 poly.array_init(0, 10, 5); // [note, velocity, freq, playback_speed]
 midi.array_init(100, 256, 4); // [offset, status, note, vel, nsample]
@@ -61,7 +68,7 @@ instance (lp, smooth) (
 function normalize_vol_slider(val) ( val * 75 / 100 - 60 );
 function note2freq(n) ( 440 * pow(2, (n - 69) / 12); );
 
-function read_file(filehandle) 
+function read_file(filehandle)
 local(i)
 (
   filehandle > 0 ? (
@@ -73,7 +80,7 @@ local(i)
     file_close(filehandle);
     wavechn == 2 ? (
       wavelen = (wavelen / 2) | 0;
-      i = 0; loop(wavelen, 
+      i = 0; loop(wavelen,
         clickl[i] = wavebuf[i*2];
         clickr[i] = wavebuf[i*2+1];
         i += 1;
@@ -95,7 +102,7 @@ function on_file_change() (
 gain.rc_set(0.0033);
 gain.smooth = db2gain(normalize_vol_slider(click_vol));
 
-function on_slider() 
+function on_slider()
 (
   lfile != slider1 ? on_file_change();
   gain = db2gain(normalize_vol_slider(click_vol));
@@ -112,11 +119,43 @@ local(f_k, gamma_k, tone_gain, amp_k, decay_k, f_max, damp_k, inharm_k)
   f_max = f_0 * npartials * inharm_k;
   omega_k = 2 * $pi * f_k / srate;
   decay_k = rel ? decay * release / 100 : decay;
-  
+
   damp_k = freq_damp <= 0
     ? pow(f_0 / f_k, freq_damp / 100 * 2)
     : pow(f_max / f_k, freq_damp / 100 * 2);
-  
+
+  // exp(-pi*2 / (srate*decay)) is set by hear and it approximates the decay time in seconds
+  gamma_k = exp(($pi * -2 / (srate * decay_k)) * damp_k);
+
+  (f_k < 0.48 * srate) ? (
+    tone_gain = tone <= 0
+      ? pow(f_k / f_0, tone * 12 / 100 / 6)
+      : pow(f_k / f_max, tone * 12 / 100 / 6);
+    amp_k = abs(sin($pi * k * hit_position / 100));
+    b = gamma_k * amp_k * sin(omega_k) * tone_gain * sqrt(f_k) / 500;
+    a1 = -2 * gamma_k * cos(omega_k);
+    a2 = gamma_k * gamma_k;
+    1
+  ) : (
+    b = a1 = a2 = 0;
+    0
+  );
+);
+
+function modal_init_ratio(f_0, k, ratio, rel)
+instance(b, a1, a2)
+local(f_k, gamma_k, tone_gain, amp_k, decay_k, f_max, damp_k, inharm_k)
+(
+  inharm_k = sqrt(1 + inharm * (k-1) * (k-1));
+  f_k = f_0 * ratio * inharm_k;
+  f_max = f_0 * npartials * inharm_k;
+  omega_k = 2 * $pi * f_k / srate;
+  decay_k = rel ? decay * release / 100 : decay;
+
+  damp_k = freq_damp <= 0
+    ? pow(f_0 / f_k, freq_damp / 100 * 2)
+    : pow(f_max / f_k, freq_damp / 100 * 2);
+
   // exp(-pi*2 / (srate*decay)) is set by hear and it approximates the decay time in seconds
   gamma_k = exp(($pi * -2 / (srate * decay_k)) * damp_k);
 
@@ -218,10 +257,16 @@ local (ptr, note_repeat, note, vel, env, freq)
   ptr[2] = freq / srate;
   ptr[3] = 0;
   ptr[4] = 2 ^ ((note - base_note) / 12);
-  
-  <? 
-    loop(i=1;npartials, 
-      printf("f%02d.modal_init(freq, %d, 0);\n", i, i); 
+
+  //<?
+  //  loop(i=1;npartials,
+  //    printf("f%02d.modal_init(freq, %d, 0);\n", i, i);
+  //    i += 1;
+  //  );
+  //?>
+  <?
+    loop(i=1;npartials,
+      printf("f%02d.modal_init_ratio(freq, %d, plate[%d], 0);\n", i, i, i-1);
       i += 1;
     );
   ?>
@@ -232,10 +277,16 @@ local(ptr, note, pp, freq)
 (
   note = p[2];
   ptr = poly.array_find(note);
-  
-  <? 
-    loop(i=1;npartials, 
-      printf("f%02d.modal_init(GLOBAL_FREQ, %d, 1);\n", i, i); 
+
+  //<?
+  //  loop(i=1;npartials,
+  //    printf("f%02d.modal_init(GLOBAL_FREQ, %d, 1);\n", i, i);
+  //    i += 1;
+  //  );
+  //?>
+  <?
+    loop(i=1;npartials,
+      printf("f%02d.modal_init_ratio(GLOBAL_FREQ, %d, plate[%d], 1);\n", i, i, i-1);
       i += 1;
     );
   ?>
@@ -282,7 +333,7 @@ while(ptr >= 0) ( // for each note/voice
   outl = wave_lerp(clickl, ptr[3]) * gain;
   outr = wave_lerp(clickr, ptr[3]) * gain;
   ptr[3] += click_ktrack // samplepos += playback_speed
-    ? ptr[4] * playback_speed 
+    ? ptr[4] * playback_speed
     : playback_speed;
   ptr[3] > wavelen ? ptr[3] = -1;
   ptr = poly.array_next(ptr);
@@ -291,9 +342,9 @@ while(ptr >= 0) ( // for each note/voice
 outc = (outl + outr) / 2;
 out_res = 0;
 
-<? 
-  loop(i=1;npartials, 
-    printf("out_res += f%02d.modal_process(outc);\n", i); 
+<?
+  loop(i=1;npartials,
+    printf("out_res += f%02d.modal_process(outc);\n", i);
     i += 1;
   );
 ?>
