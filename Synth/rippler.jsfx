@@ -129,10 +129,10 @@ function on_slider()
   playback_speed = 2^((click_pitch / 12) | 0);
 
   <?
-    //loop(i=1;npartials,
-    //  printf("f%02d.modal_init(GLOBAL_FREQ, %d, models[model][%d], 0);\n", i, i, i-1);
-    //  i += 1;
-    //);
+    loop(i=1;npolyphony,
+      printf("s%02d.string_init(s%02d.f0, 1);\n", i-1, i, i);
+      i += 1;
+    );
   ?>
 );
 
@@ -219,7 +219,7 @@ local(ptr, note, pp, freq)
   ptr = poly.array_find(note);
   ptr >= 0 ? (
     <?
-      loop(i=1;npartials,
+      loop(i=1;npolyphony,
         printf("nstring == %d ? s%02d.string_init(s%02d.f0, 1);\n", i-1, i, i);
         i += 1;
       );
