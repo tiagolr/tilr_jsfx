@@ -149,6 +149,7 @@ function string_init(freq, rel)
 globals(models, model) 
 (
   this.f0 = freq;
+  this.rel = rel;
   <?
     loop(i=1;npartials,
       printf("this.f%02d.modal_init(freq, %d, models[model][%d], rel);\n", i, i, i-1);

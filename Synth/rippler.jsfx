@@ -138,7 +138,7 @@ function on_slider()
 
   <?
     loop(i=1;npolyphony,
-      printf("s%02d.string_init(s%02d.f0, 1);\n", i, i);
+      printf("s%02d.string_init(s%02d.f0, s%02d.rel);\n", i, i);
       i += 1;
     );
   ?>
@@ -229,7 +229,7 @@ local(ptr, note, pp, freq)
   ptr >= 0 ? (
     <?
       loop(i=1;npolyphony,
-        printf("nstring == %d ? s%02d.string_init(s%02d.f0, 1);\n", i-1, i, i);
+        printf("ptr[5] == %d ? s%02d.string_init(s%02d.f0, 1);\n", i-1, i, i);
         i += 1;
       );
     ?>
