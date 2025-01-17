@@ -117,7 +117,15 @@ gain.smooth = db2gain(normalize_vol_slider(click_vol));
 
 function on_slider()
 (
-  lmodel != model ? ratio = model == 1 ? 2 : 0.78;
+  lmodel != model ? (
+    ratio = model == 1 ? 2 : 0.78;
+    <?
+      loop(i=1;npolyphony,
+        printf("s%02d.string_clear();\n", i);
+        i+=1;
+      );
+    ?>
+  );
   lmodel = model;
   model == 1 ? recalc_beam();
   model == 3 ? recalc_membrane();
@@ -130,7 +138,7 @@ function on_slider()
 
   <?
     loop(i=1;npolyphony,
-      printf("s%02d.string_init(s%02d.f0, 1);\n", i-1, i, i);
+      printf("s%02d.string_init(s%02d.f0, 1);\n", i, i);
       i += 1;
     );
   ?>
