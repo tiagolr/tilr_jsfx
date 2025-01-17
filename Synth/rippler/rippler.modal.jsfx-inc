@@ -158,15 +158,23 @@ globals(models, model)
 );
 
 function string_process(x)
+globals(srate)
+instance(active, silence)
 local(out)
 (
   out = 0;
-  <?
-    loop(i=1;npartials,
-      printf("out += this.f%02d.modal_process(x);\n", i);
-      i += 1;
-    );
-  ?>
+  active ? ( // use active and silence to turn of strings process if not in use
+    <?
+      loop(i=1;npartials,
+        printf("out += this.f%02d.modal_process(x);\n", i);
+        i += 1;
+      );
+    ?>
+  );
+  abs(out) + abs(x) > 0.00001
+    ? silence = 0
+    : silence += 1;
+  silence >= srate ? active = 0;
   out
 );
 
