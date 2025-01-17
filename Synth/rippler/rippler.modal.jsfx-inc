@@ -144,3 +144,38 @@ instance(y, y1, y2)
 (
   y = y1 = y2 = 0;
 );
+
+function string_init(freq, rel)
+globals(models, model) 
+(
+  this.f0 = freq;
+  <?
+    loop(i=1;npartials,
+      printf("this.f%02d.modal_init(freq, %d, models[model][%d], rel);\n", i, i, i-1);
+      i += 1;
+    );
+  ?>
+);
+
+function string_process(x)
+local(out)
+(
+  out = 0;
+  <?
+    loop(i=1;npartials,
+      printf("out += this.f%02d.modal_process(x);\n", i);
+      i += 1;
+    );
+  ?>
+  out
+);
+
+function string_clear()
+(
+  <?
+    loop(i=1;npartials,
+      printf("this.f%02d.modal_clear();\n", i);
+      i += 1;
+    );
+  ?>
+);

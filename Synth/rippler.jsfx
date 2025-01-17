@@ -32,6 +32,7 @@ import rippler.modal.jsfx-inc
 @init
 ext_noinit = 1;
 <? printf("npartials = %d;\n", npartials); ?>
+<? printf("npolyphony = %d;\n", npolyphony); ?>
 lfile = -1;
 lmodel = model;
 wavechn = 0;
@@ -39,6 +40,7 @@ wavesrate = 0;
 wavelen = 0;
 base_note = 60;
 playback_speed = 1;
+nstring = 0;
 freemem = 100000;
 freemem = init_models(freemem);
 
@@ -51,8 +53,8 @@ models[4] = plate;
 models[5] = drumhead;
 models[6] = marimba;
 
-freemem = poly.array_init(freemem, 10, 5); // [note, velocity, freq, playback_speed]
-freemem = midi.array_init(freemem, 256, 4); // [offset, status, note, vel, nsample]
+freemem = poly.array_init(freemem, 10, 7); // [note, velocity, freq, playback_speed, nstring, release]
+freemem = midi.array_init(freemem, 256, 4); // [offset, status, note, vel]
 clickl = freemem; freemem += 500000; // click left channel buffer
 clickr = freemem; freemem += 500000; // click right channel buffer
 wavebuf = freemem; // file reader buffer
@@ -120,7 +122,6 @@ function on_slider()
   model == 1 ? recalc_beam();
   model == 3 ? recalc_membrane();
   model == 4 ? recalc_plate();
-  
 
   lfile != slider1 ? on_file_change();
   gain = db2gain(normalize_vol_slider(click_vol));
@@ -128,10 +129,10 @@ function on_slider()
   playback_speed = 2^((click_pitch / 12) | 0);
 
   <?
-    loop(i=1;npartials,
-      printf("f%02d.modal_init(GLOBAL_FREQ, %d, models[model][%d], 0);\n", i, i, i-1);
-      i += 1;
-    );
+    //loop(i=1;npartials,
+    //  printf("f%02d.modal_init(GLOBAL_FREQ, %d, models[model][%d], 0);\n", i, i, i-1);
+    //  i += 1;
+    //);
   ?>
 );
 
@@ -189,36 +190,26 @@ local (ptr, note_repeat, note, vel, env, freq)
 
   // remove note if it is already playing
   ptr = poly.array_find(note);
-  ptr >= 0 ? (
-    poly.array_remove(ptr);
-  );
-
-  // if polyphony is full
-  poly.size >= 12 ? (
-    poly.array_remove(poly.array_first());
-  );
+  ptr >= 0 ? poly.array_remove(ptr);
 
   freq = note2freq(note);
-  GLOBAL_FREQ = freq;
   ptr = poly.array_add();
   ptr[0] = note;
   ptr[1] = vel / 127;
   ptr[2] = freq / srate;
   ptr[3] = 0;
   ptr[4] = 2 ^ ((note - base_note) / 12);
-
-  //<?
-  //  loop(i=1;npartials,
-  //    printf("f%02d.modal_init(freq, %d, 0);\n", i, i);
-  //    i += 1;
-  //  );
-  //?>
+  ptr[5] = nstring;
+  ptr[6] = 0; // note release
+  
   <?
-    loop(i=1;npartials,
-      printf("f%02d.modal_init(freq, %d, models[model][%d], 0);\n", i, i, i-1);
+    loop(i=1;npolyphony,
+      printf("nstring == %d ? s%02d.string_init(freq, 0);\n", i-1, i);
       i += 1;
     );
   ?>
+  
+  nstring = (nstring + 1) % npolyphony;
 );
 
 function off_note(p)
@@ -226,19 +217,15 @@ local(ptr, note, pp, freq)
 (
   note = p[2];
   ptr = poly.array_find(note);
-
-  //<?
-  //  loop(i=1;npartials,
-  //    printf("f%02d.modal_init(GLOBAL_FREQ, %d, 1);\n", i, i);
-  //    i += 1;
-  //  );
-  //?>
-  <?
-    loop(i=1;npartials,
-      printf("f%02d.modal_init(GLOBAL_FREQ, %d, models[model][%d], 1);\n", i, i, i-1);
-      i += 1;
-    );
-  ?>
+  ptr >= 0 ? (
+    <?
+      loop(i=1;npartials,
+        printf("nstring == %d ? s%02d.string_init(s%02d.f0, 1);\n", i-1, i, i);
+        i += 1;
+      );
+    ?>
+    ptr[6] = 1;
+  );
 );
 
 function handle_midi(p)
@@ -275,25 +262,38 @@ while(ptr >= 0) (
 );
 
 // process notes being played
-outl = 0;
-outr = 0;
+outl = spl0;
+outr = spl1;
 ptr = poly.array_first();
+<?
+  loop(i=1;npolyphony,
+    printf("outc_%02d = 0;\n",i);
+    i+=1;
+  );
+?>
 while(ptr >= 0) ( // for each note/voice
-  outl = wave_lerp(clickl, ptr[3]) * gain;
-  outr = wave_lerp(clickr, ptr[3]) * gain;
-  ptr[3] += click_ktrack // samplepos += playback_speed
-    ? ptr[4] * playback_speed
-    : playback_speed;
-  ptr[3] > wavelen ? ptr[3] = -1;
+  ptr[3] >= 0 ? ( // if note is playing sample
+    outl += wave_lerp(clickl, ptr[3]) * gain;
+    outr += wave_lerp(clickr, ptr[3]) * gain;
+    ptr[3] += click_ktrack // samplepos += playback_speed
+      ? ptr[4] * playback_speed
+      : playback_speed;
+    ptr[3] >= wavelen ? ptr[3] = -1; // note finished sample
+    <?
+      loop(i=1;npolyphony,
+        printf("ptr[5] == %d ? outc_%02d = (outl + outr) / 2;\n",i-1, i);
+        i+=1;
+      );
+    ?>
+  );
   ptr = poly.array_next(ptr);
 );
 
-outc = (outl + outr) / 2;
 out_res = 0;
 
 <?
-  loop(i=1;npartials,
-    printf("out_res += f%02d.modal_process(outc);\n", i);
+  loop(i=1;npolyphony,
+    printf("out_res += s%02d.string_process(outc_%02d);\n", i, i);
     i += 1;
   );
 ?>
@@ -301,10 +301,10 @@ out_res = 0;
 spl0 += out_res;
 spl1 = spl0;
 
-// remove notes that finish playing
+// remove notes that finish playing and are no longer pressed
 ptr = poly.array_first();
 while (ptr >= 0) (
-  ptr[3] == -1 ? (
+  ptr[3] == -1 && ptr[6] ? (
     poly.array_remove(ptr);
     ptr = poly.array_first();
   ) : (
