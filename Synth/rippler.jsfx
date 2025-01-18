@@ -18,34 +18,35 @@ import rippler.array.jsfx-inc
 import rippler.modal.jsfx-inc
 import rippler.rbj_filter.jsfx-inc
 import rippler.envlib.jsfx-inc
+import rippler.gfxlib.jsfx-inc
 
 slider1:/tilr8_Rippler:none:Mallet Sample
-slider2:click_mix=0<0,100,.01>Mallet Mix
-slider3:click_res=80<0,100,.01>Mallet Resonance
-slider4:click_pitch=0<-24,24,1>Pitch
-slider5:click_ktrack=0<0,1,1{No, Yes}>KeyTrack
-slider6:click_filter_mode=2<0,2,1{LP,BP,HP}>Mallet Filter Mode
-slider7:click_filter_freq=20<20,20000,1:log>Mallet Filter Freq
+slider2:click_mix=0<0,100,.01>-Mallet Mix
+slider3:click_res=80<0,100,.01>-Mallet Resonance
+slider4:click_pitch=0<-24,24,1>-Pitch
+slider5:click_ktrack=0<0,1,1{No, Yes}>-KeyTrack
+slider6:click_filter_mode=2<0,2,1{LP,BP,HP}>-Mallet Filter Mode
+slider7:click_filter_freq=20<20,20000,1:log>-Mallet Filter Freq
 
-slider10:model=0<0,6,1{String,Beam,Metal,Membrane,Plate,Drumhead,Marimba}>Model
-slider11:decay=1<0.01,100,0.01:log>Decay
-slider12:freq_damp=0<-100,100,0.1>Material
-slider13:tone=0<-100,100,0.1>Tone
-slider14:hit_position=26<2,50,0.1>Hit Position
-slider15:release=100<0,100,0.1>Release
-slider16:inharmonic=0.01<0.01,100,0.001:log>Inharmonic
-slider17:ratio=1<0.1,10,0.01:log>Ratio
-slider18:lowcut=20<20,20000,1:log>Low Cut
+slider10:model=0<0,6,1{String,Beam,Metal,Membrane,Plate,Drumhead,Marimba}>-Model
+slider11:decay=1<0.01,100,0.01:log>-Decay
+slider12:freq_damp=0<-100,100,0.1>-Material
+slider13:tone=0<-100,100,0.1>-Tone
+slider14:hit_position=26<2,50,0.1>-Hit Position
+slider15:release=100<0,100,0.1>-Release
+slider16:inharmonic=0.01<0.01,100,0.001:log>-Inharmonic
+slider17:ratio=1<0.1,10,0.01:log>-Ratio
+slider18:lowcut=20<20,20000,1:log>-Low Cut
 
-slider20:noise_mix=0<0,100,.01>Noise Mix
-slider21:noise_res=0<0,100,.01>Noise Res
-slider22:noise_filter_mode=2<0,2,1{LP,BP,HP}>Noise Filter Mode
-slider23:noise_filter_freq=20<20,20000,1:log>Noise Filter Freq
-slider24:noise_filter_q=.707<0.707,4,0.01:log>Noise Filter Q
-slider25:noise_att=1<1, 5000, 1:log>Noise Attack
-slider26:noise_dec=500<1, 5000, 1:log>Noise Decay
-slider27:noise_sus=0<0, 100, 0.1>Noise Sustain
-slider28:noise_rel=500<1, 5000, 1:log>Noise Release
+slider20:noise_mix=0<0,100,.01>-Noise Mix
+slider21:noise_res=0<0,100,.01>-Noise Res
+slider22:noise_filter_mode=2<0,2,1{LP,BP,HP}>-Noise Filter Mode
+slider23:noise_filter_freq=20<20,20000,1:log>-Noise Filter Freq
+slider24:noise_filter_q=.707<0.707,4,0.01:log>-Noise Filter Q
+slider25:noise_att=1<1, 5000, 1:log>-Noise Attack
+slider26:noise_dec=500<1, 5000, 1:log>-Noise Decay
+slider27:noise_sus=0<0, 100, 0.1>-Noise Sustain
+slider28:noise_rel=500<1, 5000, 1:log>-Noise Release
 
 @init
 ext_noinit = 1;
@@ -187,11 +188,11 @@ function on_slider()
   ?>
 );
 
-function process_noise() 
+function process_noise()
 local (noise)
 (
   noise = rand(2) - 1;
-  noise_filter_mode == 1 || 
+  noise_filter_mode == 1 ||
   (noise_filter_mode == 0 && noise_filter_freq < 20000) ||
   (noise_filter_mode == 2 && noise_filter_freq > 20) ?
   (
@@ -404,6 +405,129 @@ while (ptr >= 0) (
     ptr = poly.array_next(ptr);
   );
 );
+
+@gfx 600 250
+gfx_clear = COLOR_BG;
+mouse.update_mouse_state();
+
+set_color(0x666666);
+gfx_x = 20; gfx_y = 20;
+gfx_drawstr("NOISE");
+
+filter_name = noise_filter_mode == 0 ? "LP" : noise_filter_mode == 1 ? "BP" : "HP";
+draw_button(140,20,40,filter_name, 0);
+mouse.left_click && mouse_in_rect(140, 20 - 2, 40, 10 + 2) ? (
+  gfx_x = 140; gfx_y = 30;
+  choice = gfx_showmenu("LP|BP|HP");
+  choice > 0 ? slider(22) = choice - 1;
+  on_slider();
+);
+
+draw_knob(20, 40, 20, "Mix", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(20)));
+draw_knob(80, 40, 21, "Res", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(21)));
+draw_knob(140, 40, 23, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(23)));
+
+draw_knob(20, 110, 25, "A", 1, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(25)));
+draw_knob(80, 110, 26, "D", 500, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(26)));
+draw_knob(140, 110, 24, "Q", .707,.707,4, 0,0, sprintf(#, "%.1f", slider(24)));
+
+draw_knob(20, 180, 27, "S", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(27)));
+draw_knob(80, 180, 28, "R", 500, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(28)));
+
+set_color(0x666666);
+gfx_line(200, 20, 200, 230);
+gfx_x = 220; gfx_y = 20;
+gfx_drawstr("MALLET");
+
+filter_name = click_filter_mode == 0 ? "LP" : click_filter_mode == 1 ? "BP" : "HP";
+draw_button(340,20,40,filter_name, 0);
+mouse.left_click && mouse_in_rect(340, 20 - 2, 40, 10 + 2) ? (
+  gfx_x = 340; gfx_y = 30;
+  choice = gfx_showmenu("LP|BP|HP");
+  choice > 0 ? slider(6) = choice - 1;
+  on_slider();
+);
+
+draw_button(210,180,60,"KTrack", click_ktrack);
+mouse.left_click && mouse_in_rect(210,180-2, 60, 10+2) ? (
+  click_ktrack = !click_ktrack;
+);
+
+draw_knob(220, 40, 2, "Mix", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(2)));
+draw_knob(280, 40, 3, "Res", 80, 0, 100, 0, 0, sprintf(#, "%i%%", slider(3)));
+draw_knob(340, 40, 7, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(7)));
+draw_knob(220, 110, 4, "Pitch", 0, -24, 24, 0, 1, sprintf(#, "%i", slider(4)));
+
+set_color(0x666666);
+gfx_line(400, 20, 400, 230);
+gfx_x = 420; gfx_y = 20;
+gfx_drawstr("RES");
+
+model_name = model == 0 ? "String"
+  : model == 1 ? "Beam"
+  : model == 2 ? "Metal"
+  : model == 3 ? "Membrane"
+  : model == 4 ? "Plate"
+  : model == 5 ? "Drumhead"
+  : "Marimba";
+
+draw_button(500,20,80,model_name,1);
+mouse.left_click && mouse_in_rect(500, 20 - 2, 80, 10 + 2) ? (
+  gfx_x = 500; gfx_y = 30;
+  choice = gfx_showmenu("String|Beam|Metal|Membrane|Plate|Drumhead|Marimba");
+  choice > 0 ? slider(10) = choice - 1;
+  on_slider();
+);
+
+draw_knob(420, 40, 11, "Decay", 1, 0.01, 100, 1, 0, sprintf(#, "%.2f s", slider(11)));
+draw_knob(480, 40, 12, "Matrl", 0, -100, 100, 0, 1, sprintf(#, "%i%%", slider(12)));
+draw_knob(540, 40, 15, "Relse", 100, 0, 100, 0, 0, sprintf(#, "%i%%", slider(15)));
+
+draw_knob(420, 110, 13, "Tone", 0, -100, 100, 0, 1, sprintf(#, "%i%%", slider(13)));
+draw_knob(480, 110, 14, "Hit", 26, 2, 50, 0, 0, sprintf(#, "%i%%", slider(14)));
+draw_knob(540, 110, 16, "Inharm", 0.01, 0.01, 100, 1,0, sprintf(#, "%.2f", slider(16)));
+
+model == 1 || model == 3 || model == 4 ? (
+  draw_knob(420, 180, 17, "Ratio", 1, 0.1, 10, 1, 0, sprintf(#, "%.1f", slider(17)));
+);
+draw_knob(540, 180, 18, "LowCut", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(18)));
+
+function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
+  factor *= mouse.control ? 0.05 : 1;
+  slider_is_log ? (
+    slider(nslider) = slider(nslider) * pow(100, -factor * 0.01);
+  ) : (
+    inc = (slider_max - slider_min) / 100 * -factor;
+    slider(nslider) += inc;
+  );
+
+  slider(nslider) > slider_max ? slider(nslider) = slider_max;
+  slider(nslider) < slider_min ? slider(nslider) = slider_min;
+  on_slider();
+  sliderchange(slider(nslider));
+  slider_automate(slider(nslider));
+);
+
+wheelknob_nslider ? (
+  on_knob_move(wheelknob_nslider, wheelknob_min, wheelknob_max, wheelknob_is_log, mouse.wheel * -7);
+);
+
+selknob_nslider && mouse.left && mouse.dy != 0 ? (
+  on_knob_move(selknob_nslider, selknob_min, selknob_max, selknob_is_log, mouse.dy);
+);
+
+doubleclk_nslider ? (
+  on_slider();
+  sliderchange(slider(doubleclk_nslider));
+  slider_automate(slider(doubleclk_nslider));
+  doubleclk_nslider = 0;
+);
+
+gfx_setcursor(selknob_nslider ? 32511 : 0);
+!mouse.wheel ? wheelknob_nslider = 0;
+!mouse.left ? selknob_nslider = 0;
+
+
 
 
 
