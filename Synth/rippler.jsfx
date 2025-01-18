@@ -18,7 +18,7 @@ import rippler.array.jsfx-inc
 import rippler.modal.jsfx-inc
 import rippler.rbj_filter.jsfx-inc
 
-slider1:/tilr8_Rippler:none:Click
+slider1:/tilr8_Rippler:none:Mallet Sample
 slider2:click_mix=0<0,100,.01>Mallet Mix
 slider3:click_res=80<0,100,.01>Mallet Resonance
 slider4:click_pitch=0<-24,24,1>Pitch
@@ -62,9 +62,7 @@ models[6] = marimba;
 
 freemem = poly.array_init(freemem, 10, 7); // [note, velocity, freq, playback_speed, nstring, release]
 freemem = midi.array_init(freemem, 256, 4); // [offset, status, note, vel]
-clickl = freemem; freemem += 500000; // click left channel buffer
-clickr = freemem; freemem += 500000; // click right channel buffer
-wavebuf = freemem; // file reader buffer
+wavebuf = freemem; // mallet sample
 
 function db2gain (db) local (val) (
   val = 10^(db / 20);
@@ -100,13 +98,9 @@ local(i)
     wavechn == 2 ? (
       wavelen = (wavelen / 2) | 0;
       i = 0; loop(wavelen,
-        clickl[i] = wavebuf[i*2];
-        clickr[i] = wavebuf[i*2+1];
+        wavelen[i] = wavelen[2*i] + wavelen[2*i+1]; // stereo to mono
         i += 1;
       );
-    ) : (
-      memcpy(clickl,wavebuf,wavelen);
-      memcpy(clickr,wavebuf,wavelen);
     );
   );
 );
@@ -140,8 +134,7 @@ function on_slider()
   click_filter_mode == 0 ? (
     <?
       loop(i=1;npolyphony,
-        printf("click_filter_l%02d.rbj_lp(click_filter_freq, 0.707);\n",i);
-        printf("click_filter_r%02d.rbj_lp(click_filter_freq, 0.707);\n",i);
+        printf("click_filter%02d.rbj_lp(click_filter_freq, 0.707);\n",i);
         i+=1;
       );
     ?>
@@ -149,8 +142,7 @@ function on_slider()
   click_filter_mode == 1 ? (
     <?
       loop(i=1;npolyphony,
-        printf("click_filter_l%02d.rbj_bp(click_filter_freq, 0.707);\n",i);
-        printf("click_filter_r%02d.rbj_bp(click_filter_freq, 0.707);\n",i);
+        printf("click_filter%02d.rbj_bp(click_filter_freq, 0.707);\n",i);
         i+=1;
       );
     ?>
@@ -158,8 +150,7 @@ function on_slider()
   click_filter_mode == 2 ? (
     <?
       loop(i=1;npolyphony,
-        printf("click_filter_l%02d.rbj_hp(click_filter_freq, 0.707);\n",i);
-        printf("click_filter_r%02d.rbj_hp(click_filter_freq, 0.707);\n",i);
+        printf("click_filter%02d.rbj_hp(click_filter_freq, 0.707);\n",i);
         i+=1;
       );
     ?>
@@ -306,38 +297,32 @@ ptr = poly.array_first();
     i+=1;
   );
 ?>
-malletl = 0;
-malletr = 0;
+mallet = 0;
 splmono = (spl1 + spl2) / 2;
 while(ptr >= 0) ( // for each note/voice
   ptr[3] >= 0 ? ( // if note is playing sample
-    outl = wave_lerp(clickl, ptr[3]);
-    outr = wave_lerp(clickr, ptr[3]);
-    
-    click_filter_mode == 1 || 
+    out = wave_lerp(clickl, ptr[3]);
+
+    click_filter_mode == 1 ||
     (click_filter_mode == 2 && click_filter_freq > 20) ||
-    (click_filter_mode == 0 && click_filter_freq < 20000)  
-    ? (
+    (click_filter_mode == 0 && click_filter_freq < 20000) ?
+    (
       <?
         loop(i=1;npolyphony,
-          printf("ptr[5] == %d ? (\n", i - 1);
-          printf("  outl = click_filter_l%02d.rbj_df1(outl);\n",i);
-          printf("  outr = click_filter_r%02d.rbj_df1(outr);\n",i);
-          printf(");\n");
+          printf("ptr[5] == %d ? out = click_filter%02d.rbj_df1(out);\n", i - 1, i);
           i+=1;
         );
       ?>
     );
-    
-    malletl += outl;
-    malletr += outr;
+
+    mallet += out;
     ptr[3] += click_ktrack // samplepos += playback_speed
       ? ptr[4] * playback_speed
       : playback_speed;
     ptr[3] >= wavelen ? ptr[3] = -1; // finished sample playback
     <?
       loop(i=1;npolyphony,
-        printf("ptr[5] == %d ? outc_%02d = (outl + outr) / 2 * click_res / 100;\n",i-1, i);
+        printf("ptr[5] == %d ? outc_%02d = out * click_res / 100;\n",i-1, i);
         i+=1;
       );
     ?>
@@ -358,8 +343,8 @@ lowcut > 20 ? (
   out_res = lowcut_filter.rbj_df1(out_res);
 );
 
-spl0 = malletl * click_mix / 100 + out_res;
-spl1 = malletr * click_mix / 100 + out_res;
+spl0 = mallet * click_mix / 100 + out_res;
+spl1 = mallet * click_mix / 100 + out_res;
 
 // remove notes that finish playing and are no longer pressed
 ptr = poly.array_first();
