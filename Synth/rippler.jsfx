@@ -17,14 +17,15 @@ options:gfx_hz=60
 import rippler.array.jsfx-inc
 import rippler.modal.jsfx-inc
 import rippler.rbj_filter.jsfx-inc
+import rippler.envlib.jsfx-inc
 
 slider1:/tilr8_Rippler:none:Mallet Sample
 slider2:click_mix=0<0,100,.01>Mallet Mix
 slider3:click_res=80<0,100,.01>Mallet Resonance
 slider4:click_pitch=0<-24,24,1>Pitch
 slider5:click_ktrack=0<0,1,1{No, Yes}>KeyTrack
-slider6:click_filter_mode=0<0,2,1{LP,BP,HP}>Mallet Filter Mode
-slider7:click_filter_freq=20000<20,20000,1:log>Mallet Filter Freq
+slider6:click_filter_mode=2<0,2,1{LP,BP,HP}>Mallet Filter Mode
+slider7:click_filter_freq=20<20,20000,1:log>Mallet Filter Freq
 
 slider10:model=0<0,6,1{String,Beam,Metal,Membrane,Plate,Drumhead,Marimba}>Model
 slider11:decay=1<0.01,100,0.01:log>Decay
@@ -35,6 +36,16 @@ slider15:release=100<0,100,0.1>Release
 slider16:inharmonic=0.01<0.01,100,0.001:log>Inharmonic
 slider17:ratio=1<0.1,10,0.01:log>Ratio
 slider18:lowcut=20<20,20000,1:log>Low Cut
+
+slider20:noise_mix=0<0,100,.01>Noise Mix
+slider21:noise_res=0<0,100,.01>Noise Res
+slider22:noise_filter_mode=2<0,2,1{LP,BP,HP}>Noise Filter Mode
+slider23:noise_filter_freq=20<20,20000,1:log>Noise Filter Freq
+slider24:noise_filter_q=.707<0.707,4,0.01:log>Noise Filter Q
+slider25:noise_att=1<1, 5000, 1:log>Noise Attack
+slider26:noise_dec=500<1, 5000, 1:log>Noise Decay
+slider27:noise_sus=0<0, 100, 0.1>Noise Sustain
+slider28:noise_rel=500<1, 5000, 1:log>Noise Release
 
 @init
 ext_noinit = 1;
@@ -68,21 +79,8 @@ function db2gain (db) local (val) (
   val = 10^(db / 20);
   val <= 0.001 ? 0 : val;
 );
-function rc_set(rc)
-instance(a) (
-  a = 1 / (rc * srate + 1);
-);
-function rc_lp(sample)
-instance(lp, a) (
-  lp += a * (sample - lp);
-);
-function smooth()
-instance (lp, smooth) (
-  lp = smooth;
-  smooth = this.rc_lp(this);
-);
 
-function normalize_vol_slider(val) ( val * 75 / 100 - 60 );
+function normalize_vol_slider(val) ( val * 60 / 100 - 60 );
 function note2freq(n) ( 440 * pow(2, (n - 69) / 12); );
 
 function read_file(filehandle)
@@ -118,6 +116,7 @@ function on_slider()
     <?
       loop(i=1;npolyphony,
         printf("s%02d.string_clear();\n", i);
+        printf("noise_env%02d.env_reset();\n", i);
         i+=1;
       );
     ?>
@@ -155,13 +154,50 @@ function on_slider()
       );
     ?>
   );
-
+  noise_filter_mode == 0 ? (
+    <?
+      loop(i=1;npolyphony,
+        printf("noise_gen%02d.rbj_lp(noise_filter_freq, noise_filter_q);\n",i);
+        i+=1;
+      );
+    ?>
+  );
+  noise_filter_mode == 1 ? (
+    <?
+      loop(i=1;npolyphony,
+        printf("noise_gen%02d.rbj_bp(noise_filter_freq, noise_filter_q);\n",i);
+        i+=1;
+      );
+    ?>
+  );
+  noise_filter_mode == 2 ? (
+    <?
+      loop(i=1;npolyphony,
+        printf("noise_gen%02d.rbj_hp(noise_filter_freq, noise_filter_q);\n",i);
+        i+=1;
+      );
+    ?>
+  );
   <?
     loop(i=1;npolyphony,
       printf("s%02d.string_init(s%02d.f0, s%02d.rel);\n", i, i);
+      printf("noise_env%02d.env_adsr(noise_att, noise_dec, normalize_vol_slider(noise_sus), noise_rel, 0.4, 0.4, 0.4);\n",i);
       i += 1;
     );
   ?>
+);
+
+function process_noise() 
+local (noise)
+(
+  noise = rand(2) - 1;
+  noise_filter_mode == 1 || 
+  (noise_filter_mode == 0 && noise_filter_freq < 20000) ||
+  (noise_filter_mode == 2 && noise_filter_freq > 20) ?
+  (
+    noise = this.rbj_df1(noise);
+  );
+  noise
 );
 
 @slider
@@ -233,6 +269,7 @@ local (ptr, note_repeat, note, vel, env, freq)
     loop(i=1;npolyphony,
       printf("nstring == %d ? s%02d.string_init(freq, 0);\n", i-1, i);
       printf("nstring == %d ? (s%02d.active = 1; s%02d.silence = 0);\n", i-1, i, i);
+      printf("nstring == %d ? noise_env%02d.env_a(1);\n", i-1, i);
       i += 1;
     );
   ?>
@@ -249,6 +286,7 @@ local(ptr, note, pp, freq)
     <?
       loop(i=1;npolyphony,
         printf("ptr[5] == %d ? s%02d.string_init(s%02d.f0, 1);\n", i-1, i, i);
+        printf("ptr[5] == %d ? noise_env%02d.env_r();\n", i-1, i);
         i += 1;
       );
     ?>
@@ -293,15 +331,14 @@ while(ptr >= 0) (
 ptr = poly.array_first();
 <?
   loop(i=1;npolyphony,
-    printf("outc_%02d = 0;\n",i);
+    printf("outm_%02d = 0;\n",i); // out mallet into resonance
     i+=1;
   );
 ?>
-mallet = 0;
-splmono = (spl1 + spl2) / 2;
+mallet = 0; // total mallet output
 while(ptr >= 0) ( // for each note/voice
   ptr[3] >= 0 ? ( // if note is playing sample
-    out = wave_lerp(clickl, ptr[3]);
+    out = wave_lerp(wavebuf, ptr[3]);
 
     click_filter_mode == 1 ||
     (click_filter_mode == 2 && click_filter_freq > 20) ||
@@ -322,7 +359,7 @@ while(ptr >= 0) ( // for each note/voice
     ptr[3] >= wavelen ? ptr[3] = -1; // finished sample playback
     <?
       loop(i=1;npolyphony,
-        printf("ptr[5] == %d ? outc_%02d = out * click_res / 100;\n",i-1, i);
+        printf("ptr[5] == %d ? outm_%02d = out * click_res / 100;\n",i-1, i);
         i+=1;
       );
     ?>
@@ -330,11 +367,21 @@ while(ptr >= 0) ( // for each note/voice
   ptr = poly.array_next(ptr);
 );
 
-out_res = 0;
-
+out_res = 0; // out resonance
+out_noise = 0;
+splmono = (spl1 + spl2) / 2;
 <?
   loop(i=1;npolyphony,
-    printf("out_res += s%02d.string_process(splmono + outc_%02d);\n", i, i);
+    // process noise
+    printf("noise_env%02d.state > 0 ? (\n", i);
+    printf("  noise_env%02d.env_process();\n", i);
+    printf("  n = noise_gen%02d.process_noise();\n", i);
+    printf("  n *= noise_env%02d.env;\n", i);
+    printf("  out_noise += n;\n");
+    printf("  outm_%02d += n * noise_res / 100;\n",i);
+    printf(");\n");
+    // process resonance
+    printf("out_res += s%02d.string_process(splmono + outm_%02d);\n", i, i);
     i += 1;
   );
 ?>
@@ -343,8 +390,9 @@ lowcut > 20 ? (
   out_res = lowcut_filter.rbj_df1(out_res);
 );
 
-spl0 = mallet * click_mix / 100 + out_res;
-spl1 = mallet * click_mix / 100 + out_res;
+output = mallet * click_mix/100 + out_res + out_noise * noise_mix / 100;
+spl0 = output;
+spl1 = output;
 
 // remove notes that finish playing and are no longer pressed
 ptr = poly.array_first();
