@@ -83,7 +83,10 @@ models[6] = marimba;
 
 freemem = poly.array_init(freemem, 10, 7); // [note, velocity, freq, playback_speed, nstring, release]
 freemem = midi.array_init(freemem, 256, 4); // [offset, status, note, vel]
-wavebuf = freemem; // mallet sample
+wavebuf = freemem; freemem += 500000; // mallet sample
+combbuf = freemem; // comb used for stereo effect
+combpos = 0;
+combsize = (20 * srate / 1000)|0;
 
 function db2gain (db) local (val) (
   val = 10^(db / 20);
@@ -139,6 +142,7 @@ function on_slider()
   lfile != slider1 ? on_file_change();
   playback_speed = 2^((click_pitch / 12) | 0);
   lowcut_filter.rbj_hp(lowcut, 0.707);
+  combsize = (20 * srate / 1000)|0;
   click_filter_mode == 0 ? (
     <?
       loop(i=1;npolyphony,
@@ -404,8 +408,10 @@ lowcut > 20 ? (
 );
 
 output = mallet + out_res + out_noise;
-spl0 = output;
-spl1 = output;
+combbuf[combpos] = output; // comb stereo FX similar to Haas
+combpos = (combpos + 1) % combsize;
+spl0 = output + combbuf[combpos] * 0.33;
+spl1 = output - combbuf[combpos] * 0.33;
 
 // remove notes that finish playing and are no longer pressed
 ptr = poly.array_first();
