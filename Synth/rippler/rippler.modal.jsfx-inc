@@ -96,29 +96,32 @@ local(n)
   freemem
 );
 
-function modal_init(f_0, k, ratio, ratio_max, rel)
-global(inharm, npartials, srate, decay, release, freq_damp, tone, hit_position)
+function modal_init(f_0, k, ratio, ratio_max, rel, vel)
+global(inharmonic, npartials, srate, decay, release, freq_damp, tone, hit_position, vel_res_decay, vel_res_hit, vel_res_inharm)
 instance(b, a1, a2)
-local(f_k, gamma_k, tone_gain, amp_k, decay_k, f_max, damp_k, inharm_k, omega_k)
+local(f_k, gamma_k, tone_gain, amp_k, decay_k, f_max, damp_k, inharm_k, omega_k, dec)
 (
-  inharm_k = sqrt(1 + inharm * (ratio-1) * (ratio-1));
+  inharm_k = min(1, exp(log(inharmonic) + vel * vel_res_inharm * -log(0.0001))) - 0.0001; // normalize velocity contribution on a logarithmic scale
+  inharm_k = sqrt(1 + inharm_k * (ratio-1) * (ratio-1));
   f_k = f_0 * ratio * inharm_k;
   f_max = min(f_0 * ratio_max * inharm_k, 20000);
   omega_k = 2 * $pi * f_k / srate;
-  decay_k = rel ? decay * release / 100 : decay;
+
+  dec = min(100, exp(log(decay) + vel * vel_res_decay * (log(100) - log(0.01)))); // normalize velocity contribution on a logarithmic scale
+  decay_k = rel ? dec * release : dec;
 
   damp_k = freq_damp <= 0
-    ? pow(f_0 / f_k, freq_damp / 100 * 2)
-    : pow(f_max / f_k, freq_damp / 100 * 2);
+    ? pow(f_0 / f_k, freq_damp * 2)
+    : pow(f_max / f_k, freq_damp * 2);
 
   // exp(-pi*2 / (srate*decay)) is set by hear and it approximates the decay time in seconds
   gamma_k = exp(($pi * -2 / (srate * decay_k)) * damp_k);
 
   (f_k < 0.48 * srate) ? (
     tone_gain = tone <= 0
-      ? pow(f_k / f_0, tone * 12 / 100 / 6)
-      : pow(f_k / f_max, tone * 12 / 100 / 6);
-    amp_k = abs(sin($pi * k * hit_position / 100));
+      ? pow(f_k / f_0, tone * 12 / 6)
+      : pow(f_k / f_max, tone * 12 / 6);
+    amp_k = abs(sin($pi * k * min(.5, hit_position / 100 + vel_res_hit * vel / 2)));
     b = gamma_k * amp_k * sin(omega_k) * tone_gain * sqrt(f_k) / 5000; // sqrt(f_k) normalizes freq gain
     f_k > 5000 ? b /= sqrt(ratio); // tone down harsh high frequencies
     a1 = -2 * gamma_k * cos(omega_k);
@@ -154,7 +157,7 @@ local(ratio_max)
   ratio_max = models[model][npartials-1];
   <?
     loop(i=1;npartials,
-      printf("this.f%02d.modal_init(freq, %d, models[model][%d], ratio_max, rel);\n", i, i, i-1);
+      printf("this.f%02d.modal_init(freq, %d, models[model][%d], ratio_max, rel, this.vel);\n", i, i, i-1);
       i += 1;
     );
   ?>

@@ -21,42 +21,40 @@ import rippler.envlib.jsfx-inc
 import rippler.gfxlib.jsfx-inc
 
 slider1:/tilr8_Rippler:none:Mallet Sample
-slider2:click_mix=0<0,100,.01>-Mallet Mix
-slider3:click_res=80<0,100,.01>-Mallet Resonance
+slider2:click_mix=0<0,1,.0001>-Mallet Mix
+slider3:click_res=.8<0,1,.0001>-Mallet Resonance
 slider4:click_pitch=0<-24,24,1>-Pitch
 slider5:click_ktrack=0<0,1,1{No, Yes}>-KeyTrack
 slider6:click_filter_mode=2<0,2,1{LP,BP,HP}>-Mallet Filter Mode
 slider7:click_filter_freq=20<20,20000,1:log>-Mallet Filter Freq
 
 slider10:model=0<0,6,1{String,Beam,Metal,Membrane,Plate,Drumhead,Marimba}>-Model
-slider11:decay=1<0.01,100,0.01:log>-Decay
-slider12:freq_damp=0<-100,100,0.1>-Material
-slider13:tone=0<-100,100,0.1>-Tone
+slider11:decay=1<0.01,100,.01:log>-Decay
+slider12:freq_damp=0<-1,1,.001>-Material
+slider13:tone=0<-1,1,0.1>-Tone
 slider14:hit_position=26<2,50,0.1>-Hit Position
-slider15:release=100<0,100,0.1>-Release
-slider16:inharmonic=0.01<0.01,100,0.001:log>-Inharmonic
+slider15:release=1<0,1,.001>-Release
+slider16:inharmonic=0.0001<0.0001,1,.001:log>-Inharmonic
 slider17:ratio=1<0.1,10,0.01:log>-Ratio
 slider18:lowcut=20<20,20000,1:log>-Low Cut
 
-slider20:noise_mix=0<0,100,.01>-Noise Mix
-slider21:noise_res=0<0,100,.01>-Noise Res
+slider20:noise_mix=0<0,1,.0001>-Noise Mix
+slider21:noise_res=0<0,1,.0001>-Noise Res
 slider22:noise_filter_mode=2<0,2,1{LP,BP,HP}>-Noise Filter Mode
 slider23:noise_filter_freq=20<20,20000,1:log>-Noise Filter Freq
-slider24:noise_filter_q=.707<0.707,4,0.01:log>-Noise Filter Q
+slider24:noise_filter_q=.707<0.707,4,.01:log>-Noise Filter Q
 slider25:noise_att=1<1, 5000, 1:log>-Noise Attack
 slider26:noise_dec=500<1, 5000, 1:log>-Noise Decay
 slider27:noise_sus=0<0, 100, 0.1>-Noise Sustain
 slider28:noise_rel=500<1, 5000, 1:log>-Noise Release
 
-slider40:vel_click_mix=0<0,1,0.01>Vel Click Mix
-slider41:vel_click_res=0<0,1,0.01>Vel Click Res
-slider42:vel_click_freq=0<0,1,0.01>Vel Click Freq
-slider43:vel_noise_mix=0<0,1,0.01>Vel Noise Mix
-slider44:vel_noise_res=0<0,1,0.01>Vel Noise Res
-slider45:vel_noise_freq=0<0,1,0.01>Vel Noise Freq
-slider46:vel_res_decay=0<0,1,0.01>Vel Noise Mix
-slider47:vel_res_hit=0<0,1,0.01>Vel Noise Res
-slider48:vel_res_inharm=0<0,1,0.01>Vel Noise Freq
+slider40:vel_click_mix=0<0,1,0.01>-Vel Click Mix
+slider41:vel_click_res=0<0,1,0.01>-Vel Click Res
+slider43:vel_noise_mix=0<0,1,0.01>-Vel Noise Mix
+slider44:vel_noise_res=0<0,1,0.01>-Vel Noise Res
+slider46:vel_res_decay=0<0,1,0.01>-Vel Decay
+slider47:vel_res_hit=0<0,1,0.01>-Vel Hit
+slider48:vel_res_inharm=0<0,1,0.01>-Vel Inharm
 
 @init
 ext_noinit = 1;
@@ -139,7 +137,6 @@ function on_slider()
   model == 4 ? recalc_plate();
 
   lfile != slider1 ? on_file_change();
-  inharm = inharmonic == 0.01 ? 0 : inharmonic / 100;
   playback_speed = 2^((click_pitch / 12) | 0);
   lowcut_filter.rbj_hp(lowcut, 0.707);
   click_filter_mode == 0 ? (
@@ -280,6 +277,7 @@ local (ptr, note_repeat, note, vel, env, freq)
   <?
     loop(i=1;npolyphony,
       printf("nstring == %d ? (\n", i-1);
+      printf("  s%02d.vel = ptr[1];\n", i);
       printf("  s%02d.string_init(freq, 0);\n", i);
       printf("  s%02d.active = 1; s%02d.silence = 0;\n", i, i);
       printf("  noise_env%02d.env_a(1);\n", i);
@@ -367,14 +365,14 @@ while(ptr >= 0) ( // for each note/voice
       ?>
     );
 
-    mallet += out * min(1, click_mix/100 + vel_click_mix * ptr[1]);
+    mallet += out * min(1, click_mix + vel_click_mix * ptr[1]);
     ptr[3] += click_ktrack // samplepos += playback_speed
       ? ptr[4] * playback_speed
       : playback_speed;
     ptr[3] >= wavelen ? ptr[3] = -1; // finished sample playback
     <?
       loop(i=1;npolyphony,
-        printf("ptr[5] == %d ? outm_%02d = out * min(1, click_res / 100 + vel_click_res * ptr[1] );\n",i-1, i);
+        printf("ptr[5] == %d ? outm_%02d = out * min(1, click_res + vel_click_res * ptr[1] );\n",i-1, i);
         i+=1;
       );
     ?>
@@ -392,8 +390,8 @@ splmono = (spl1 + spl2) / 2;
     printf("  noise_env%02d.env_process();\n", i);
     printf("  n = noise_gen%02d.process_noise();\n", i);
     printf("  n *= noise_env%02d.env;\n", i);
-    printf("  out_noise += n * min(1, noise_mix / 100 + vel_noise_mix * noise_env%02d.vel);\n", i);
-    printf("  outm_%02d += n * min(1, noise_res / 100 + vel_noise_res * noise_env%02d.vel);\n", i, i);
+    printf("  out_noise += n * min(1, noise_mix + vel_noise_mix * noise_env%02d.vel);\n", i);
+    printf("  outm_%02d += n * min(1, noise_res + vel_noise_res * noise_env%02d.vel);\n", i, i);
     printf(");\n");
     // process resonance
     printf("out_res += s%02d.string_process(splmono + outm_%02d);\n", i, i);
@@ -437,9 +435,9 @@ mouse.left_click && mouse_in_rect(140, 20 - 2, 40, 10 + 2) ? (
   on_slider();
 );
 
-draw_knob(20, 40, 20, "Mix", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(20)), 43);
-draw_knob(80, 40, 21, "Res", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(21)), 44);
-draw_knob(140, 40, 23, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(23)), 45);
+draw_knob(20, 40, 20, "Mix", 0, 0, 1, 0, 0, sprintf(#, "%i%%", slider(20) * 100), 43);
+draw_knob(80, 40, 21, "Res", 0, 0, 1, 0, 0, sprintf(#, "%i%%", slider(21) * 100), 44);
+draw_knob(140, 40, 23, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(23)), 0);
 
 draw_knob(20, 110, 25, "A", 1, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(25)), 0);
 draw_knob(80, 110, 26, "D", 500, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(26)), 0);
@@ -471,9 +469,9 @@ mouse.left_click && mouse_in_rect(210,220-2, 60, 10+2) ? (
   vel_mapping = !vel_mapping;
 );
 
-draw_knob(220, 40, 2, "Mix", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(2)), 40);
-draw_knob(280, 40, 3, "Res", 80, 0, 100, 0, 0, sprintf(#, "%i%%", slider(3)), 41);
-draw_knob(340, 40, 7, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(7)), 42);
+draw_knob(220, 40, 2, "Mix", 0, 0, 1, 0, 0, sprintf(#, "%i%%", slider(2) * 100), 40);
+draw_knob(280, 40, 3, "Res", .8, 0, 1, 0, 0, sprintf(#, "%i%%", slider(3) * 100), 41);
+draw_knob(340, 40, 7, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(7)), 0);
 draw_knob(220, 110, 4, "Pitch", 0, -24, 24, 0, 1, sprintf(#, "%i", slider(4)), 0);
 
 set_color(0x666666);
@@ -498,12 +496,12 @@ mouse.left_click && mouse_in_rect(500, 20 - 2, 80, 10 + 2) ? (
 );
 
 draw_knob(420, 40, 11, "Decay", 1, 0.01, 100, 1, 0, sprintf(#, "%.2f s", slider(11)), 46);
-draw_knob(480, 40, 12, "Matrl", 0, -100, 100, 0, 1, sprintf(#, "%i%%", slider(12)), 0);
-draw_knob(540, 40, 15, "Relse", 100, 0, 100, 0, 0, sprintf(#, "%i%%", slider(15)), 0);
+draw_knob(480, 40, 12, "Matrl", 0, -1, 1, 0, 1, sprintf(#, "%i%%", slider(12) * 100), 0);
+draw_knob(540, 40, 15, "Relse", 1, 0, 1, 0, 0, sprintf(#, "%i%%", slider(15) * 100), 0);
 
-draw_knob(420, 110, 13, "Tone", 0, -100, 100, 0, 1, sprintf(#, "%i%%", slider(13)), 0);
+draw_knob(420, 110, 13, "Tone", 0, -1, 1, 0, 1, sprintf(#, "%i%%", slider(13) * 100), 0);
 draw_knob(480, 110, 14, "Hit", 26, 2, 50, 0, 0, sprintf(#, "%i%%", slider(14)), 47);
-draw_knob(540, 110, 16, "Inharm", 0.01, 0.01, 100, 1,0, sprintf(#, "%.2f", slider(16)), 48);
+draw_knob(540, 110, 16, "Inharm", 0.0001, 0.0001, 1, 1,0, sprintf(#, "%.2f", slider(16) * 100), 48);
 
 model == 1 || model == 3 || model == 4 ? (
   draw_knob(420, 180, 17, "Ratio", 1, 0.1, 10, 1, 0, sprintf(#, "%.1f", slider(17)), 0);

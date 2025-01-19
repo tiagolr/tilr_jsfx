@@ -25,7 +25,7 @@ function deg2rad (deg) (deg * $pi / 180;);
 RAD130 = deg2rad(130);
 
 function update_mouse_state()
-instance(cap, x, y, lx, ly, dx, dy, right_click, left_click, lleft, lright, left, right, click_time, double_click, control, lwheel, wheel)
+instance(cap, x, y, lx, ly, dx, dy, right_click, left_click, lleft, lright, left, right, click_time, double_click, control, alt, lwheel, wheel)
 global(mouse_cap, mouse_x, mouse_y, mouse_wheel)
 (
   lleft = left;
@@ -34,6 +34,7 @@ global(mouse_cap, mouse_x, mouse_y, mouse_wheel)
   ly = y;
   cap = mouse_cap;
   control = mouse_cap & 4;
+  alt = mouse_cap & 16;
   x = mouse_x;
   y = mouse_y;
 
@@ -148,7 +149,7 @@ local (scale)
 
   mouse_in_rect(x, y, 40, 40) ? (
     mouse.double_click ? (
-      vel_mapping && vel_slider ? (
+      (vel_mapping && vel_slider) || (vel_slider && mouse.alt) ? (
         slider(vel_slider) = 0;
         sliderchange(slider(vel_slider));
         slider_automate(slider(vel_slider));
@@ -158,7 +159,7 @@ local (scale)
       );
     );
     mouse.left_click ? (
-      vel_mapping && vel_slider ? (
+      (vel_mapping && vel_slider) || (vel_slider && mouse.alt) ? (
         selknob_velslider = vel_slider;
       ) : (
         selknob_nslider = nslider;
@@ -168,7 +169,7 @@ local (scale)
       );
     );
     mouse.wheel ? (
-      vel_mapping && vel_slider ? (
+      (vel_mapping && vel_slider) || (vel_slider && mouse.alt) ? (
         wheelknob_velslider = vel_slider;
       ) : (
         wheelknob_nslider = nslider;
