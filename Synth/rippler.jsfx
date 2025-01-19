@@ -279,9 +279,12 @@ local (ptr, note_repeat, note, vel, env, freq)
 
   <?
     loop(i=1;npolyphony,
-      printf("nstring == %d ? s%02d.string_init(freq, 0);\n", i-1, i);
-      printf("nstring == %d ? (s%02d.active = 1; s%02d.silence = 0);\n", i-1, i, i);
-      printf("nstring == %d ? noise_env%02d.env_a(1);\n", i-1, i);
+      printf("nstring == %d ? (\n", i-1);
+      printf("  s%02d.string_init(freq, 0);\n", i);
+      printf("  s%02d.active = 1; s%02d.silence = 0;\n", i, i);
+      printf("  noise_env%02d.env_a(1);\n", i);
+      printf("  noise_env%02d.vel = ptr[1];\n", i);
+      printf(");\n");
       i += 1;
     );
   ?>
@@ -364,14 +367,14 @@ while(ptr >= 0) ( // for each note/voice
       ?>
     );
 
-    mallet += out;
+    mallet += out * min(1, click_mix/100 + vel_click_mix * ptr[1]);
     ptr[3] += click_ktrack // samplepos += playback_speed
       ? ptr[4] * playback_speed
       : playback_speed;
     ptr[3] >= wavelen ? ptr[3] = -1; // finished sample playback
     <?
       loop(i=1;npolyphony,
-        printf("ptr[5] == %d ? outm_%02d = out * click_res / 100;\n",i-1, i);
+        printf("ptr[5] == %d ? outm_%02d = out * min(1, click_res / 100 + vel_click_res * ptr[1] );\n",i-1, i);
         i+=1;
       );
     ?>
@@ -389,8 +392,8 @@ splmono = (spl1 + spl2) / 2;
     printf("  noise_env%02d.env_process();\n", i);
     printf("  n = noise_gen%02d.process_noise();\n", i);
     printf("  n *= noise_env%02d.env;\n", i);
-    printf("  out_noise += n;\n");
-    printf("  outm_%02d += n * noise_res / 100;\n",i);
+    printf("  out_noise += n * min(1, noise_mix / 100 + vel_noise_mix * noise_env%02d.vel);\n", i);
+    printf("  outm_%02d += n * min(1, noise_res / 100 + vel_noise_res * noise_env%02d.vel);\n", i, i);
     printf(");\n");
     // process resonance
     printf("out_res += s%02d.string_process(splmono + outm_%02d);\n", i, i);
@@ -402,7 +405,7 @@ lowcut > 20 ? (
   out_res = lowcut_filter.rbj_df1(out_res);
 );
 
-output = mallet * click_mix/100 + out_res + out_noise * noise_mix / 100;
+output = mallet + out_res + out_noise;
 spl0 = output;
 spl1 = output;
 
