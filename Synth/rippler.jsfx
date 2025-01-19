@@ -48,6 +48,16 @@ slider26:noise_dec=500<1, 5000, 1:log>-Noise Decay
 slider27:noise_sus=0<0, 100, 0.1>-Noise Sustain
 slider28:noise_rel=500<1, 5000, 1:log>-Noise Release
 
+slider40:vel_click_mix=0<0,1,0.01>Vel Click Mix
+slider41:vel_click_res=0<0,1,0.01>Vel Click Res
+slider42:vel_click_freq=0<0,1,0.01>Vel Click Freq
+slider43:vel_noise_mix=0<0,1,0.01>Vel Noise Mix
+slider44:vel_noise_res=0<0,1,0.01>Vel Noise Res
+slider45:vel_noise_freq=0<0,1,0.01>Vel Noise Freq
+slider46:vel_res_decay=0<0,1,0.01>Vel Noise Mix
+slider47:vel_res_hit=0<0,1,0.01>Vel Noise Res
+slider48:vel_res_inharm=0<0,1,0.01>Vel Noise Freq
+
 @init
 ext_noinit = 1;
 <? printf("npartials = %d;\n", npartials); ?>
@@ -60,6 +70,7 @@ wavelen = 0;
 base_note = 60;
 playback_speed = 1;
 nstring = 0;
+vel_mapping = 0;
 freemem = 100000;
 freemem = init_models(freemem);
 
@@ -181,7 +192,7 @@ function on_slider()
   );
   <?
     loop(i=1;npolyphony,
-      printf("s%02d.string_init(s%02d.f0, s%02d.rel);\n", i, i);
+      printf("s%02d.string_init(s%02d.f0, s%02d.rel);\n", i, i, i);
       printf("noise_env%02d.env_adsr(noise_att, noise_dec, normalize_vol_slider(noise_sus), noise_rel, 0.4, 0.4, 0.4);\n",i);
       i += 1;
     );
@@ -423,16 +434,16 @@ mouse.left_click && mouse_in_rect(140, 20 - 2, 40, 10 + 2) ? (
   on_slider();
 );
 
-draw_knob(20, 40, 20, "Mix", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(20)));
-draw_knob(80, 40, 21, "Res", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(21)));
-draw_knob(140, 40, 23, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(23)));
+draw_knob(20, 40, 20, "Mix", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(20)), 43);
+draw_knob(80, 40, 21, "Res", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(21)), 44);
+draw_knob(140, 40, 23, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(23)), 45);
 
-draw_knob(20, 110, 25, "A", 1, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(25)));
-draw_knob(80, 110, 26, "D", 500, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(26)));
-draw_knob(140, 110, 24, "Q", .707,.707,4, 0,0, sprintf(#, "%.1f", slider(24)));
+draw_knob(20, 110, 25, "A", 1, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(25)), 0);
+draw_knob(80, 110, 26, "D", 500, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(26)), 0);
+draw_knob(140, 110, 24, "Q", .707,.707,4, 0,0, sprintf(#, "%.1f", slider(24)), 0);
 
-draw_knob(20, 180, 27, "S", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(27)));
-draw_knob(80, 180, 28, "R", 500, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(28)));
+draw_knob(20, 180, 27, "S", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(27)), 0);
+draw_knob(80, 180, 28, "R", 500, 1, 5000, 1, 0, sprintf(#, "%i ms", slider(28)), 0);
 
 set_color(0x666666);
 gfx_line(200, 20, 200, 230);
@@ -452,11 +463,15 @@ draw_button(210,180,60,"KTrack", click_ktrack);
 mouse.left_click && mouse_in_rect(210,180-2, 60, 10+2) ? (
   click_ktrack = !click_ktrack;
 );
+draw_button_vel(210,220,60,"VelMap", vel_mapping);
+mouse.left_click && mouse_in_rect(210,220-2, 60, 10+2) ? (
+  vel_mapping = !vel_mapping;
+);
 
-draw_knob(220, 40, 2, "Mix", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(2)));
-draw_knob(280, 40, 3, "Res", 80, 0, 100, 0, 0, sprintf(#, "%i%%", slider(3)));
-draw_knob(340, 40, 7, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(7)));
-draw_knob(220, 110, 4, "Pitch", 0, -24, 24, 0, 1, sprintf(#, "%i", slider(4)));
+draw_knob(220, 40, 2, "Mix", 0, 0, 100, 0, 0, sprintf(#, "%i%%", slider(2)), 40);
+draw_knob(280, 40, 3, "Res", 80, 0, 100, 0, 0, sprintf(#, "%i%%", slider(3)), 41);
+draw_knob(340, 40, 7, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(7)), 42);
+draw_knob(220, 110, 4, "Pitch", 0, -24, 24, 0, 1, sprintf(#, "%i", slider(4)), 0);
 
 set_color(0x666666);
 gfx_line(400, 20, 400, 230);
@@ -479,18 +494,18 @@ mouse.left_click && mouse_in_rect(500, 20 - 2, 80, 10 + 2) ? (
   on_slider();
 );
 
-draw_knob(420, 40, 11, "Decay", 1, 0.01, 100, 1, 0, sprintf(#, "%.2f s", slider(11)));
-draw_knob(480, 40, 12, "Matrl", 0, -100, 100, 0, 1, sprintf(#, "%i%%", slider(12)));
-draw_knob(540, 40, 15, "Relse", 100, 0, 100, 0, 0, sprintf(#, "%i%%", slider(15)));
+draw_knob(420, 40, 11, "Decay", 1, 0.01, 100, 1, 0, sprintf(#, "%.2f s", slider(11)), 46);
+draw_knob(480, 40, 12, "Matrl", 0, -100, 100, 0, 1, sprintf(#, "%i%%", slider(12)), 0);
+draw_knob(540, 40, 15, "Relse", 100, 0, 100, 0, 0, sprintf(#, "%i%%", slider(15)), 0);
 
-draw_knob(420, 110, 13, "Tone", 0, -100, 100, 0, 1, sprintf(#, "%i%%", slider(13)));
-draw_knob(480, 110, 14, "Hit", 26, 2, 50, 0, 0, sprintf(#, "%i%%", slider(14)));
-draw_knob(540, 110, 16, "Inharm", 0.01, 0.01, 100, 1,0, sprintf(#, "%.2f", slider(16)));
+draw_knob(420, 110, 13, "Tone", 0, -100, 100, 0, 1, sprintf(#, "%i%%", slider(13)), 0);
+draw_knob(480, 110, 14, "Hit", 26, 2, 50, 0, 0, sprintf(#, "%i%%", slider(14)), 47);
+draw_knob(540, 110, 16, "Inharm", 0.01, 0.01, 100, 1,0, sprintf(#, "%.2f", slider(16)), 48);
 
 model == 1 || model == 3 || model == 4 ? (
-  draw_knob(420, 180, 17, "Ratio", 1, 0.1, 10, 1, 0, sprintf(#, "%.1f", slider(17)));
+  draw_knob(420, 180, 17, "Ratio", 1, 0.1, 10, 1, 0, sprintf(#, "%.1f", slider(17)), 0);
 );
-draw_knob(540, 180, 18, "LowCut", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(18)));
+draw_knob(540, 180, 18, "LowCut", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(18)), 0);
 
 function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
   factor *= mouse.control ? 0.05 : 1;
@@ -508,12 +523,23 @@ function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
   slider_automate(slider(nslider));
 );
 
+function on_velknob_move(nslider, factor) (
+  factor *= mouse.control ? 0.05 : 1;
+  slider(nslider) = max(0,min(1,slider(nslider) + 0.01 * -factor));
+  sliderchange(slider(nslider));
+  slider_automate(slider(nslider));
+);
+
 wheelknob_nslider ? (
   on_knob_move(wheelknob_nslider, wheelknob_min, wheelknob_max, wheelknob_is_log, mouse.wheel * -7);
 );
 
 selknob_nslider && mouse.left && mouse.dy != 0 ? (
   on_knob_move(selknob_nslider, selknob_min, selknob_max, selknob_is_log, mouse.dy);
+);
+
+selknob_velslider && mouse.left && mouse.dy ? (
+  on_velknob_move(selknob_velslider, mouse.dy);
 );
 
 doubleclk_nslider ? (
@@ -524,8 +550,14 @@ doubleclk_nslider ? (
 );
 
 gfx_setcursor(selknob_nslider ? 32511 : 0);
-!mouse.wheel ? wheelknob_nslider = 0;
-!mouse.left ? selknob_nslider = 0;
+!mouse.wheel ? (
+  wheelknob_nslider = 0;
+  wheelknob_velslider = 0;
+);
+!mouse.left ? (
+  selknob_nslider = 0;
+  selknob_velslider = 0;
+);
 
 
 
