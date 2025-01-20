@@ -83,7 +83,7 @@ models[4] = plate;
 models[5] = drumhead;
 models[6] = marimba;
 
-freemem = poly.array_init(freemem, 127, 6); // [note, velocity, freq, playback_speed, nstring, release]
+freemem = poly.array_init(freemem, 127, 7); // [note, velocity, freq, sample_pos, playback_speed, nstring, release]
 freemem = midi.array_init(freemem, 256, 4); // [offset, status, note, vel]
 wavebuf = freemem; freemem += 500000; // mallet sample
 combbuf = freemem; // comb used for stereo effect
@@ -254,7 +254,6 @@ while (midirecv(offset, msg1, note, vel)) (
   // All notes off
   event == 0xB0 && note == 123 ? (
     poly.array_clear();
-    //hold.array_clear();
   );
 
   midisend(offset, msg1, note, vel);
@@ -276,8 +275,8 @@ local (ptr, note_repeat, note, vel, env, freq)
   ptr[0] = note;
   ptr[1] = vel / 127;
   ptr[2] = freq / srate;
-  ptr[3] = 0;
-  ptr[4] = 2 ^ ((note - base_note) / 12);
+  ptr[3] = 0; // sample pos
+  ptr[4] = 2 ^ ((note - base_note) / 12); // playback speed
   ptr[5] = nstring;
   ptr[6] = 0; // note release
 
