@@ -22,7 +22,7 @@ import rippler.gfxlib.jsfx-inc
 
 filename:0,rippler/logo.png
 
-slider1:/tilr8_Rippler:none:Mallet Sample
+slider1:/tilr8_Rippler:none:Mallet
 slider2:click_mix=0<0,1,.0001>-Mallet Mix
 slider3:click_res=.8<0,1,.0001>-Mallet Resonance
 slider4:click_pitch=0<-24,24,1>-Pitch
