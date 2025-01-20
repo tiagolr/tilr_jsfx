@@ -20,6 +20,8 @@ import rippler.rbj_filter.jsfx-inc
 import rippler.envlib.jsfx-inc
 import rippler.gfxlib.jsfx-inc
 
+filename:0,rippler/logo.png
+
 slider1:/tilr8_Rippler:none:Mallet Sample
 slider2:click_mix=0<0,1,.0001>-Mallet Mix
 slider3:click_res=.8<0,1,.0001>-Mallet Resonance
@@ -81,7 +83,7 @@ models[4] = plate;
 models[5] = drumhead;
 models[6] = marimba;
 
-freemem = poly.array_init(freemem, 10, 7); // [note, velocity, freq, playback_speed, nstring, release]
+freemem = poly.array_init(freemem, 10, 6); // [note, velocity, freq, playback_speed, nstring, release]
 freemem = midi.array_init(freemem, 256, 4); // [offset, status, note, vel]
 wavebuf = freemem; freemem += 500000; // mallet sample
 combbuf = freemem; // comb used for stereo effect
@@ -428,6 +430,17 @@ while (ptr >= 0) (
 gfx_clear = COLOR_BG;
 mouse.update_mouse_state();
 
+gfx_a = 0.9;
+gfx_x = 300; gfx_y = 130;
+gfx_blit(0,1,0); // draw logo
+gfx_a = 1;
+show_help && mouse.left_click
+  ? show_help = 0
+  : mouse.left_click && mouse_in_rect(300,130,90,60) ?
+(
+  show_help = 1;
+);
+
 set_color(0x666666);
 gfx_x = 20; gfx_y = 20;
 gfx_drawstr("NOISE");
@@ -565,6 +578,34 @@ gfx_setcursor(selknob_nslider ? 32511 : 0);
   selknob_nslider = 0;
   selknob_velslider = 0;
 );
+
+function draw_help ()
+local(xsize, ysize, txt, pad)
+(
+  gfx_setfont(1, "Arial", 16);
+  xsize = 400;
+  ysize = 180;
+  pad = 20;
+  gfx_x = 0; gfx_y = 0;
+  gfx_blurto(gfx_w, gfx_h);
+  gfx_x = 0; gfx_y = 0;
+  gfx_blurto(gfx_w, gfx_h);
+  gfx_set(0,0,0,0.8);
+  gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
+  txt = #;
+  strcpy(txt, "Rippler 1.0.0\nTilr 2025\n\n");
+  strcat(txt, "Change polyphony and partials in window menu\n");
+  strcat(txt, "Ctrl for fine slider adjustments\n");
+  strcat(txt, "Alt to adjust velocity mapping\n");
+  strcat(txt, "Double click to reset sliders\n");
+  gfx_x = gfx_w/2 - xsize/2 + pad;
+  gfx_y = gfx_h/2 - ysize/2 + pad;
+  gfx_set(1,1,1);
+  gfx_drawstr(txt,0,gfx_w/2+xsize/2-pad,gfx_h/2+ysize/2-pad);
+  gfx_setfont(0);
+);
+
+show_help ? draw_help()
 
 
 

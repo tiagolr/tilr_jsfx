@@ -2,9 +2,10 @@ desc:ws.gfxlib.jsfx-inc
 
 @init
 
-COLOR_ACTIVE = 0x5de4b1;
-COLOR_BG = 0x141618;
-COLOR_VEL = 0xFFFFFF;
+COLOR_ACTIVE = 0x008070;
+COLOR_BG = 0xeeeeee;
+COLOR_VEL = 0xaa5050;
+COLOR_NEUTRAL = 0x333333;
 
 selknob_nslider = 0;
 selknob_velslider = 0;
@@ -93,11 +94,12 @@ function mouse_in_rect (x, y, w ,h) (
 function draw_knob(x, y, nslider, label, default, _min, _max, is_log, is_sym, val_label, vel_slider)
 local (scale)
 (
-  set_color(0x282D32);
-  gfx_arc(x+20, y+20, 20, -RAD130, RAD130, 1);
-  gfx_arc(x+20, y+20, 19.5, -RAD130, RAD130, 1);
-  gfx_arc(x+20, y+20, 19, -RAD130, RAD130, 1);
-  gfx_arc(x+20, y+20, 18.5, -RAD130, RAD130, 1);
+  //set_color(0x282D32);
+  //set_color(0xaaaaaa);
+  //gfx_arc(x+20, y+20, 20, -RAD130, RAD130, 1);
+  //gfx_arc(x+20, y+20, 19.5, -RAD130, RAD130, 1);
+  //gfx_arc(x+20, y+20, 19, -RAD130, RAD130, 1);
+  //gfx_arc(x+20, y+20, 18.5, -RAD130, RAD130, 1);
 
   slider_val = slider(nslider);
   is_log ? (
@@ -109,6 +111,8 @@ local (scale)
   _offset = (-_min * (130 - -130)) / (_max - _min) + -130;
   slider_deg = slider_val * scale + _offset;
   slider_rad = deg2rad(slider_deg);
+
+  set_color(0xaaaaaa);
 
   gfx_circle(x+20, y+20, 15, 1, 1);
   set_color(COLOR_ACTIVE);
@@ -136,7 +140,7 @@ local (scale)
     gfx_arc(x+20, y+20, 23, slider_rad, vel_rad, 1);
   );
 
-  set_color(0xFFFFFF);
+  set_color(COLOR_NEUTRAL);
   gfx_x = x - 20;
   gfx_y = y + 20 * 2 + 5;
   vel_slider && selknob_velslider == vel_slider ? (
