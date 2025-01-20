@@ -83,7 +83,7 @@ models[4] = plate;
 models[5] = drumhead;
 models[6] = marimba;
 
-freemem = poly.array_init(freemem, 10, 6); // [note, velocity, freq, playback_speed, nstring, release]
+freemem = poly.array_init(freemem, 127, 6); // [note, velocity, freq, playback_speed, nstring, release]
 freemem = midi.array_init(freemem, 256, 4); // [offset, status, note, vel]
 wavebuf = freemem; freemem += 500000; // mallet sample
 combbuf = freemem; // comb used for stereo effect

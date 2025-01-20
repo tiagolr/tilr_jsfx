@@ -63,28 +63,22 @@ function set_color(color) (
   gfx_b = (color & 0x0000FF) / 0x0000FF;
 );
 
-function log_scale (value, max, min)
-local (minP, maxP, scale) (
-    minP = min;
-    maxP = max;
+function log_scale (value, _max, _min)
+local (minV, maxV, scale) (
+    minV = log(_min);
+    maxV = log(_max);
 
-    minV = log(min);
-    maxV = log(max);
-
-    scale = (maxV - minV) / (maxP - minP);
-    exp(minV + scale * (value - minP));
+    scale = (maxV - minV) / (_max - _min);
+    exp(minV + scale * (value - _min));
 );
 
-function inverse_log_scale (lg, max, min)
-local (minP, maxP, scale) (
-    minP = min;
-    maxP = max;
+function inverse_log_scale (lg, _max, _min)
+local (minV, maxV, scale) (
+    minV = log(_min);
+    maxV = log(_max);
 
-    minV = log(min);
-    maxV = log(max);
-
-    scale = (maxV - minV) / (maxP - minP);
-    (log(lg) - minV) / scale + minP;
+    scale = (maxV - minV) / (_max - _min);
+    (log(lg) - minV) / scale + _min;
 );
 
 function mouse_in_rect (x, y, w ,h) (
@@ -92,7 +86,7 @@ function mouse_in_rect (x, y, w ,h) (
 );
 
 function draw_knob(x, y, nslider, label, default, _min, _max, is_log, is_sym, val_label, vel_slider)
-local (scale)
+local (scale, _offset, slider_val)
 (
   //set_color(0x282D32);
   //set_color(0xaaaaaa);
