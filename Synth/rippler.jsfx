@@ -120,8 +120,8 @@ local(i)
 
 function on_file_change() (
   lfile = slider1;
-  filehandle=file_open(slider1);
-  read_file(filehandle);
+  fhandle = file_open(slider1);
+  read_file(fhandle);
 );
 
 function on_slider()
@@ -141,7 +141,7 @@ function on_slider()
   model == 3 ? recalc_membrane();
   model == 4 ? recalc_plate();
 
-  lfile != slider1 ? on_file_change();
+  lfile != slider1 || fhandle == -1 ? on_file_change();
   playback_speed = 2^((click_pitch / 12) | 0);
   lowcut_filter.rbj_hp(lowcut, 0.707);
   combsize = (20 * srate / 1000)|0;
@@ -215,13 +215,14 @@ local (noise)
   noise
 );
 
-@slider
+on_file_change(); // fix force first file open
 
-rel_pos = min(max(0.01, position / 100), 0.99);
+@slider
 
 on_slider();
 
 @block
+
 // remove queued midi messages that have been processed
 ptr = midi.array_first();
 while (ptr >= 0) (
