@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="b3392b5e2d96ab2940e874818cef6c9732777325" name="Tilr">
+<index version="1" commit="dee65d7df4469303bf5f3b5ead973800962624e1" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -2121,6 +2121,67 @@ Added presets]]></changelog>
         <source type="data" file="tilr8_Rippler/mallet48.wav">https://github.com/tiagolr/tilr_jsfx/raw/b3392b5e2d96ab2940e874818cef6c9732777325/Synth/tilr8_Rippler/mallet48.wav</source>
         <source type="data" file="tilr8_Rippler/mallet49.wav">https://github.com/tiagolr/tilr_jsfx/raw/b3392b5e2d96ab2940e874818cef6c9732777325/Synth/tilr8_Rippler/mallet49.wav</source>
         <source type="data" file="tilr8_Rippler/mallet50.wav">https://github.com/tiagolr/tilr_jsfx/raw/b3392b5e2d96ab2940e874818cef6c9732777325/Synth/tilr8_Rippler/mallet50.wav</source>
+      </version>
+      <version name="1.0.3" author="tilr" time="2025-01-21T15:00:12Z">
+        <changelog><![CDATA[First]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/rippler.jsfx</source>
+        <source file="rippler.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/rippler.jsfx.RPL</source>
+        <source file="rippler/logo.png">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/rippler/logo.png</source>
+        <source file="rippler/rippler.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/rippler/rippler.array.jsfx-inc</source>
+        <source file="rippler/rippler.envlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/rippler/rippler.envlib.jsfx-inc</source>
+        <source file="rippler/rippler.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/rippler/rippler.gfxlib.jsfx-inc</source>
+        <source file="rippler/rippler.modal.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/rippler/rippler.modal.jsfx-inc</source>
+        <source file="rippler/rippler.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/rippler/rippler.rbj_filter.jsfx-inc</source>
+        <source type="data" file="tilr8_Rippler/mallet01.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet01.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet02.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet02.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet03.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet03.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet04.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet04.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet05.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet05.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet06.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet06.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet07.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet07.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet08.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet08.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet09.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet09.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet10.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet10.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet11.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet11.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet12.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet12.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet13.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet13.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet14.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet14.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet15.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet15.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet16.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet16.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet17.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet17.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet18.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet18.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet19.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet19.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet20.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet20.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet21.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet21.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet22.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet22.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet23.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet23.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet24.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet24.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet25.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet25.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet26.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet26.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet27.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet27.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet28.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet28.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet29.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet29.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet30.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet30.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet31.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet31.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet32.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet32.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet33.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet33.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet34.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet34.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet35.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet35.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet36.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet36.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet37.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet37.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet38.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet38.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet39.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet39.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet40.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet40.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet41.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet41.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet42.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet42.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet43.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet43.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet44.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet44.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet45.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet45.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet46.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet46.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet47.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet47.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet48.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet48.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet49.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet49.wav</source>
+        <source type="data" file="tilr8_Rippler/mallet50.wav">https://github.com/tiagolr/tilr_jsfx/raw/dee65d7df4469303bf5f3b5ead973800962624e1/Synth/tilr8_Rippler/mallet50.wav</source>
       </version>
     </reapack>
   </category>
