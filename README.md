@@ -199,6 +199,22 @@ Supports configs like min and max note, min and max CC values, off notes value a
 
 # Synths
 
+## Rippler
+
+A physical modeled synth.
+
+![](doc/rippler.png)
+
+#### Features:
+
+* 7 Models of acoustic resonators: String, Beam, Metal, Membrane, Drumhead, Plate and Marimba.
+* Inharmocity, Tone, Ratio and Material sliders to shape the timbre.
+* Sample based mallet with 50 samples to chose from.
+* Noise generator with filter and ADSR.
+* Up to 64 partials (configurable).
+* Up to 16 polyphony (configurable).
+
+
 ## JS3Osc
 
 JSFX polyphonic synth based of IL 3xOsc.

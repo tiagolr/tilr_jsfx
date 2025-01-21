@@ -1,3 +1,8 @@
+/**
+  Based on Saikes Partials
+  see https://github.com/JoepVanlier/JSFX/blob/master/partials/partials_dependencies/saike_modal.jsfx-inc
+*/
+
 @init
 
 function recalc_beam()

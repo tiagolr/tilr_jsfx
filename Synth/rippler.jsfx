@@ -3,8 +3,77 @@ author: tilr
 version: 1.0.0
 changelog:
   First
+provides:
+  rippler.jsfx.RPL
+  rippler/logo.png
+  rippler/rippler.array.jsfx-inc
+  rippler/rippler.envlib.jsfx-inc
+  rippler/rippler.gfxlib.jsfx-inc
+  rippler/rippler.modal.jsfx-inc
+  rippler/rippler.rbj_filter.jsfx-inc
+  [data] tilr8_Rippler/mallet01.wav
+  [data] tilr8_Rippler/mallet02.wav
+  [data] tilr8_Rippler/mallet03.wav
+  [data] tilr8_Rippler/mallet04.wav
+  [data] tilr8_Rippler/mallet05.wav
+  [data] tilr8_Rippler/mallet06.wav
+  [data] tilr8_Rippler/mallet07.wav
+  [data] tilr8_Rippler/mallet08.wav
+  [data] tilr8_Rippler/mallet09.wav
+  [data] tilr8_Rippler/mallet10.wav
+  [data] tilr8_Rippler/mallet11.wav
+  [data] tilr8_Rippler/mallet12.wav
+  [data] tilr8_Rippler/mallet13.wav
+  [data] tilr8_Rippler/mallet14.wav
+  [data] tilr8_Rippler/mallet15.wav
+  [data] tilr8_Rippler/mallet16.wav
+  [data] tilr8_Rippler/mallet17.wav
+  [data] tilr8_Rippler/mallet18.wav
+  [data] tilr8_Rippler/mallet19.wav
+  [data] tilr8_Rippler/mallet20.wav
+  [data] tilr8_Rippler/mallet21.wav
+  [data] tilr8_Rippler/mallet22.wav
+  [data] tilr8_Rippler/mallet23.wav
+  [data] tilr8_Rippler/mallet24.wav
+  [data] tilr8_Rippler/mallet25.wav
+  [data] tilr8_Rippler/mallet26.wav
+  [data] tilr8_Rippler/mallet27.wav
+  [data] tilr8_Rippler/mallet28.wav
+  [data] tilr8_Rippler/mallet29.wav
+  [data] tilr8_Rippler/mallet30.wav
+  [data] tilr8_Rippler/mallet31.wav
+  [data] tilr8_Rippler/mallet32.wav
+  [data] tilr8_Rippler/mallet33.wav
+  [data] tilr8_Rippler/mallet34.wav
+  [data] tilr8_Rippler/mallet35.wav
+  [data] tilr8_Rippler/mallet36.wav
+  [data] tilr8_Rippler/mallet37.wav
+  [data] tilr8_Rippler/mallet38.wav
+  [data] tilr8_Rippler/mallet39.wav
+  [data] tilr8_Rippler/mallet40.wav
+  [data] tilr8_Rippler/mallet41.wav
+  [data] tilr8_Rippler/mallet42.wav
+  [data] tilr8_Rippler/mallet43.wav
+  [data] tilr8_Rippler/mallet44.wav
+  [data] tilr8_Rippler/mallet45.wav
+  [data] tilr8_Rippler/mallet46.wav
+  [data] tilr8_Rippler/mallet47.wav
+  [data] tilr8_Rippler/mallet48.wav
+  [data] tilr8_Rippler/mallet49.wav
+  [data] tilr8_Rippler/mallet50.wav
+screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/rippler.png
 about:
-  # Rippler - a physical modeled synth
+  # Rippler
+
+  A physical modeled synth
+
+  **Features:**
+  * 7 Models of acoustic resonators: String, Beam, Metal, Membrane, Drumhead, Plate and Marimba.
+  * Inharmocity, Tone, Ratio and Material sliders to shape the timbre.
+  * Sample based mallet with 50 samples to chose from.
+  * Noise generator with filter and ADSR.
+  * Up to 64 partials (configurable).
+  * Up to 16 polyphony (configurable).
 tags: synth, instrument
 
 <? npartials < 1 ? npartials = 32 ?>
@@ -584,7 +653,7 @@ local(xsize, ysize, txt, pad)
 (
   gfx_setfont(1, "Arial", 16);
   xsize = 400;
-  ysize = 180;
+  ysize = 200;
   pad = 20;
   gfx_x = 0; gfx_y = 0;
   gfx_blurto(gfx_w, gfx_h);
@@ -594,10 +663,11 @@ local(xsize, ysize, txt, pad)
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
   strcpy(txt, "Rippler 1.0.0\nTilr 2025\n\n");
-  strcat(txt, "Change polyphony and partials in window menu\n");
-  strcat(txt, "Ctrl for fine slider adjustments\n");
-  strcat(txt, "Alt to adjust velocity mapping\n");
-  strcat(txt, "Double click to reset sliders\n");
+  strcat(txt, "- Change polyphony and partials in window menu.\n");
+  strcat(txt, "- Ctrl for fine slider adjustments.\n");
+  strcat(txt, "- Alt to adjust velocity mapping.\n");
+  strcat(txt, "- Double click to reset sliders.\n");
+  strcat(txt, "- Rippler supports audio in, press notes to send\nthe signal through to the ressonators.\n");
   gfx_x = gfx_w/2 - xsize/2 + pad;
   gfx_y = gfx_h/2 - ysize/2 + pad;
   gfx_set(1,1,1);
