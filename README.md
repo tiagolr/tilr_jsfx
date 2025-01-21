@@ -214,6 +214,7 @@ A physical modeled synth.
 * Up to 64 partials (configurable).
 * Up to 16 polyphony (configurable).
 
+[Sound demo](https://raw.githubusercontent.com/tiagolr/tilr_jsfx/refs/heads/master/demo/rippler.flac)
 
 ## JS3Osc
 

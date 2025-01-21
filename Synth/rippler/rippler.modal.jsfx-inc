@@ -104,7 +104,7 @@ local(n)
 function modal_init(f_0, k, ratio, ratio_max, rel, vel)
 global(inharmonic, npartials, srate, decay, release, freq_damp, tone, hit_position, vel_res_decay, vel_res_hit, vel_res_inharm)
 instance(b, a1, a2)
-local(f_k, gamma_k, tone_gain, amp_k, decay_k, f_max, damp_k, inharm_k, omega_k, dec)
+local(f_k, gamma_k, tone_gain, amp_k, decay_k, f_max, damp_k, inharm_k, omega_k)
 (
   inharm_k = min(1, exp(log(inharmonic) + vel * vel_res_inharm * -log(0.0001))) - 0.0001; // normalize velocity contribution on a logarithmic scale
   inharm_k = sqrt(1 + inharm_k * (ratio-1) * (ratio-1));
@@ -112,8 +112,8 @@ local(f_k, gamma_k, tone_gain, amp_k, decay_k, f_max, damp_k, inharm_k, omega_k,
   f_max = min(f_0 * ratio_max * inharm_k, 20000);
   omega_k = 2 * $pi * f_k / srate;
 
-  dec = min(100, exp(log(decay) + vel * vel_res_decay * (log(100) - log(0.01)))); // normalize velocity contribution on a logarithmic scale
-  decay_k = rel ? dec * release : dec;
+  decay_k = min(100, exp(log(decay) + vel * vel_res_decay * (log(100) - log(0.01)))); // normalize velocity contribution on a logarithmic scale
+  decay_k = rel ? decay_k * release : decay_k;
 
   damp_k = freq_damp <= 0
     ? pow(f_0 / f_k, freq_damp * 2)
