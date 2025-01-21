@@ -1,6 +1,6 @@
 desc:Rippler
 author: tilr
-version: 1.0.2
+version: 1.0.3
 changelog:
   First
 provides:
@@ -653,7 +653,7 @@ local(xsize, ysize, txt, pad)
 (
   gfx_setfont(1, "Arial", 16);
   xsize = 400;
-  ysize = 200;
+  ysize = 210;
   pad = 20;
   gfx_x = 0; gfx_y = 0;
   gfx_blurto(gfx_w, gfx_h);
@@ -662,7 +662,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "Rippler 1.0.2\nTilr 2025\n\n");
+  strcpy(txt, "Rippler 1.0.3\nTilr 2025\n\n");
   strcat(txt, "- Change polyphony and partials in window menu.\n");
   strcat(txt, "- Ctrl for fine slider adjustments.\n");
   strcat(txt, "- Alt to adjust velocity mapping.\n");
