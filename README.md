@@ -207,7 +207,7 @@ A physical modeled synth.
 
 #### Features:
 
-* 7 Models of acoustic resonators: String, Beam, Metal, Membrane, Drumhead, Plate and Marimba.
+* 7 Models of acoustic resonators: String, Beam, Squared, Membrane, Drumhead, Plate and Marimba.
 * Inharmocity, Tone, Ratio and Material sliders to shape the timbre.
 * Sample based mallet with 50 samples to chose from.
 * Noise generator with filter and ADSR.
