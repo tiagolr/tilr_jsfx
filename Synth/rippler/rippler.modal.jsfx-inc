@@ -138,6 +138,19 @@ local(f_k, gamma_k, tone_gain, amp_k, decay_k, f_max, damp_k, inharm_k, omega_k)
   );
 );
 
+function waveguide_init(f_0, rel, vel)
+global(srate, tube_buf, tube_len, decay, vel_res_decay, release)
+instance(read_ptr, write_ptr, tube_decay)
+local(tlength, decay_k)
+(
+  tlength = srate / f_0;
+  read_ptr = (write_ptr - tlength + tube_len) % tube_len;
+
+  decay_k = min(100, exp(log(decay) + vel * vel_res_decay * (log(100) - log(0.01)))); // normalize velocity contribution on a logarithmic scale
+  decay_k = rel ? decay_k * release : decay_k;
+  tube_decay = exp(-$pi / f_0 / (srate * decay_k / 125000)); // 125000 set by hear so that decay approximates in seconds
+);
+
 function modal_process(x)
 instance(b, a1, a2, y, y1, y2)
 (
@@ -147,10 +160,39 @@ instance(b, a1, a2, y, y1, y2)
   y
 );
 
+function waveguide_process(x, nstring)
+globals(tube_buf, tube_len, tube_radius, model)
+instance(y, y1, write_ptr, read_ptr, tube_decay)
+local(sample, dsample)
+(
+  sample = tube_buf[(nstring - 1) * tube_len + read_ptr];
+  // Apply lowpass filter for frequency damping (tube radius)
+  y = tube_radius * sample + (1 - tube_radius) * y1;
+  y1 = y;
+
+  // Apply decay to sample
+  dsample = y * tube_decay;
+  model == 8 ? dsample *= -1; // closed tube, inverting dsample causes only odd harmonics
+  tube_buf[(nstring - 1) * tube_len + write_ptr] = x + dsample;
+
+  write_ptr = (write_ptr + 1) % tube_len;
+  read_ptr = (read_ptr + 1) % tube_len;
+
+  dsample
+);
+
 function modal_clear()
 instance(y, y1, y2)
 (
   y = y1 = y2 = 0;
+);
+
+function waveguide_clear(nstring)
+globals(tube_buf, tube_len)
+instance(y, y1, read_ptr, write_ptr)
+(
+  y = y1 = read_ptr = write_ptr = 0;
+  memset(tube_buf + (nstring - 1) * tube_len, 0, tube_len);
 );
 
 function string_init(freq, rel)
@@ -160,27 +202,37 @@ local(ratio_max)
   this.f0 = freq;
   this.rel = rel;
   ratio_max = models[model][npartials-1];
-  <?
-    loop(i=1;npartials,
-      printf("this.f%02d.modal_init(freq, %d, models[model][%d], ratio_max, rel, this.vel);\n", i, i, i-1);
-      i += 1;
-    );
-  ?>
+  model < 7 ? (
+    <?
+      loop(i=1;npartials,
+        printf("this.f%02d.modal_init(freq, %d, models[model][%d], ratio_max, rel, this.vel);\n", i, i, i-1);
+        i += 1;
+      );
+    ?>
+  ) : (
+    // use waveguides for open and closed tube
+    this.waveguide_init(freq, rel, this.vel);
+  );
 );
 
-function string_process(x)
-globals(srate)
+function string_process(x, nstring)
+globals(srate, model)
 instance(active, silence)
 local(out)
 (
   out = 0;
   active ? ( // use active and silence to turn of strings process if not in use
-    <?
-      loop(i=1;npartials,
-        printf("out += this.f%02d.modal_process(x);\n", i);
-        i += 1;
-      );
-    ?>
+    model < 7 ? (
+      <?
+        loop(i=1;npartials,
+          printf("out += this.f%02d.modal_process(x);\n", i);
+          i += 1;
+        );
+      ?>
+    ) : (
+      // use waveguides for open and closed tube
+      out += this.waveguide_process(x, nstring);
+    );
   );
   abs(out) + abs(x) > 0.00001
     ? silence = 0
@@ -189,7 +241,8 @@ local(out)
   out
 );
 
-function string_clear()
+function string_clear(nstring)
+globals(model)
 (
   <?
     loop(i=1;npartials,
@@ -197,4 +250,5 @@ function string_clear()
       i += 1;
     );
   ?>
+  this.waveguide_clear(nstring);
 );

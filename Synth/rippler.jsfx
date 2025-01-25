@@ -1,8 +1,8 @@
 desc:Rippler
 author: tilr
-version: 1.0.3
+version: 1.1.0
 changelog:
-  First
+  Add closed and open tube models
 provides:
   rippler.jsfx.RPL
   rippler/logo.png
@@ -118,6 +118,7 @@ slider25:noise_att=1<1, 5000, 1:log>-Noise Attack
 slider26:noise_dec=500<1, 5000, 1:log>-Noise Decay
 slider27:noise_sus=0<0, 100, 0.1>-Noise Sustain
 slider28:noise_rel=500<1, 5000, 1:log>-Noise Release
+slider29:_tube_radius=50<0,100,0.01>-Tube radius
 
 slider40:vel_click_mix=0<0,1,0.01>-Vel Click Mix
 slider41:vel_click_res=0<0,1,0.01>-Vel Click Res
@@ -143,7 +144,7 @@ vel_mapping = 0;
 freemem = 100000;
 freemem = init_models(freemem);
 
-models = freemem; freemem += 7;
+models = freemem; freemem += 9;
 models[0] = string;
 models[1] = beam;
 models[2] = metal;
@@ -151,6 +152,8 @@ models[3] = membrane;
 models[4] = plate;
 models[5] = drumhead;
 models[6] = marimba;
+models[7] = 0; // open tube uses no modals
+models[8] = 0; // closed tube uses no modals
 
 freemem = poly.array_init(freemem, 128, 7); // [note, velocity, freq, sample_pos, playback_speed, nstring, release]
 freemem = midi.array_init(freemem, 256, 4); // [offset, status, note, vel]
@@ -158,6 +161,10 @@ wavebuf = freemem; freemem += 500000; // mallet sample
 combbuf = freemem; // comb used for stereo effect
 combpos = 0;
 combsize = (20 * srate / 1000)|0;
+freemem += combsize;
+tube_buf = freemem;
+tube_len = 20000; // buffer size, 20000 allows for 10Hz at 200k srate (max_size = srate / freq_min)
+freemem += tube_len * npolyphony; // allocate npolyphony buffers for tube waveguides
 
 function db2gain (db) local (val) (
   val = 10^(db / 20);
@@ -199,7 +206,7 @@ function on_slider()
     ratio = model == 1 ? 2 : 0.78;
     <?
       loop(i=1;npolyphony,
-        printf("s%02d.string_clear();\n", i);
+        printf("s%02d.string_clear(%d);\n", i, i);
         printf("noise_env%02d.env_reset();\n", i);
         i+=1;
       );
@@ -210,6 +217,7 @@ function on_slider()
   model == 3 ? recalc_membrane();
   model == 4 ? recalc_plate();
 
+  tube_radius = 0.01 + _tube_radius * 0.89 / 100; // map tube radius [0,100] to [0.01, 0.9]
   lfile != slider1 || fhandle == -1 ? on_file_change();
   playback_speed = 2^((click_pitch / 12) | 0);
   lowcut_filter.rbj_hp(lowcut, 0.707);
@@ -469,7 +477,7 @@ splmono = (spl1 + spl2) / 2;
     printf("  outm_%02d += n * min(1, noise_res + vel_noise_res * noise_env%02d.vel);\n", i, i);
     printf(");\n");
     // process resonance
-    printf("out_res += s%02d.string_process(splmono + outm_%02d);\n", i, i);
+    printf("out_res += s%02d.string_process(splmono + outm_%02d, %d);\n", i, i, i);
     i += 1;
   );
 ?>
@@ -573,27 +581,35 @@ model_name = model == 0 ? "String"
   : model == 3 ? "Membrane"
   : model == 4 ? "Plate"
   : model == 5 ? "Drumhead"
-  : "Marimba";
+  : model == 6 ? "Marimba"
+  : model == 7 ? "Open Tube"
+  : "Closed Tube";
 
-draw_button(500,20,80,model_name,1);
-mouse.left_click && mouse_in_rect(500, 20 - 2, 80, 10 + 2) ? (
+draw_button(480,20,100,model_name,1);
+mouse.left_click && mouse_in_rect(480, 20 - 2, 100, 10 + 2) ? (
   gfx_x = 500; gfx_y = 30;
-  choice = gfx_showmenu("String|Beam|Squared|Membrane|Plate|Drumhead|Marimba");
+  choice = gfx_showmenu("String|Beam|Squared|Membrane|Plate|Drumhead|Marimba|Open Tube|Closed Tube");
   choice > 0 ? slider(10) = choice - 1;
   on_slider();
 );
 
 draw_knob(420, 40, 11, "Decay", 1, 0.01, 100, 1, 0, sprintf(#, "%.2f s", slider(11)), 46);
-draw_knob(480, 40, 12, "Matrl", 0, -1, 1, 0, 1, sprintf(#, "%i%%", slider(12) * 100), 0);
 draw_knob(540, 40, 15, "Relse", 1, 0, 1, 0, 0, sprintf(#, "%i%%", slider(15) * 100), 0);
 
-draw_knob(420, 110, 13, "Tone", 0, -1, 1, 0, 1, sprintf(#, "%i%%", slider(13) * 100), 0);
-draw_knob(480, 110, 14, "Hit", 26, 2, 50, 0, 0, sprintf(#, "%i%%", slider(14)), 47);
-draw_knob(540, 110, 16, "Inharm", 0.0001, 0.0001, 1, 1,0, sprintf(#, "%.2f", slider(16) * 100), 48);
-
-model == 1 || model == 3 || model == 4 ? (
-  draw_knob(420, 180, 17, "Ratio", 1, 0.1, 10, 1, 0, sprintf(#, "%.1f", slider(17)), 0);
+model >= 7 ? (
+  draw_knob(480, 40, 29, "Radius", 50, 0, 100, 0, 0, sprintf(#, "%i%%", slider(29)), 0);
 );
+
+model < 7 ? (
+  draw_knob(480, 40, 12, "Matrl", 0, -1, 1, 0, 1, sprintf(#, "%i%%", slider(12) * 100), 0);
+  draw_knob(420, 110, 13, "Tone", 0, -1, 1, 0, 1, sprintf(#, "%i%%", slider(13) * 100), 0);
+  draw_knob(480, 110, 14, "Hit", 26, 2, 50, 0, 0, sprintf(#, "%i%%", slider(14)), 47);
+  draw_knob(540, 110, 16, "Inharm", 0.0001, 0.0001, 1, 1,0, sprintf(#, "%.2f", slider(16) * 100), 48);
+  model == 1 || model == 3 || model == 4 ? (
+    draw_knob(420, 180, 17, "Ratio", 1, 0.1, 10, 1, 0, sprintf(#, "%.1f", slider(17)), 0);
+  );
+);
+
 draw_knob(540, 180, 18, "LowCut", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(18)), 0);
 
 function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
@@ -662,7 +678,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "Rippler 1.0.3\nTilr 2025\n\n");
+  strcpy(txt, "Rippler 1.1.0\nTilr 2025\n\n");
   strcat(txt, "- Change polyphony and partials in window menu.\n");
   strcat(txt, "- Ctrl for fine slider adjustments.\n");
   strcat(txt, "- Alt to adjust velocity mapping.\n");
