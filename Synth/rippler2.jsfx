@@ -89,6 +89,25 @@ base_note = 60;
 playback_speed = 1;
 nstring = 0;
 vel_mapping = 0;
+
+// limiter
+log2db = 8.6858896380650365530225783783321; // 20 / ln(10)
+db2log = 0.11512925464970228420089957273422; // ln(10) / 20
+attime=0.0002; //200us
+reltime=0.300; //300ms
+rmstime=0.000050; //50us
+maxover=0;
+limratio=0;
+cratio=0;
+rundb=0;
+overdb=0;
+maxover=0;
+atcoef=exp(-1/(attime * srate));
+relcoef=exp(-1/(reltime * srate));
+rmscoef=exp(-1/(rmstime * srate));
+leftright = 0;
+latvert = 1;
+
 freemem = 100000;
 freemem = init_models(freemem);
 
@@ -205,6 +224,25 @@ function on_slider()
   lowcut_filter.rbj_hp(lowcut, 0.707);
   b_lowcut_filter.rbj_hp(b_lowcut, 0.707);
   combsize = (20 * srate / 1000)|0;
+
+  // limiter
+  thresh = 0;
+  threshv = exp(thresh * db2log);
+  limratio = 20;
+  bias = 80 * 70 / 100;
+  cthresh = thresh - bias;
+  cthreshv = exp(cthresh * db2log);
+  makeup = 0;
+  makeupv = exp(makeup * db2log);
+  agc = 0;
+  capsc = log2db;
+  attime = 0.0002;
+  reltime = 0.300;
+  atcoef = exp(-1 / (attime * srate));
+  relcoef = exp(-1 / (reltime * srate));
+  rmstime = 100 / 1000000;
+  rmscoef=exp(-1/(rmstime * srate));
+
   click_filter_mode == 0 ? (
     <?
       loop(i=1;npolyphony,
@@ -534,6 +572,32 @@ combpos = (combpos + 1) % combsize;
 spl0 = output + combbuf[combpos] * 0.33;
 spl1 = output - combbuf[combpos] * 0.33;
 
+// Limiter
+aspl0 = abs(spl0+spl1)/2;
+aspl1 = abs(spl0-spl1)/2;
+maxspl = sqr(max(aspl0, aspl1));
+runave = maxspl + rmscoef * (runave - maxspl);
+det = sqrt(max(0,runave));
+overdb = capsc * log(det/threshv);
+overdb = max(0,overdb);
+overdb > rundb ? (
+  rundb = overdb + atcoef * (rundb - overdb);
+) : (
+  rundb = overdb + relcoef * (rundb - overdb);
+);
+overdb = max(rundb,0);
+bias == 0 ? (
+  cratio = limratio;
+) : (
+  cratio = 1 + (limratio-1) * sqrt((overdb + dcoffset) / (bias + dcoffset));
+);
+gr = -overdb * (cratio-1)/cratio;
+grv = exp(gr * db2log);
+sav0 = (spl0 + spl1) * grv;
+sav1 = (spl0 - spl1) * grv;
+spl0 = makeupv * (sav0 + sav1) * 0.5;
+spl1 = makeupv * (sav0 - sav1) * 0.5;
+
 // remove notes that finish playing and are no longer pressed
 ptr = poly.array_first();
 while (ptr >= 0) (
@@ -739,7 +803,7 @@ couple ? (
 gfx_a = 1;
 
 draw_knob(825, 180, 83, "Gain", 0, -24, 24, 0, 1, sprintf(#, "%idB", slider(83)),0);
-// 
+//
 
 function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
   factor *= mouse.control ? 0.05 : 1;

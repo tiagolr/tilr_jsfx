@@ -298,7 +298,7 @@ local(avg, k, delta, w, k)
 );
 
 function string_init(freq, rel, resAB)
-globals(open_tube,models, b_models, model, b_model, npartials, couple, a_on, b_on, f_shifts, aaa, aaab, aaaa, aaaaa)
+globals(open_tube,models, b_models, model, b_model, npartials, couple, a_on, b_on, f_shifts)
 local(ratio_max, buf, i, j, a_mdl, b_mdl, fa, fb, shift)
 (
   this.f0 = freq;
@@ -319,8 +319,6 @@ local(ratio_max, buf, i, j, a_mdl, b_mdl, fa, fb, shift)
         abs(fa - fb) <= 4 ? (
           shift = freq_shift(fa*freq, fb*freq) / freq;
           !resAB && fa == fb ? shift *= -1;
-          !resAB && i == 0 && j == 0 ? aaaa = shift;
-          !resAB && i == 0 && j == 2 ? aaab = shift;
           f_shifts[i] += fa > fb ? shift : -shift;
         );
         j += 1;
@@ -339,7 +337,6 @@ local(ratio_max, buf, i, j, a_mdl, b_mdl, fa, fb, shift)
     ?>
   ) : (
     // use waveguides for open and closed tube
-    !resAB ? aaa = f_shifts[0];
     this.waveguide_init(max(20, f_shifts[0] * freq), rel, this.vel, resAB);
   );
 );
