@@ -242,7 +242,7 @@ local(sample, dsample)
   Same as waveguide_process() but using resonator B globals
 */
 function b_waveguide_process(x, nstring)
-globals(b_tube_buf, b_tube_decay, b_tube_len, b_tube_radius, b_model)
+globals(b_tube_buf, b_tube_len, b_tube_radius, b_model)
 instance(y, y1, write_ptr, read_ptr, tube_decay)
 local(sample, dsample)
 (
@@ -252,7 +252,7 @@ local(sample, dsample)
   y1 = y;
 
   // Apply decay to sample
-  dsample = y * b_tube_decay;
+  dsample = y * tube_decay;
   b_model == 8 ? dsample *= -1; // closed tube, inverting dsample causes only odd harmonics
   b_tube_buf[(nstring - 1) * b_tube_len + write_ptr] = x + dsample;
 
