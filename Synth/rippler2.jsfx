@@ -18,13 +18,9 @@ filename:0,rippler2/logo.png
 filename:1,rippler2/on.png
 filename:2,rippler2/off.png
 
-slider1:/tilr8_Rippler:none:Mallet
 slider2:click_mix=0<0,1,.0001>-Mallet Mix
 slider3:click_res=.8<0,1,.0001>-Mallet Resonance
-slider4:click_pitch=0<-24,24,1>-Pitch
-slider5:click_ktrack=0<0,1,1{No, Yes}>-KeyTrack
-slider6:click_filter_mode=2<0,2,1{LP,BP,HP}>-Mallet Filter Mode
-slider7:click_filter_freq=20<20,20000,1:log>-Mallet Filter Freq
+slider4:click_freq=400<40,5000,1:log>-Mallet Stiffness
 
 slider9:a_on=1<0,1,1{False,True}>-A ON
 slider10:model=0<0,6,1{String,Beam,Squared,Membrane,Plate,Drumhead,Marimba}>-A Model
@@ -48,8 +44,9 @@ slider27:noise_sus=0<0, 100, 0.1>-Noise Sustain
 slider28:noise_rel=500<1, 5000, 1:log>-Noise Release
 slider29:_tube_radius=50<0,100,0.01>-Tube radius
 
-slider40:vel_click_mix=0<0,1,0.01>-Vel Click Mix
-slider41:vel_click_res=0<0,1,0.01>-Vel Click Res
+slider39:vel_click_freq=0<0,1,0.01>-Vel Mallet Stiffness
+slider40:vel_click_mix=0<0,1,0.01>-Vel Mallet Mix
+slider41:vel_click_res=0<0,1,0.01>-Vel Mallet Res
 slider43:vel_noise_mix=0<0,1,0.01>-Vel Noise Mix
 slider44:vel_noise_res=0<0,1,0.01>-Vel Noise Res
 slider46:vel_res_decay=0<0,1,0.01>-Vel A Decay
@@ -80,15 +77,10 @@ slider83:_res_gain=0<-24,24,0.01>-Res Gain
 ext_noinit = 1;
 <? printf("npartials = %d;\n", npartials); ?>
 <? printf("npolyphony = %d;\n", npolyphony); ?>
-lfile = -1;
 lmodel = model;
-wavechn = 0;
-wavesrate = 0;
-wavelen = 0;
-base_note = 60;
-playback_speed = 1;
 nstring = 0;
 vel_mapping = 0;
+click_env = exp(-100/srate);
 
 // limiter
 log2db = 8.6858896380650365530225783783321; // 20 / ln(10)
@@ -133,9 +125,8 @@ b_models[6] = b_marimba;
 b_models[7] = b_open_tube; // open tube uses no modals
 b_models[8] = b_closed_tube; // closed tube uses no modals
 
-freemem = poly.array_init(freemem, 128, 7); // [note, velocity, freq, sample_pos, playback_speed, nstring, release]
+freemem = poly.array_init(freemem, 128, 7); // [note, velocity, freq, impulse, elapsed, nstring, release]
 freemem = midi.array_init(freemem, 256, 4); // [offset, status, note, vel]
-wavebuf = freemem; freemem += 500000; // mallet sample
 combbuf = freemem; // comb used for stereo effect
 combpos = 0;
 combsize = (20 * srate / 1000)|0;
@@ -155,32 +146,6 @@ function db2gain (db) local (val) (
 
 function normalize_vol_slider(val) ( val * 60 / 100 - 60 );
 function note2freq(n) ( 440 * pow(2, (n - 69) / 12); );
-
-function read_file(filehandle)
-local(i)
-(
-  filehandle > 0 ? (
-    file_riff(filehandle, wavechn, wavesrate);
-    wavechn ? (
-      wavelen = file_avail(filehandle);
-      file_mem(filehandle,wavebuf, min(wavelen, 500000));
-    );
-    file_close(filehandle);
-    wavechn == 2 ? (
-      wavelen = (wavelen / 2) | 0;
-      i = 0; loop(wavelen,
-        wavelen[i] = wavelen[2*i] + wavelen[2*i+1]; // stereo to mono
-        i += 1;
-      );
-    );
-  );
-);
-
-function on_file_change() (
-  lfile = slider1;
-  fhandle = file_open(slider1);
-  read_file(fhandle);
-);
 
 function on_slider()
 (
@@ -219,7 +184,6 @@ function on_slider()
   res_gain = 10^(_res_gain / 20);
   tube_radius = 0.01 + _tube_radius * 0.89 / 100; // map tube radius [0,100] to [0.01, 0.9]
   b_tube_radius = 0.01 + _b_tube_radius * 0.89 / 100; // map tube radius [0,100] to [0.01, 0.9]
-  lfile != slider1 || fhandle == -1 ? on_file_change();
   playback_speed = 2^((click_pitch / 12) | 0);
   lowcut_filter.rbj_hp(lowcut, 0.707);
   b_lowcut_filter.rbj_hp(b_lowcut, 0.707);
@@ -243,30 +207,6 @@ function on_slider()
   rmstime = 100 / 1000000;
   rmscoef=exp(-1/(rmstime * srate));
 
-  click_filter_mode == 0 ? (
-    <?
-      loop(i=1;npolyphony,
-        printf("click_filter%02d.rbj_lp(click_filter_freq, 0.707);\n",i);
-        i+=1;
-      );
-    ?>
-  );
-  click_filter_mode == 1 ? (
-    <?
-      loop(i=1;npolyphony,
-        printf("click_filter%02d.rbj_bp(click_filter_freq, 0.707);\n",i);
-        i+=1;
-      );
-    ?>
-  );
-  click_filter_mode == 2 ? (
-    <?
-      loop(i=1;npolyphony,
-        printf("click_filter%02d.rbj_hp(click_filter_freq, 0.707);\n",i);
-        i+=1;
-      );
-    ?>
-  );
   noise_filter_mode == 0 ? (
     <?
       loop(i=1;npolyphony,
@@ -328,8 +268,6 @@ local (noise)
   noise
 );
 
-on_file_change(); // fix force first file open
-
 @slider
 
 on_slider();
@@ -374,7 +312,7 @@ while (midirecv(offset, msg1, note, vel)) (
 
 @sample
 function on_note(p)
-local (ptr, note_repeat, note, vel, env, freq)
+local (ptr, note_repeat, note, vel, env, freq, click_f)
 (
   note = p[2];
   vel = p[3];
@@ -388,10 +326,13 @@ local (ptr, note_repeat, note, vel, env, freq)
   ptr[0] = note;
   ptr[1] = vel / 127;
   ptr[2] = freq / srate;
-  ptr[3] = 0; // sample pos
-  ptr[4] = 2 ^ ((note - base_note) / 12); // playback speed
+  ptr[3] = 1; // impulse
+  ptr[4] = (srate/10)|0; // elapsed (countdown 100ms)
   ptr[5] = nstring;
   ptr[6] = 0; // note release
+  
+  // normalize velocity contribution on a logarithmic scale
+  click_f = min(5000, exp(log(click_freq) + vel / 127 * vel_click_freq * (log(5000) - log(40)))); 
 
   <?
     loop(i=1;npolyphony,
@@ -399,6 +340,7 @@ local (ptr, note_repeat, note, vel, env, freq)
       printf("  s%02d.vel = ptr[1];\n", i);
       printf("  s%02d.string_init(freq, 0, 1);\n", i);
       printf("  s%02d.active = 1; s%02d.silence = 0;\n", i, i);
+      printf("  click_filter%02d.rbj_bp(click_f, 0.707);\n",i);
       printf("  b_s%02d.string_init(freq, 0, 0);\n", i);
       printf("  b_s%02d.active = 1; b_s%02d.silence = 0;\n", i, i);
       printf("  noise_env%02d.env_a(1);\n", i);
@@ -438,19 +380,6 @@ local(msg1, vel, event)
   event == 0x80 || (event == 0x90 && !vel) ? off_note(p); // Note off
 );
 
-/**
-  Sample linear interpolation
-*/
-function wave_lerp(buf, pos)
-local(x, i, j)
-(
-  i = pos|0;
-  x = pos - i;
-  j = i + 1;
-  j >= wavelen ? j = 0;
-  (1 - x) * buf[i] + x * buf[j];
-);
-
 // process queued midi
 ptr = midi.array_first();
 while(ptr >= 0) (
@@ -472,26 +401,18 @@ ptr = poly.array_first();
 ?>
 mallet = 0; // total mallet output
 while(ptr >= 0) ( // for each note/voice
-  ptr[3] >= 0 ? ( // if note is playing sample
-    out = wave_lerp(wavebuf, ptr[3]);
-
-    click_filter_mode == 1 ||
-    (click_filter_mode == 2 && click_filter_freq > 20) ||
-    (click_filter_mode == 0 && click_filter_freq < 20000) ?
-    (
-      <?
-        loop(i=1;npolyphony,
-          printf("ptr[5] == %d ? out = click_filter%02d.rbj_df1(out);\n", i - 1, i);
-          i+=1;
-        );
-      ?>
-    );
+  ptr[4] ? ( // if note is playing sample
+    ptr[4] -= 1;
+    out = 0;
+    <?
+      loop(i=1;npolyphony,
+        printf("ptr[5] == %d ? out = click_filter%02d.rbj_df2(ptr[3]) * 2;\n", i - 1, i);
+        i+=1;
+      );
+    ?>
 
     mallet += out * min(1, click_mix + vel_click_mix * ptr[1]);
-    ptr[3] += click_ktrack // samplepos += playback_speed
-      ? ptr[4] * playback_speed
-      : playback_speed;
-    ptr[3] >= wavelen ? ptr[3] = -1; // finished sample playback
+    ptr[3] *= click_env;
     <?
       loop(i=1;npolyphony,
         printf("ptr[5] == %d ? outm_%02d = out * min(1, click_res + vel_click_res * ptr[1] );\n",i-1, i);
@@ -601,7 +522,7 @@ spl1 = makeupv * (sav0 - sav1) * 0.5;
 // remove notes that finish playing and are no longer pressed
 ptr = poly.array_first();
 while (ptr >= 0) (
-  ptr[3] == -1 && ptr[6] ? (
+  !ptr[4] && ptr[6] ? (
     poly.array_remove(ptr);
     ptr = poly.array_first();
   ) : (
@@ -653,19 +574,6 @@ gfx_line(200, 20, 200, 230);
 gfx_x = 220; gfx_y = 20;
 gfx_drawstr("MALLET");
 
-filter_name = click_filter_mode == 0 ? "LP" : click_filter_mode == 1 ? "BP" : "HP";
-draw_button(340,20,40,filter_name, 0);
-mouse.left_click && mouse_in_rect(340, 20 - 2, 40, 10 + 2) ? (
-  gfx_x = 340; gfx_y = 30;
-  choice = gfx_showmenu("LP|BP|HP");
-  choice > 0 ? slider(6) = choice - 1;
-  on_slider();
-);
-
-draw_button(210,180,60,"KTrack", click_ktrack);
-mouse.left_click && mouse_in_rect(210,180-2, 60, 10+2) ? (
-  click_ktrack = !click_ktrack;
-);
 draw_button_vel(210,220,60,"VelMap", vel_mapping);
 mouse.left_click && mouse_in_rect(210,220-2, 60, 10+2) ? (
   vel_mapping = !vel_mapping;
@@ -673,8 +581,7 @@ mouse.left_click && mouse_in_rect(210,220-2, 60, 10+2) ? (
 
 draw_knob(220, 40, 2, "Mix", 0, 0, 1, 0, 0, sprintf(#, "%i%%", slider(2) * 100), 40);
 draw_knob(280, 40, 3, "Res", .8, 0, 1, 0, 0, sprintf(#, "%i%%", slider(3) * 100), 41);
-draw_knob(340, 40, 7, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(7)), 0);
-draw_knob(220, 110, 4, "Pitch", 0, -24, 24, 0, 1, sprintf(#, "%i", slider(4)), 0);
+draw_knob(340, 40, 4, "Stiff", 400, 40, 5000, 1, 0, sprintf(#, "%i Hz", slider(4)), 39);
 
 // RESONATOR A
 
