@@ -14,8 +14,9 @@ import rippler2.rbj_filter.jsfx-inc
 import rippler2.envlib.jsfx-inc
 import rippler2.gfxlib.jsfx-inc
 
-filename:0,rippler/logo.png
-
+filename:0,rippler2/logo.png
+filename:1,rippler2/on.png
+filename:2,rippler2/off.png
 
 slider1:/tilr8_Rippler:none:Mallet
 slider2:click_mix=0<0,1,.0001>-Mallet Mix
@@ -520,7 +521,7 @@ while (ptr >= 0) (
   );
 );
 
-@gfx 600 250
+@gfx 800 250
 gfx_clear = COLOR_BG;
 mouse.update_mouse_state();
 
@@ -591,6 +592,13 @@ set_color(0x666666);
 gfx_line(400, 20, 400, 230);
 gfx_x = 420; gfx_y = 20;
 gfx_drawstr("RES A");
+gfx_x = 468; gfx_y = 17;
+gfx_blit(a_on ? 1 : 2,1,0); // draw on/off
+
+mouse.left_click && mouse_in_rect(420, 20-2, 60, 10+2) ? (
+  a_on = !a_on;
+  on_slider();
+);
 
 model_name = model == 0 ? "String"
   : model == 1 ? "Beam"
