@@ -1,69 +1,62 @@
-/**
-  Based on Saikes Partials
-  see https://github.com/JoepVanlier/JSFX/blob/master/partials/partials_dependencies/saike_modal.jsfx-inc
-*/
-
 @init
 
-function recalc_beam()
-global(beam, bfree, ratio)
+function recalc_beam(buf, ratio)
+global(bfree)
 local(i, m, n, f0)
 (
   i = 0;
   loop(m=1; 8,
     loop(n=1; 8,
-      beam[i] = sqrt(m^4 + (ratio*bfree[i])^4);
+      buf[i] = sqrt(m^4 + (ratio*bfree[i])^4);
       n+=1;i+=1;
     );
     m+=1;
   );
-  f0 = beam[0];
+  f0 = buf[0];
   loop(i=0; 64,
-     beam[i] = beam[i]/f0;
+     buf[i] = buf[i]/f0;
      i += 1;
   );
 );
 
-function recalc_membrane()
-global(membrane, ratio)
+function recalc_membrane(buf, ratio)
 local(i, m, n, f0)
 (
   i = 0;
   loop(m=1; 8,
     loop(n=1; 8,
-      membrane[i] = sqrt(m^2 + (ratio*n)^2);
+      buf[i] = sqrt(m^2 + (ratio*n)^2);
       n+=1;i+=1;
     );
     m+=1;
   );
-  f0 = membrane[0];
+  f0 = buf[0];
   loop(i=0; 64,
-     membrane[i] = membrane[i]/f0;
+     buf[i] = buf[i]/f0;
      i += 1;
   );
 );
 
-function recalc_plate()
-global(plate, ratio)
+function recalc_plate(buf, ratio)
 local(i, m, n, f0)
 (
   i = 0;
   loop(m=1; 8,
     loop(n=1; 8,
-      plate[i] = m^2 + (ratio*n)^2;
+      buf[i] = m^2 + (ratio*n)^2;
       n+=1;i+=1;
     );
     m+=1;
   );
-  f0 = plate[0];
+  f0 = buf[0];
   loop(i=0; 64,
-     plate[i] = plate[i]/f0;
+     buf[i] = buf[i]/f0;
      i += 1;
   );
 );
 
 function init_models(freemem)
-global(bfree, string, beam, metal, membrane, plate, drumhead, marimba)
+global(bfree, string, beam, metal, membrane, plate, drumhead, marimba, b_string, b_beam, b_plate, b_metal, b_membrane, b_drumhead, b_marimba)
 local(n)
 (
   bfree = freemem; freemem += 64;
@@ -98,39 +91,77 @@ local(n)
   marimba = freemem; freemem += 64;
   marimba[0] = 1.0;marimba[1] = 3.9393939393939394;marimba[2] = 10.575757575757576;marimba[3] = 19.0;marimba[4] = 26.757575757575758;marimba[5] = 36.93939393939394;marimba[6] = 49.18181818181818;marimba[7] = 63.18181818181818;marimba[8] = 78.9090909090909;marimba[9] = 96.39393939393939;marimba[10] = 115.63636363636364;marimba[11] = 136.6060606060606;marimba[12] = 159.36363636363637;marimba[13] = 183.8181818181818;marimba[14] = 210.06060606060606;marimba[15] = 238.03030303030303;marimba[16] = 267.75757575757575;marimba[17] = 299.24242424242425;marimba[18] = 442.6363636363636;marimba[19] = 568.5454545454545;marimba[20] = 614.0;marimba[21] = 100000;marimba[22] = 100000;marimba[23] = 100000;marimba[24] = 100000;marimba[25] = 100000;marimba[26] = 100000;marimba[27] = 100000;marimba[28] = 100000;marimba[29] = 100000;marimba[30] = 100000;marimba[31] = 100000;marimba[32] = 100000;marimba[33] = 100000;marimba[34] = 100000;marimba[35] = 100000;marimba[36] = 100000;marimba[37] = 100000;marimba[38] = 100000;marimba[39] = 100000;marimba[40] = 100000;marimba[41] = 100000;marimba[42] = 100000;marimba[43] = 100000;marimba[44] = 100000;marimba[45] = 100000;marimba[46] = 100000;marimba[47] = 100000;marimba[48] = 100000;marimba[49] = 100000;marimba[50] = 100000;marimba[51] = 100000;marimba[52] = 100000;marimba[53] = 100000;marimba[54] = 100000;marimba[55] = 100000;marimba[56] = 100000;marimba[57] = 100000;marimba[58] = 100000;marimba[59] = 100000;marimba[60] = 100000;marimba[61] = 100000;marimba[62] = 100000;marimba[63] = 100000;
 
+  // Copy models to resonator B
+  b_string = freemem; freemem += 64;
+  memcpy(b_string, string, 64);
+  b_beam = freemem; freemem += 64;
+  memcpy(b_beam, beam, 64);
+  b_metal = freemem; freemem += 64;
+  memcpy(b_metal, metal, 64);
+  b_plate = freemem; freemem += 64;
+  memcpy(b_plate, plate, 64);
+  b_drumhead = freemem; freemem += 64;
+  memcpy(b_drumhead, drumhead, 64);
+  b_marimba = freemem; freemem += 64;
+  memcpy(b_marimba, marimba, 64);
+
   freemem
 );
 
-function modal_init(f_0, k, ratio, ratio_max, rel, vel)
-global(inharmonic, npartials, srate, decay, release, freq_damp, tone, hit_position, vel_res_decay, vel_res_hit, vel_res_inharm)
+function modal_init(f_0, k, ratio, ratio_max, rel, vel, resAB)
+global(srate, npartials, inharmonic, decay, release, freq_damp, tone, hit_position, vel_res_decay, vel_res_hit, vel_res_inharm, b_inharmonic, b_decay, b_release, b_freq_damp, b_tone, b_hit_position, b_vel_res_decay, b_vel_res_hit, b_vel_res_inharm)
 instance(a1, a2, b0, b2, a0, a1, a2)
-local(f_k, gamma_k, tone_gain, amp_k, decay_k, alpha, f_max, damp_k, inharm_k, omega)
+local(f_k, gamma_k, tone_gain, amp_k, decay_k, alpha, f_max, damp_k, inharm_k, omega, _inharmonic, _decay, _release, _freq_damp, _tone, _hit_position, _vel_res_decay, _vel_res_hit, _vel_res_inharm)
 (
-  inharm_k = min(1, exp(log(inharmonic) + vel * vel_res_inharm * -log(0.0001))) - 0.0001; // normalize velocity contribution on a logarithmic scale
-  inharm_k = sqrt(1 + inharm_k * (ratio-1) * (ratio-1));
+  // Load resonator A or B globals
+  resAB ? (
+    _inharmonic = inharmonic;
+    _decay = decay;
+    _release = release;
+    _freq_damp = freq_damp;
+    _tone = tone;
+    _hit_position = hit_position;
+    _vel_res_decay = vel_res_decay;
+    _vel_res_hit = vel_res_hit;
+    _vel_res_inharm = vel_res_inharm;
+  ) : (
+    _inharmonic = b_inharmonic;
+    _decay = b_decay;
+    _release = b_release;
+    _freq_damp = b_freq_damp;
+    _tone = b_tone;
+    _hit_position = b_hit_position;
+    _vel_res_decay = b_vel_res_decay;
+    _vel_res_hit = b_vel_res_hit;
+    _vel_res_inharm = b_vel_res_inharm;
+  );
+
+  inharm_k = min(1, exp(log(_inharmonic) + vel * _vel_res_inharm * -log(0.0001))) - 0.0001; // normalize velocity contribution on a logarithmic scale
+  inharm_k = sqrt(1 + inharm_k * sqr(ratio-1));
   f_k = f_0 * ratio * inharm_k;
-  
+
   (f_k < 0.48 * srate) ? (
     f_max = min(f_0 * ratio_max * inharm_k, 20000);
     omega = 2 * $pi * f_k / srate;
     alpha = 2 * $pi / srate; // aprox 1 sec decay
-    
-    decay_k = min(100, exp(log(decay) + vel * vel_res_decay * (log(100) - log(0.01)))); // normalize velocity contribution on a logarithmic scale
-    decay_k = rel ? decay_k * release : decay_k;
-    
-    damp_k = freq_damp <= 0
-      ? pow(f_0 / f_k, freq_damp * 2)
-      : pow(f_max / f_k, freq_damp * 2);
-      
+
+    decay_k = min(100, exp(log(_decay) + vel * _vel_res_decay * (log(100) - log(0.01)))); // normalize velocity contribution on a logarithmic scale
+    decay_k = rel ? decay_k * _release : decay_k;
+
+    damp_k = _freq_damp <= 0
+      ? pow(f_0 / f_k, _freq_damp * 2)
+      : pow(f_max / f_k, _freq_damp * 2);
+
     decay_k /= damp_k;
-    
-    tone_gain = tone <= 0
-      ? pow(f_k / f_0, tone * 12 / 6)
-      : pow(f_k / f_max, tone * 12 / 6);
-    
-    amp_k = abs(sin($pi * k * min(.5, hit_position / 100 + vel_res_hit * vel / 2)));
-    amp_k *= sqrt(f_k) * 0.08; // push higher frequencies
-    
+
+    tone_gain = _tone <= 0
+      ? pow(f_k / f_0, _tone * 12 / 6)
+      : pow(f_k / f_max, _tone * 12 / 6);
+
+    amp_k = abs(sin($pi * k * min(.5, _hit_position / 100 + _vel_res_hit * vel / 2)));
+    amp_k *= f_k; // push higher frequencies
+    amp_k *= 0.005;
+
     // Bandpass filter coefficients (normalized)
     b0 = alpha * tone_gain * amp_k;
     b2 = -alpha * tone_gain * amp_k;
@@ -144,16 +175,31 @@ local(f_k, gamma_k, tone_gain, amp_k, decay_k, alpha, f_max, damp_k, inharm_k, o
   );
 );
 
-function waveguide_init(f_0, rel, vel)
-global(srate, tube_buf, tube_len, decay, vel_res_decay, release)
+function waveguide_init(f_0, rel, vel, resAB)
+global(srate, tube_buf, tube_len, decay, vel_res_decay, release, b_tube_buf, b_tube_len, b_decay, b_vel_res_decay, b_release)
 instance(read_ptr, write_ptr, tube_decay)
-local(tlength, decay_k)
+local(tlength, decay_k, _tube_buf, _tube_len, _decay, _vel_res_decay, _release)
 (
-  tlength = srate / f_0;
-  read_ptr = (write_ptr - tlength + tube_len) % tube_len;
+  // Load resonator A or B globals
+  resAB ? (
+    _tube_buf = tube_buf;
+    _tube_len = tube_len;
+    _decay = decay;
+    _vel_res_decay = vel_res_decay;
+    _release = release;
+  ) : (
+    _tube_buf = b_tube_buf;
+    _tube_len = b_tube_len;
+    _decay = b_decay;
+    _vel_res_decay = b_vel_res_decay;
+    _release = b_release;
+  );
 
-  decay_k = min(100, exp(log(decay) + vel * vel_res_decay * (log(100) - log(0.01)))); // normalize velocity contribution on a logarithmic scale
-  decay_k = rel ? decay_k * release : decay_k;
+  tlength = srate / f_0;
+  read_ptr = (write_ptr - tlength + _tube_len) % _tube_len;
+
+  decay_k = min(100, exp(log(_decay) + vel * _vel_res_decay * (log(100) - log(0.01)))); // normalize velocity contribution on a logarithmic scale
+  decay_k = rel ? decay_k * _release : decay_k;
   tube_decay = exp(-$pi / f_0 / (srate * decay_k / 125000)); // 125000 set by hear so that decay approximates in seconds
 );
 
@@ -162,12 +208,12 @@ instance(b0, b2, a0, a1, a2, x1, x2, y1, y2)
 local(output)
 (
   output = ((b0 * input + b2 * x2) - (a1 * y1 + a2 * y2)) / a0;
-  
+
   x2 = x1;
   x1 = x;
   y2 = y1;
   y1 = output;
-  
+
   output;
 );
 
@@ -192,6 +238,30 @@ local(sample, dsample)
   dsample
 );
 
+/**
+  Same as waveguide_process() but using resonator B globals
+*/
+function b_waveguide_process(x, nstring)
+globals(b_tube_buf, b_tube_decay, b_tube_len, b_tube_radius, b_model)
+instance(y, y1, write_ptr, read_ptr, tube_decay)
+local(sample, dsample)
+(
+  sample = b_tube_buf[(nstring - 1) * b_tube_len + read_ptr];
+  // Apply lowpass filter for frequency damping (tube radius)
+  y = b_tube_radius * sample + (1 - b_tube_radius) * y1;
+  y1 = y;
+
+  // Apply decay to sample
+  dsample = y * b_tube_decay;
+  b_model == 8 ? dsample *= -1; // closed tube, inverting dsample causes only odd harmonics
+  b_tube_buf[(nstring - 1) * b_tube_len + write_ptr] = x + dsample;
+
+  write_ptr = (write_ptr + 1) % b_tube_len;
+  read_ptr = (read_ptr + 1) % b_tube_len;
+
+  dsample
+);
+
 function modal_clear()
 instance(x1, x2, y1, y2)
 (
@@ -199,41 +269,43 @@ instance(x1, x2, y1, y2)
 );
 
 function waveguide_clear(nstring)
-globals(tube_buf, tube_len)
+globals(tube_buf, tube_len, b_tube_buf, b_tube_len)
 instance(y, y1, read_ptr, write_ptr)
 (
   y = y1 = read_ptr = write_ptr = 0;
   memset(tube_buf + (nstring - 1) * tube_len, 0, tube_len);
+  memset(b_tube_buf + (nstring - 1) * b_tube_len, 0, b_tube_len);
 );
 
-function string_init(freq, rel)
-globals(models, model, npartials)
-local(ratio_max)
+function string_init(freq, rel, resAB)
+globals(models, b_models, model, b_model, npartials)
+local(ratio_max, buf)
 (
   this.f0 = freq;
   this.rel = rel;
-  ratio_max = models[model][npartials-1];
+  ratio_max = resAB ? models[model][npartials-1] : b_models[b_model][npartials-1];
+  buf = resAB ? models[model] : b_models[b_model];
   model < 7 ? (
     <?
       loop(i=1;npartials,
-        printf("this.f%02d.modal_init(freq, %d, models[model][%d], ratio_max, rel, this.vel);\n", i, i, i-1);
+        printf("this.f%02d.modal_init(freq, %d, buf[%d], ratio_max, rel, this.vel, resAB);\n", i, i, i-1);
         i += 1;
       );
     ?>
   ) : (
     // use waveguides for open and closed tube
-    this.waveguide_init(freq, rel, this.vel);
+    this.waveguide_init(freq, rel, this.vel, resAB);
   );
 );
 
-function string_process(x, nstring)
-globals(srate, model)
+function string_process(x, nstring, resAB)
+globals(srate, model, b_model)
 instance(active, silence)
 local(out)
 (
   out = 0;
   active ? ( // use active and silence to turn of strings process if not in use
-    model < 7 ? (
+    (resAB && model < 7) || (!resAB && b_model < 7) ? (
       <?
         loop(i=1;npartials,
           printf("out += this.f%02d.modal_process(x);\n", i);
@@ -242,7 +314,9 @@ local(out)
       ?>
     ) : (
       // use waveguides for open and closed tube
-      out += this.waveguide_process(x, nstring);
+      out += resAB
+        ? this.waveguide_process(x, nstring)
+        : this.b_waveguide_process(x, nstring)
     );
   );
   abs(out) + abs(x) > 0.00001

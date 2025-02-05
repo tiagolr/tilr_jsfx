@@ -1,0 +1,172 @@
+desc:envlib
+
+// Copyright (C) 2023 tilr
+// Envlib 1.0 based of zenvelib.v1 by dwelx
+// provides adsr envelopes with tension/shape and scale controls
+
+/* Example
+
+    desc:envlib test
+
+    slider1:attack=1000<0,5000,1>Attack (ms)
+    slider2:decay=1000<1,15000,1>Decay (ms)
+    slider3:sustain=-12.0<-90,0,1>Sustain (dB)
+    slider4:release=500<0,5000,1>Release (ms)
+    slider5:tension=0<-1,1,0.01>Tension
+
+    import envlib.jsfx-inc
+
+    @init
+    function sine_wave(cycle) (sin(cycle * 2 * $pi););
+
+    @slider
+    tensionAtt = tensionDec = tensionRel = tension;
+    adsr.env_adsr(attack, decay, sustain, release, tensionAtt, tensionDec, tensionRel);
+
+    @block
+    while (midirecv(offset, msg1, note, vel)) (
+      event = msg1 & 0xF0;
+      event == 0x90 && vel ? ( // Note on
+        adsr.env_a(vel / 127);
+      );
+      event == 0x80 || event == 0x90 && !vel ? (
+        adsr.env_r();
+      );
+    );
+
+    @sample
+    adsr.env_process();
+    cycle = cycle + 440 / srate;
+    cycle > 1 ? cycle = cycle - 1;
+    spl0 = spl1 = sine_wave(cycle) * adsr.env;
+
+    Functions:
+
+    env_adsr(attack_ms, decay_ms, sustain_dB, release_ms, tensionAtt, tensionDec, tensionRel)l
+    Inits the envelope with attack decay release in milliseconds, systain in dB
+    and curve tension/shape in interval [-1,1] where zero means linear.
+
+    env_process()
+    Main tick function of this library, should be called every sample
+
+    env_a(scale)
+    Triggers envelope attack stage, scale is a factor of the envelope amplitude
+    Use scale = 1 for default envelope amplitude.
+
+    env_r()
+    Triggers envelope release stage
+*/
+
+@init
+
+// main equation for exponential coefficients and base values
+function calc_coefs(targetB1, targetB2, targetC, rate, tension, mult)
+instance (b,c)
+(
+	tension > 1 ? (											// slow-start shape
+		tension = pow(tension - 1, 3);
+		c = exp(log((targetC + tension) / tension) / rate);
+		b = (targetB1 - mult * tension) * (1 - c);
+	) : (																// fast-start shape (inverse exponential)
+		tension = pow(tension, 3);
+		c = exp(-log((targetC + tension) / tension) / rate);
+		b = (targetB2 + mult * tension) * (1 - c);
+	);
+);
+
+// Normalize tension between [0.001..1, 100, 2..1]
+function normalize_t(t) (
+  t += 1;
+  t == 1 ? 100
+    : t > 1 ? 3.001 - t
+    : 0.001 + t;
+);
+
+function env_adsr(_a, _d, _s, _r, tensionA, tensionD, tensionR)
+instance(a, d, s, r, ta, td, tr)
+(
+  a = max(_a, 1) * 0.001 * srate;
+  d = max(_d, 1) * 0.001 * srate;
+  s = pow(10, min(_s, 0) / 20);
+  r = max(_r, 1) * 0.001 * srate;
+
+  ta = normalize_t(tensionA);
+  td = normalize_t(-1 * tensionD);
+  tr = normalize_t(-1 * tensionR);
+);
+
+function recalc_coefs()
+instance (scale, ab, ac, db, dc, b, c, ta, td, a, d, s)
+(
+  this.calc_coefs(0, 1*scale, 1*scale, a, ta, 1);
+  ab = b; // attack coef b
+  ac = c; // attack coef c
+
+  this.calc_coefs(1, s*scale, (1-s)*scale, d, td, -1);
+  db = b; // decay coef b
+  dc = c; // decay coef c
+);
+
+function env_reset()
+  instance(state, env)
+(
+  state = env = 0;
+);
+
+function env_r()
+  instance(state, r, env, s, tr, rb, rc, b, c, scale)
+(
+  this.calc_coefs(max(env, s)*scale, 0, max(env, s)*scale, r, tr, -1);
+  rb = b;
+  rc = c;
+  state = 8;
+);
+
+function env_s()
+  instance(state, s, env, scale)
+(
+  env = scale * s;
+  state = 4;
+);
+
+function env_d()
+  instance(state, d, scale, env)
+(
+  env = scale;
+  state = 2;
+);
+
+function env_a(scale)
+  instance(state, a, env)
+(
+  this.scale = scale;
+  this.recalc_coefs();
+  state = 1;
+);
+
+function env_process()
+  instance(state, a, d, s, r, env, scale, ab, ac, db, dc, rb, rc)
+(
+  state ? (
+
+    // Attack
+    state == 1 ? (
+      env = ab + env * ac;
+      env >= scale ? this.env_d();
+    ) :
+
+    // Decay
+    state == 2 ? (
+      env = db + env * dc;
+      env <= s * scale ? this.env_s();
+    ) :
+
+    // Release
+    state == 8 ? (
+      env = rb + env * rc;
+      env <= 0 ? this.env_reset();
+    );
+  );
+
+  state;
+);
