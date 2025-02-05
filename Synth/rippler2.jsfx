@@ -74,7 +74,7 @@ slider70:_b_tube_radius=50<0,100,0.01>-B Tube radius
 slider80:couple=1<0,1,1{Parallel,Serial}>-Coupling
 slider81:ab_mix=0.5<0,1,0.01>-AB Mix
 slider82:freq_split=1<1,100,0.01:log>-Freq Split
-slider83:res_gain=0<-24,24,0.01>-Res Gain
+slider83:_res_gain=0<-24,24,0.01>-Res Gain
 
 @init
 ext_noinit = 1;
@@ -196,6 +196,7 @@ function on_slider()
   b_model == 3 ? recalc_membrane(b_membrane, b_ratio);
   b_model == 4 ? recalc_plate(b_plate, b_ratio);
 
+  res_gain = 10^(_res_gain / 20);
   tube_radius = 0.01 + _tube_radius * 0.89 / 100; // map tube radius [0,100] to [0.01, 0.9]
   b_tube_radius = 0.01 + _b_tube_radius * 0.89 / 100; // map tube radius [0,100] to [0.01, 0.9]
   lfile != slider1 || fhandle == -1 ? on_file_change();
@@ -426,6 +427,7 @@ ptr = poly.array_first();
 <?
   loop(i=1;npolyphony,
     printf("outm_%02d = 0;\n",i); // out mallet into resonance
+    printf("outa_%02d = 0;\n",i); // out resonator A into B (coupled mode)
     i+=1;
   );
 ?>
@@ -483,20 +485,32 @@ a_on ? (
   <?
     loop(i=1;npolyphony,
       // process resonance
-      printf("out_res += s%02d.string_process(splmono + outm_%02d, %d, 1);\n", i, i, i);
+      printf("resa = s%02d.string_process(splmono + outm_%02d, %d, 1);\n", i, i, i);
+      printf("out_res += resa;\n");
+      printf("outa_%02d = resa;\n", i); // output into resonator B coupled serial mode
       i +=1;
     );
   ?>
 );
 
 b_on ? (
-  <?
-    loop(i=1;npolyphony,
-      // process resonance
-      printf("b_out_res += b_s%02d.string_process(splmono + outm_%02d, %d, 0);\n", i, i, i);
-      i +=1;
-    );
-  ?>
+  a_on && couple ? (
+    <?
+      loop(i=1;npolyphony,
+        // process resonance B serial coupling
+        printf("b_out_res += b_s%02d.string_process(outa_%02d, %d, 0);\n", i, i, i);
+        i +=1;
+      );
+    ?>
+  ) : (
+    <?
+      loop(i=1;npolyphony,
+        // process resonance B uncoupled
+        printf("b_out_res += b_s%02d.string_process(splmono + outm_%02d, %d, 0);\n", i, i, i);
+        i +=1;
+      );
+    ?>
+  );
 );
 
 a_on && b_on ? (
@@ -513,7 +527,7 @@ a_on && b_on ? (
 lowcut > 20 ? out_res = lowcut_filter.rbj_df1(out_res);
 b_lowcut > 20 ? b_out_res = b_lowcut_filter.rbj_df1(b_out_res);
 
-output = mallet + out_res + b_out_res + out_noise;
+output = mallet + (out_res + b_out_res) * res_gain + out_noise;
 combbuf[combpos] = output; // comb stereo FX similar to Haas
 combpos = (combpos + 1) % combsize;
 spl0 = output + combbuf[combpos] * 0.33;
