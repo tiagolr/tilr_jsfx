@@ -285,7 +285,7 @@ local(ratio_max, buf)
   this.rel = rel;
   ratio_max = resAB ? models[model][npartials-1] : b_models[b_model][npartials-1];
   buf = resAB ? models[model] : b_models[b_model];
-  model < 7 ? (
+  (resAB && model < 7) || (!resAB && b_model < 7) ? (
     <?
       loop(i=1;npartials,
         printf("this.f%02d.modal_init(freq, %d, buf[%d], ratio_max, rel, this.vel, resAB);\n", i, i, i-1);
