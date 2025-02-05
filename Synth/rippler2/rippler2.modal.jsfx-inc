@@ -56,7 +56,7 @@ local(i, m, n, f0)
 );
 
 function init_models(freemem)
-global(bfree, string, beam, metal, membrane, plate, drumhead, marimba, b_string, b_beam, b_plate, b_metal, b_membrane, b_drumhead, b_marimba)
+global(bfree, string, beam, metal, membrane, plate, drumhead, marimba, open_tube, closed_tube, b_string, b_beam, b_plate, b_metal, b_membrane, b_drumhead, b_marimba, b_open_tube, b_closed_tube)
 local(n)
 (
   bfree = freemem; freemem += 64;
@@ -90,6 +90,12 @@ local(n)
   // using frequency analysis on a marimba sample from chromaphone
   marimba = freemem; freemem += 64;
   marimba[0] = 1.0;marimba[1] = 3.9393939393939394;marimba[2] = 10.575757575757576;marimba[3] = 19.0;marimba[4] = 26.757575757575758;marimba[5] = 36.93939393939394;marimba[6] = 49.18181818181818;marimba[7] = 63.18181818181818;marimba[8] = 78.9090909090909;marimba[9] = 96.39393939393939;marimba[10] = 115.63636363636364;marimba[11] = 136.6060606060606;marimba[12] = 159.36363636363637;marimba[13] = 183.8181818181818;marimba[14] = 210.06060606060606;marimba[15] = 238.03030303030303;marimba[16] = 267.75757575757575;marimba[17] = 299.24242424242425;marimba[18] = 442.6363636363636;marimba[19] = 568.5454545454545;marimba[20] = 614.0;marimba[21] = 100000;marimba[22] = 100000;marimba[23] = 100000;marimba[24] = 100000;marimba[25] = 100000;marimba[26] = 100000;marimba[27] = 100000;marimba[28] = 100000;marimba[29] = 100000;marimba[30] = 100000;marimba[31] = 100000;marimba[32] = 100000;marimba[33] = 100000;marimba[34] = 100000;marimba[35] = 100000;marimba[36] = 100000;marimba[37] = 100000;marimba[38] = 100000;marimba[39] = 100000;marimba[40] = 100000;marimba[41] = 100000;marimba[42] = 100000;marimba[43] = 100000;marimba[44] = 100000;marimba[45] = 100000;marimba[46] = 100000;marimba[47] = 100000;marimba[48] = 100000;marimba[49] = 100000;marimba[50] = 100000;marimba[51] = 100000;marimba[52] = 100000;marimba[53] = 100000;marimba[54] = 100000;marimba[55] = 100000;marimba[56] = 100000;marimba[57] = 100000;marimba[58] = 100000;marimba[59] = 100000;marimba[60] = 100000;marimba[61] = 100000;marimba[62] = 100000;marimba[63] = 100000;
+  // closed tube harmonics, used for freqency shifts
+  open_tube = freemem; freemem += 64;
+  loop(n=1; 64, open_tube[n-1] = n; n += 1;);
+  // open tube harmonics, used for frequency shifts
+  closed_tube = freemem; freemem += 64;
+  loop(n=1; 64, closed_tube[n-1] = 2*n - 1; n +=1);
 
   // Copy models to resonator B
   b_string = freemem; freemem += 64;
@@ -104,6 +110,10 @@ local(n)
   memcpy(b_drumhead, drumhead, 64);
   b_marimba = freemem; freemem += 64;
   memcpy(b_marimba, marimba, 64);
+  b_open_tube = freemem; freemem += 64;
+  memcpy(b_open_tube, open_tube, 64);
+  b_closed_tube = freemem; freemem += 64;
+  memcpy(b_closed_tube, closed_tube, 64);
 
   freemem
 );
@@ -138,7 +148,7 @@ local(f_k, gamma_k, tone_gain, amp_k, decay_k, alpha, f_max, damp_k, inharm_k, o
 
   inharm_k = min(1, exp(log(_inharmonic) + vel * _vel_res_inharm * -log(0.0001))) - 0.0001; // normalize velocity contribution on a logarithmic scale
   inharm_k = sqrt(1 + inharm_k * sqr(ratio-1));
-  f_k = f_0 * ratio * inharm_k;
+  f_k = max(20, f_0 * ratio * inharm_k);
 
   (f_k < 0.48 * srate) ? (
     f_max = min(f_0 * ratio_max * inharm_k, 20000);
@@ -277,24 +287,60 @@ instance(y, y1, read_ptr, write_ptr)
   memset(b_tube_buf + (nstring - 1) * b_tube_len, 0, b_tube_len);
 );
 
+function freq_shift(fa,fb)
+globals(freq_split)
+local(avg, k, delta, w, k)
+(
+  avg = (fa + fb) / 2;
+  k = freq_split + cos(avg) / 5; // add some pseudo random offset to coupling so that frequency couples are not in perfect sync
+  w = avg + sqrt(sqr((fa - fb) / 2) + sqr(k / 2.5));
+  abs(max(fa, fb) - w)
+);
+
 function string_init(freq, rel, resAB)
-globals(models, b_models, model, b_model, npartials)
-local(ratio_max, buf)
+globals(open_tube,models, b_models, model, b_model, npartials, couple, a_on, b_on, f_shifts, aaa, aaab, aaaa, aaaaa)
+local(ratio_max, buf, i, j, a_mdl, b_mdl, fa, fb, shift)
 (
   this.f0 = freq;
   this.rel = rel;
   ratio_max = resAB ? models[model][npartials-1] : b_models[b_model][npartials-1];
-  buf = resAB ? models[model] : b_models[b_model];
+  resAB 
+    ? memcpy(f_shifts, models[model], 64)
+    : memcpy(f_shifts, b_models[b_model], 64);
+  
+  couple && a_on && b_on ? (
+    // calculate frequency splitting for serial coupling
+    a_mdl = resAB ? models[model] : b_models[b_model];
+    b_mdl = resAB ? b_models[b_model] : models[model];
+    loop(i=0; 64,
+      fa = a_mdl[i];
+      loop(j=0; 64,
+        fb = b_mdl[j];
+        abs(fa - fb) <= 4 ? (
+          shift = freq_shift(fa*freq, fb*freq) / freq;
+          !resAB && fa == fb ? shift *= -1;
+          !resAB && i == 0 && j == 0 ? aaaa = shift;
+          !resAB && i == 0 && j == 2 ? aaab = shift;
+          f_shifts[i] += fa > fb ? shift : -shift;
+        );
+        j += 1;
+      );
+      i += 1;
+    );
+    1;
+  );
+  
   (resAB && model < 7) || (!resAB && b_model < 7) ? (
     <?
       loop(i=1;npartials,
-        printf("this.f%02d.modal_init(freq, %d, buf[%d], ratio_max, rel, this.vel, resAB);\n", i, i, i-1);
+        printf("this.f%02d.modal_init(freq, %d, f_shifts[%d], ratio_max, rel, this.vel, resAB);\n", i, i, i-1);
         i += 1;
       );
     ?>
   ) : (
     // use waveguides for open and closed tube
-    this.waveguide_init(freq, rel, this.vel, resAB);
+    !resAB ? aaa = f_shifts[0];
+    this.waveguide_init(max(20, f_shifts[0] * freq), rel, this.vel, resAB);
   );
 );
 

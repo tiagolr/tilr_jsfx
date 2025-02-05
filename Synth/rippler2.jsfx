@@ -100,8 +100,8 @@ models[3] = membrane;
 models[4] = plate;
 models[5] = drumhead;
 models[6] = marimba;
-models[7] = 0; // open tube uses no modals
-models[8] = 0; // closed tube uses no modals
+models[7] = open_tube; // open tube uses no modals, models used for frequency shifts
+models[8] = closed_tube; // closed tube uses no modals, models used for frequency shifts
 
 b_models = freemem; freemem += 9;
 b_models[0] = b_string;
@@ -111,8 +111,8 @@ b_models[3] = b_membrane;
 b_models[4] = b_plate;
 b_models[5] = b_drumhead;
 b_models[6] = b_marimba;
-b_models[7] = 0; // open tube uses no modals
-b_models[8] = 0; // closed tube uses no modals
+b_models[7] = b_open_tube; // open tube uses no modals
+b_models[8] = b_closed_tube; // closed tube uses no modals
 
 freemem = poly.array_init(freemem, 128, 7); // [note, velocity, freq, sample_pos, playback_speed, nstring, release]
 freemem = midi.array_init(freemem, 256, 4); // [offset, status, note, vel]
@@ -127,6 +127,7 @@ freemem += tube_len * npolyphony; // allocate npolyphony buffers for tube wavegu
 b_tube_buf = freemem;
 b_tube_len = 20000;
 freemem += b_tube_len * npolyphony;
+f_shifts = freemem; freemem += 64; // frequency shifts buffer used for serial coupling freq split calculations
 
 function db2gain (db) local (val) (
   val = 10^(db / 20);
