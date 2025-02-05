@@ -590,7 +590,7 @@ draw_knob(220, 110, 4, "Pitch", 0, -24, 24, 0, 1, sprintf(#, "%i", slider(4)), 0
 set_color(0x666666);
 gfx_line(400, 20, 400, 230);
 gfx_x = 420; gfx_y = 20;
-gfx_drawstr("RES");
+gfx_drawstr("RES A");
 
 model_name = model == 0 ? "String"
   : model == 1 ? "Beam"
@@ -603,8 +603,8 @@ model_name = model == 0 ? "String"
   : "Closed Tube";
 
 gfx_a = a_on ? 1 : 0.5;
-draw_button(480,20,100,model_name,1);
-mouse.left_click && mouse_in_rect(480, 20 - 2, 100, 10 + 2) ? (
+draw_button(490,20,90,model_name,1);
+mouse.left_click && mouse_in_rect(490, 20 - 2, 90, 10 + 2) ? (
   gfx_x = 500; gfx_y = 30;
   choice = gfx_showmenu("String|Beam|Squared|Membrane|Plate|Drumhead|Marimba|Open Tube|Closed Tube");
   choice > 0 ? slider(10) = choice - 1;
