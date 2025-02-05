@@ -26,7 +26,7 @@ slider5:click_ktrack=0<0,1,1{No, Yes}>-KeyTrack
 slider6:click_filter_mode=2<0,2,1{LP,BP,HP}>-Mallet Filter Mode
 slider7:click_filter_freq=20<20,20000,1:log>-Mallet Filter Freq
 
-slider9:a_on=1<0,1,1{False,True}>A ON
+slider9:a_on=1<0,1,1{False,True}>-A ON
 slider10:model=0<0,6,1{String,Beam,Squared,Membrane,Plate,Drumhead,Marimba}>-A Model
 slider11:decay=1<0.01,100,.01:log>-A Decay
 slider12:freq_damp=0<-1,1,.001>-A Material
@@ -59,7 +59,7 @@ slider49:b_vel_res_decay=0<0,1,0.01>-Vel B Decay
 slider50:b_vel_res_hit=0<0,1,0.01>-Vel B Hit
 slider51:b_vel_bres_inharm=0<0,1,0.01>-Vel B Inharm
 
-slider60:b_on=0<0,1,1{False,True}>B ON
+slider60:b_on=0<0,1,1{False,True}>-B ON
 slider61:b_model=0<0,6,1{String,Beam,Squared,Membrane,Plate,Drumhead,Marimba}>-B Model
 slider62:b_decay=1<0.01,100,.01:log>-B Decay
 slider63:b_freq_damp=0<-1,1,.001>-B Material
@@ -588,6 +588,8 @@ draw_knob(280, 40, 3, "Res", .8, 0, 1, 0, 0, sprintf(#, "%i%%", slider(3) * 100)
 draw_knob(340, 40, 7, "Filter", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(7)), 0);
 draw_knob(220, 110, 4, "Pitch", 0, -24, 24, 0, 1, sprintf(#, "%i", slider(4)), 0);
 
+// RESONATOR A
+
 set_color(0x666666);
 gfx_line(400, 20, 400, 230);
 gfx_x = 420; gfx_y = 20;
@@ -638,6 +640,61 @@ model < 7 ? (
 
 draw_knob(540, 180, 18, "LowCut", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(18)), 0);
 gfx_a = 1;
+
+// RESONATOR B
+
+set_color(0x666666);
+gfx_line(400+200, 20, 400+200, 230);
+gfx_x = 420+200; gfx_y = 20;
+gfx_drawstr("RES B");
+gfx_x = 468+200; gfx_y = 17;
+gfx_blit(b_on ? 1 : 2,1,0); // draw on/off
+
+mouse.left_click && mouse_in_rect(420+200, 20-2, 60, 10+2) ? (
+  b_on = !b_on;
+  on_slider();
+);
+
+model_name = b_model == 0 ? "String"
+  : b_model == 1 ? "Beam"
+  : b_model == 2 ? "Squared"
+  : b_model == 3 ? "Membrane"
+  : b_model == 4 ? "Plate"
+  : b_model == 5 ? "Drumhead"
+  : b_model == 6 ? "Marimba"
+  : b_model == 7 ? "Open Tube"
+  : "Closed Tube";
+
+gfx_a = b_on ? 1 : 0.5;
+draw_button(490+200,20,90,model_name,1);
+mouse.left_click && mouse_in_rect(490+200, 20 - 2, 90, 10 + 2) ? (
+  gfx_x = 500+200; gfx_y = 30;
+  choice = gfx_showmenu("String|Beam|Squared|Membrane|Plate|Drumhead|Marimba|Open Tube|Closed Tube");
+  choice > 0 ? slider(61) = choice - 1;
+  on_slider();
+);
+
+draw_knob(420+200, 40, 62, "Decay", 1, 0.01, 100, 1, 0, sprintf(#, "%.2f s", slider(62)), 49);
+draw_knob(540+200, 40, 66, "Relse", 1, 0, 1, 0, 0, sprintf(#, "%i%%", slider(66) * 100), 0);
+
+b_model >= 7 ? (
+  draw_knob(480+200, 40, 70, "Radius", 50, 0, 100, 0, 0, sprintf(#, "%i%%", slider(70)), 0);
+);
+
+b_model < 7 ? (
+  draw_knob(480+200, 40, 63, "Matrl", 0, -1, 1, 0, 1, sprintf(#, "%i%%", slider(64) * 100), 0);
+  draw_knob(420+200, 110, 64, "Tone", 0, -1, 1, 0, 1, sprintf(#, "%i%%", slider(64) * 100), 0);
+  draw_knob(480+200, 110, 65, "Hit", 26, 2, 50, 0, 0, sprintf(#, "%i%%", slider(65)), 50);
+  draw_knob(540+200, 110, 67, "Inharm", 0.0001, 0.0001, 1, 1,0, sprintf(#, "%.2f", slider(67) * 100), 51);
+  b_model == 1 || b_model == 3 || b_model == 4 ? (
+    draw_knob(420+200, 180, 68, "Ratio", 1, 0.1, 10, 1, 0, sprintf(#, "%.1f", slider(68)), 0);
+  );
+);
+
+draw_knob(540+200, 180, 69, "LowCut", 20, 20, 20000, 1, 0, sprintf(#, "%i Hz", slider(69)), 0);
+gfx_a = 1;
+
+// COUPLING
 
 function on_knob_move (nslider, slider_min, slider_max, slider_is_log, factor) (
   factor *= mouse.control ? 0.05 : 1;
