@@ -213,7 +213,7 @@ A newer physical modeled synth.
 - Frequency split control for serial coupling.
 - Redesigned modals using bandpass filters with better stability and response.
 - Mallet generator instead of sample based mallet.
-- Built in limiter allows to experiment without blowing up the speakers.
+- Built in limiter allows to experiment without loudness issues.
 
 ## Rippler
 
