@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="b0e271eb529d32be8f3085cd450cfef87860904a" name="Tilr">
+<index version="1" commit="67079441f5b1906f9d99906d996d424892b49835" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -2337,6 +2337,19 @@ Added presets]]></changelog>
         <source file="rippler2/rippler2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/rippler2.gfxlib.jsfx-inc</source>
         <source file="rippler2/rippler2.modal.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/rippler2.modal.jsfx-inc</source>
         <source file="rippler2/rippler2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/rippler2.rbj_filter.jsfx-inc</source>
+      </version>
+      <version name="2.0.1" author="tilr" time="2025-02-06T15:36:40Z">
+        <changelog><![CDATA[First]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/67079441f5b1906f9d99906d996d424892b49835/Synth/rippler2.jsfx</source>
+        <source file="rippler2.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/67079441f5b1906f9d99906d996d424892b49835/Synth/rippler2.jsfx.RPL</source>
+        <source file="rippler2/logo.png">https://github.com/tiagolr/tilr_jsfx/raw/67079441f5b1906f9d99906d996d424892b49835/Synth/rippler2/logo.png</source>
+        <source file="rippler2/on.png">https://github.com/tiagolr/tilr_jsfx/raw/67079441f5b1906f9d99906d996d424892b49835/Synth/rippler2/on.png</source>
+        <source file="rippler2/off.png">https://github.com/tiagolr/tilr_jsfx/raw/67079441f5b1906f9d99906d996d424892b49835/Synth/rippler2/off.png</source>
+        <source file="rippler2/rippler2.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/67079441f5b1906f9d99906d996d424892b49835/Synth/rippler2/rippler2.array.jsfx-inc</source>
+        <source file="rippler2/rippler2.envlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/67079441f5b1906f9d99906d996d424892b49835/Synth/rippler2/rippler2.envlib.jsfx-inc</source>
+        <source file="rippler2/rippler2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/67079441f5b1906f9d99906d996d424892b49835/Synth/rippler2/rippler2.gfxlib.jsfx-inc</source>
+        <source file="rippler2/rippler2.modal.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/67079441f5b1906f9d99906d996d424892b49835/Synth/rippler2/rippler2.modal.jsfx-inc</source>
+        <source file="rippler2/rippler2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/67079441f5b1906f9d99906d996d424892b49835/Synth/rippler2/rippler2.rbj_filter.jsfx-inc</source>
       </version>
     </reapack>
   </category>
