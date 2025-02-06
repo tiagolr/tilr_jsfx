@@ -215,16 +215,6 @@ A newer physical modeled synth.
 - Mallet generator instead of sample based mallet.
 - Built in limiter allows to experiment without blowing up the speakers.
 
-#### Features:
-
-* Dual resonator with parallel and serial coupling.
-* 9 Models of acoustic resonators: String, Beam, Squared, Membrane, Drumhead, Plate and Marimba, Closed and Open Tubes.
-* Inharmocity, Tone, Ratio and Material sliders to shape the timbre.
-* Sample based mallet with 50 samples to chose from.
-* Noise generator with filter and ADSR.
-* Up to 64 partials (configurable).
-* Up to 16 polyphony (configurable).
-
 ## Rippler
 
 A physical modeled synth.
