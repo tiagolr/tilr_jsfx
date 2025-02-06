@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="75b5ffb51b7485e93305ee323ca51491fc830349" name="Tilr">
+<index version="1" commit="617d4c6392c55b67d0bbda49c64d4ec9562b9a55" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -2304,6 +2304,39 @@ Added presets]]></changelog>
         <source type="data" file="tilr8_Rippler/mallet48.wav">https://github.com/tiagolr/tilr_jsfx/raw/75b5ffb51b7485e93305ee323ca51491fc830349/Synth/tilr8_Rippler/mallet48.wav</source>
         <source type="data" file="tilr8_Rippler/mallet49.wav">https://github.com/tiagolr/tilr_jsfx/raw/75b5ffb51b7485e93305ee323ca51491fc830349/Synth/tilr8_Rippler/mallet49.wav</source>
         <source type="data" file="tilr8_Rippler/mallet50.wav">https://github.com/tiagolr/tilr_jsfx/raw/75b5ffb51b7485e93305ee323ca51491fc830349/Synth/tilr8_Rippler/mallet50.wav</source>
+      </version>
+    </reapack>
+    <reapack name="rippler2.jsfx" type="effect" desc="Rippler2">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 Rippler 2\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 A physical modeled synth\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 {\b Features:}\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Dual resonator bank with parallel and serial coupling.\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab 9 Models of acoustic resonators: String, Beam, Squared, Membrane, Drumhead, Plate, Marimba, Closed and Open Tube.\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Inharmocity, Tone, Ratio and Material sliders to shape the timbre.\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Mallet impulse generator based on stiffness.\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Noise generator with filter and ADSR.\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Up to 64 partials (configurable).\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Up to 16 polyphony (configurable).\sa180\par}
+}
+]]></description>
+        <link rel="screenshot">https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/rippler2.png</link>
+      </metadata>
+      <version name="2.0.0" author="tilr" time="2025-02-06T00:15:52Z">
+        <changelog><![CDATA[First]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2.jsfx</source>
+        <source file="rippler2/logo.png">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/logo.png</source>
+        <source file="rippler2/on.png">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/on.png</source>
+        <source file="rippler2/off.png">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/off.png</source>
+        <source file="rippler2/rippler2.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/rippler2.array.jsfx-inc</source>
+        <source file="rippler2/rippler2.envlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/rippler2.envlib.jsfx-inc</source>
+        <source file="rippler2/rippler2.gfxlib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/rippler2.gfxlib.jsfx-inc</source>
+        <source file="rippler2/rippler2.modal.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/rippler2.modal.jsfx-inc</source>
+        <source file="rippler2/rippler2.rbj_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/617d4c6392c55b67d0bbda49c64d4ec9562b9a55/Synth/rippler2/rippler2.rbj_filter.jsfx-inc</source>
       </version>
     </reapack>
   </category>
