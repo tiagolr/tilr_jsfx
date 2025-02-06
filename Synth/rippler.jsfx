@@ -1,8 +1,8 @@
 desc:Rippler
 author: tilr
-version: 1.1.0
+version: 1.1.1
 changelog:
-  Add closed and open tube models
+  Doc updates, shift also does velocity mapping
 provides:
   rippler.jsfx.RPL
   rippler/logo.png
@@ -68,7 +68,7 @@ about:
   A physical modeled synth
 
   **Features:**
-  * 7 Models of acoustic resonators: String, Beam, Metal, Membrane, Drumhead, Plate and Marimba.
+  * 9 Models of acoustic resonators: String, Beam, Squared, Membrane, Drumhead, Plate, Marimba, Open and Closed Tubes.
   * Inharmocity, Tone, Ratio and Material sliders to shape the timbre.
   * Sample based mallet with 50 samples to chose from.
   * Noise generator with filter and ADSR.
@@ -678,12 +678,12 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "Rippler 1.1.0\nTilr 2025\n\n");
+  strcpy(txt, "Rippler 1.1.1\nTilr 2025\n\n");
   strcat(txt, "- Change polyphony and partials in window menu.\n");
   strcat(txt, "- Ctrl for fine slider adjustments.\n");
-  strcat(txt, "- Alt to adjust velocity mapping.\n");
+  strcat(txt, "- Shift to adjust velocity mapping.\n");
   strcat(txt, "- Double click to reset sliders.\n");
-  strcat(txt, "- Rippler supports audio in, press notes to send\nthe signal through to the ressonators.\n");
+  strcat(txt, "- Rippler supports audio in, press notes to send\nthe signal through to the resonators.\n");
   gfx_x = gfx_w/2 - xsize/2 + pad;
   gfx_y = gfx_h/2 - ysize/2 + pad;
   gfx_set(1,1,1);
