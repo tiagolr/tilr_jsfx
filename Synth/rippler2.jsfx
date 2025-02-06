@@ -19,7 +19,7 @@ about:
   A physical modeled synth
 
   **Features:**
-  * Dual resonator bank with parallel and serial coupling.
+  * Dual resonator with parallel and serial coupling.
   * 9 Models of acoustic resonators: String, Beam, Squared, Membrane, Drumhead, Plate, Marimba, Closed and Open Tube.
   * Inharmocity, Tone, Ratio and Material sliders to shape the timbre.
   * Mallet impulse generator based on stiffness.

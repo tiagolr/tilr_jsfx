@@ -199,6 +199,32 @@ Supports configs like min and max note, min and max CC values, off notes value a
 
 # Synths
 
+## Rippler 2
+
+A newer physical modeled synth.
+
+![](doc/rippler2.png)
+
+#### Whats new?
+
+- Dual resonators A and B.
+- Serial and parallel resonator coupling.
+- A:B ratio control for parallel coupling.
+- Frequency split control for serial coupling.
+- Redesigned modals using bandpass filters with better stability and response.
+- Mallet generator instead of sample based mallet.
+- Built in limiter allows to experiment without blowing up the speakers.
+
+#### Features:
+
+* Dual resonator with parallel and serial coupling.
+* 9 Models of acoustic resonators: String, Beam, Squared, Membrane, Drumhead, Plate and Marimba, Closed and Open Tubes.
+* Inharmocity, Tone, Ratio and Material sliders to shape the timbre.
+* Sample based mallet with 50 samples to chose from.
+* Noise generator with filter and ADSR.
+* Up to 64 partials (configurable).
+* Up to 16 polyphony (configurable).
+
 ## Rippler
 
 A physical modeled synth.
@@ -207,7 +233,7 @@ A physical modeled synth.
 
 #### Features:
 
-* 7 Models of acoustic resonators: String, Beam, Squared, Membrane, Drumhead, Plate and Marimba.
+* 9 Models of acoustic resonators: String, Beam, Squared, Membrane, Drumhead, Plate and Marimba, Closed and Open Tubes.
 * Inharmocity, Tone, Ratio and Material sliders to shape the timbre.
 * Sample based mallet with 50 samples to chose from.
 * Noise generator with filter and ADSR.
