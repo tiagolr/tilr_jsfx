@@ -7,11 +7,11 @@ provides:
   rippler2/logo.png
   rippler2/on.png
   rippler2/off.png
-  rippler2/rippler.array.jsfx-inc
-  rippler2/rippler.envlib.jsfx-inc
-  rippler2/rippler.gfxlib.jsfx-inc
-  rippler2/rippler.modal.jsfx-inc
-  rippler2/rippler.rbj_filter.jsfx-inc
+  rippler2/rippler2.array.jsfx-inc
+  rippler2/rippler2.envlib.jsfx-inc
+  rippler2/rippler2.gfxlib.jsfx-inc
+  rippler2/rippler2.modal.jsfx-inc
+  rippler2/rippler2.rbj_filter.jsfx-inc
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/rippler2.png
 about:
   # Rippler 2
