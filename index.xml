@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="617d4c6392c55b67d0bbda49c64d4ec9562b9a55" name="Tilr">
+<index version="1" commit="b0e271eb529d32be8f3085cd450cfef87860904a" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -2315,7 +2315,7 @@ Added presets]]></changelog>
 {\pard \ql \f0 \sa180 \li0 \fi0 \outlinelevel0 \b \fs36 Rippler 2\par}
 {\pard \ql \f0 \sa180 \li0 \fi0 A physical modeled synth\par}
 {\pard \ql \f0 \sa180 \li0 \fi0 {\b Features:}\par}
-{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Dual resonator bank with parallel and serial coupling.\par}
+{\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Dual resonator with parallel and serial coupling.\par}
 {\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab 9 Models of acoustic resonators: String, Beam, Squared, Membrane, Drumhead, Plate, Marimba, Closed and Open Tube.\par}
 {\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Inharmocity, Tone, Ratio and Material sliders to shape the timbre.\par}
 {\pard \ql \f0 \sa0 \li360 \fi-360 \bullet \tx360\tab Mallet impulse generator based on stiffness.\par}

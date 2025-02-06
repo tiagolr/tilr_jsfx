@@ -4,7 +4,7 @@ version: 2.0.1
 changelog:
   First
 provides:
-  rippler.jsfx.RPL
+  rippler2.jsfx.RPL
   rippler2/logo.png
   rippler2/on.png
   rippler2/off.png
