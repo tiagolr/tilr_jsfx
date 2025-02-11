@@ -170,7 +170,7 @@ local(f_k, gamma_k, tone_gain, amp_k, decay_k, alpha, f_max, damp_k, inharm_k, o
 
     amp_k = abs(sin($pi * k * min(.5, _hit_position / 100 + _vel_res_hit * vel / 2)));
     amp_k *= f_k; // push higher frequencies
-    amp_k *= 0.005;
+    amp_k *= 0.01;
 
     // Bandpass filter coefficients (normalized)
     b0 = alpha * tone_gain * amp_k;
@@ -217,7 +217,7 @@ function modal_process(x)
 instance(b0, b2, a0, a1, a2, x1, x2, y1, y2)
 local(output)
 (
-  output = ((b0 * input + b2 * x2) - (a1 * y1 + a2 * y2)) / a0;
+  output = ((b0 * x + b2 * x2) - (a1 * y1 + a2 * y2)) / a0;
 
   x2 = x1;
   x1 = x;
