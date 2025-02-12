@@ -169,8 +169,7 @@ local(f_k, gamma_k, tone_gain, amp_k, decay_k, alpha, f_max, damp_k, inharm_k, o
       : pow(f_k / f_max, _tone * 12 / 6);
 
     amp_k = abs(sin($pi * k * min(.5, _hit_position / 100 + _vel_res_hit * vel / 2)));
-    amp_k *= f_k; // push higher frequencies
-    amp_k *= 0.01;
+    amp_k *= 25;
 
     // Bandpass filter coefficients (normalized)
     b0 = alpha * tone_gain * amp_k;
