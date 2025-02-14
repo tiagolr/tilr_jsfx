@@ -1,6 +1,6 @@
 desc: TIME-1
 author: tilr
-version: 1.1.4
+version: 1.1.5
 provides:
   time1.jsfx.RPL
   time1/time.array.jsfx-inc
@@ -8,7 +8,7 @@ provides:
   time1/time.delay.jsfx-inc
   time1/time.mouselib.jsfx-inc
 changelog:
-  Fix sliders range
+  Fix delay continuing forward
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/time1.png
 about:
   # TIME-1
@@ -893,7 +893,7 @@ local(xsize, ysize, txt, pad)
   gfx_set(0,0,0,0.8);
   gfx_rect(gfx_w/2 - xsize/2, gfx_h/2 - ysize/2, xsize, ysize);
   txt = #;
-  strcpy(txt, "TIME-1 1.1.4\nTilr 2024\n\n");
+  strcpy(txt, "TIME-1 1.1.5\nTilr 2024\n\n");
   strcat(txt, "TIME-1 is a playback/time and pitch editor.\n");
   strcat(txt, "X axis is time, Y axis controls the delay position.\n\n");
   strcat(txt, "Toggle patterns 1-12 by sending midi notes on chn 11 (default)\n");

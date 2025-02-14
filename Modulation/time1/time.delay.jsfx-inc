@@ -193,7 +193,7 @@ function delay_write(signal)
     this.buf[this.size+1] = this.buf[1];
     this.buf[-1] = this.buf[this.size-1];
     this.curpos += 1;
-    this.curpos == this.size ? this.curpos = 0;
+    this.curpos >= this.size ? this.curpos = 0;
 );
 
 function delay_read(delay)
