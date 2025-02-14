@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="beaf6136e74ea799789fdad4abcc56e624d7c2a7" name="Tilr">
+<index version="1" commit="3ad1f16c0c974483e1a7e29d507d6a8c43accd0f" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -791,6 +791,15 @@ Add retrigger slider]]></changelog>
         <source file="time1/time.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8379da177843b130bcd828cb9a0bb87ce8a508e0/Modulation/time1/time.curvelib.jsfx-inc</source>
         <source file="time1/time.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8379da177843b130bcd828cb9a0bb87ce8a508e0/Modulation/time1/time.delay.jsfx-inc</source>
         <source file="time1/time.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/8379da177843b130bcd828cb9a0bb87ce8a508e0/Modulation/time1/time.mouselib.jsfx-inc</source>
+      </version>
+      <version name="1.1.5" author="tilr" time="2025-02-14T01:01:05Z">
+        <changelog><![CDATA[Fix delay continuing forward]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/3ad1f16c0c974483e1a7e29d507d6a8c43accd0f/Modulation/time1.jsfx</source>
+        <source file="time1.jsfx.RPL">https://github.com/tiagolr/tilr_jsfx/raw/3ad1f16c0c974483e1a7e29d507d6a8c43accd0f/Modulation/time1.jsfx.RPL</source>
+        <source file="time1/time.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/3ad1f16c0c974483e1a7e29d507d6a8c43accd0f/Modulation/time1/time.array.jsfx-inc</source>
+        <source file="time1/time.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/3ad1f16c0c974483e1a7e29d507d6a8c43accd0f/Modulation/time1/time.curvelib.jsfx-inc</source>
+        <source file="time1/time.delay.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/3ad1f16c0c974483e1a7e29d507d6a8c43accd0f/Modulation/time1/time.delay.jsfx-inc</source>
+        <source file="time1/time.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/3ad1f16c0c974483e1a7e29d507d6a8c43accd0f/Modulation/time1/time.mouselib.jsfx-inc</source>
       </version>
     </reapack>
   </category>
