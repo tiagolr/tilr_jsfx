@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="3ad1f16c0c974483e1a7e29d507d6a8c43accd0f" name="Tilr">
+<index version="1" commit="4206a7233593487fe4db6d6a561d1c51e9afd148" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -318,6 +318,13 @@ Add midi offset support]]></changelog>
         <source file="adsr1/adsr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dfcf8b3cab048e43ca7d527d700909806c38ae2b/Modulation/adsr1/adsr.array.jsfx-inc</source>
         <source file="adsr1/adsr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dfcf8b3cab048e43ca7d527d700909806c38ae2b/Modulation/adsr1/adsr.curvelib.jsfx-inc</source>
         <source file="adsr1/adsr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/dfcf8b3cab048e43ca7d527d700909806c38ae2b/Modulation/adsr1/adsr.mouselib.jsfx-inc</source>
+      </version>
+      <version name="1.3.2" author="tilr" time="2025-02-15T13:26:38Z">
+        <changelog><![CDATA[Add option to retrigger while playing notes]]></changelog>
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/4206a7233593487fe4db6d6a561d1c51e9afd148/Modulation/adsr1.jsfx</source>
+        <source file="adsr1/adsr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/4206a7233593487fe4db6d6a561d1c51e9afd148/Modulation/adsr1/adsr.array.jsfx-inc</source>
+        <source file="adsr1/adsr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/4206a7233593487fe4db6d6a561d1c51e9afd148/Modulation/adsr1/adsr.curvelib.jsfx-inc</source>
+        <source file="adsr1/adsr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/4206a7233593487fe4db6d6a561d1c51e9afd148/Modulation/adsr1/adsr.mouselib.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="distr.jsfx" type="effect" desc="DIST-R">
