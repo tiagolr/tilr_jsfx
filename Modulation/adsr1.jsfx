@@ -1,12 +1,12 @@
 desc: ADSR-1
 author: tilr
-version: 1.3.1
+version: 1.3.2
 provides:
   adsr1/adsr.array.jsfx-inc
   adsr1/adsr.curvelib.jsfx-inc
   adsr1/adsr.mouselib.jsfx-inc
 changelog:
-  Add modulate volume option
+  Add option to retrigger while playing notes
 screenshot: https://raw.githubusercontent.com/tiagolr/tilr_jsfx/master/doc/adsr1.png
 about:
   # ADSR-1
@@ -49,6 +49,7 @@ file_mem(0, curve.segments.buf, curve.segments.num * curve.segments.size);
 file_var(0, sus_loop);
 file_var(0, modulate_volume);
 file_var(0, show_tension_sliders);
+file_var(0, retrigger_while_playing);
 
 @init
 
@@ -60,6 +61,7 @@ midi_trigger = 0;
 modulate_volume = 0;
 sus_loop = 0;
 show_tension_sliders = 0;
+retrigger_while_playing = 0;
 
 latt_t = att_t;
 ldec_t = dec_t;
@@ -305,7 +307,7 @@ local (ptr, pp, event, note, vel)
       note = ptr[2];
       vel = ptr[3];
       event == 0x90 ? ( // note on
-        notes.size == 0 ? on_notes_pressed();
+        notes.size == 0 || retrigger_while_playing ? on_notes_pressed();
         notes.array_find(note) == -1 ? (
           pp = notes.array_add();
           pp[0] = note;
@@ -638,6 +640,7 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   menu = #;
   strcpy(menu, modulate_volume ? "!Modulate volume" : "Modulate volume");
   strcat(menu, show_tension_sliders ? "|!Show tension sliders" : "|Show tension sliders");
+  strcat(menu, retrigger_while_playing ? "|!Retrigger while playing" : "|Retrigger while playing");
   choice = gfx_showmenu(menu);
   choice == 1 ? (
     modulate_volume = !modulate_volume;
@@ -645,6 +648,9 @@ mouse.left_click && mouse_in_rect(drawx, drawy-2, 30, 10+2) ? (
   choice == 2 ? (
     show_tension_sliders = !show_tension_sliders;
     on_slider();
+  );
+  choice == 3 ? (
+    retrigger_while_playing = !retrigger_while_playing;
   );
 
 );
