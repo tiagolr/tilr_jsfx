@@ -1,7 +1,21 @@
-desc: Vel to CC
+desc: Vel to Slider
 author: tilr
-version: 1.0.2
-about: Maps midi notes velocity to CC automation
+version: 2.0.0
+changelog:
+  * Added
+    - slider for Inverted Value
+  * Changed
+    - Changed name from "Vel to CC" (effect never output MIDI CC)
+about:
+  # Vel to Slider
+
+  Maps velocity of incoming MIDI note-on messages to automated slider positions,
+  which can be used by REAPER to link to other effects' parameter automation.
+
+  Key features:
+  - Provides automated "Value" and "Inverted Value" sliders
+  - _(optional)_ Filter by MIDI note/range
+  - _(optional)_ Clamp slider value range
 
 in_pin:none
 out_pin:none
@@ -12,6 +26,7 @@ slider3:0<0, 127, 1>Param min
 slider4:127<0, 127, 1>Param max
 slider5:0<0, 1, 1{No,Yes}>Ignore zero vel
 slider7:0<0, 127, 1>Value
+slider8:0<0, 127, 1>Inverted Value
 
 ////////////////////////////////////////////////////////////////////////////////
 @init
@@ -47,8 +62,9 @@ while
         note <= noteMax && note >= noteMin ? (
           // linear mapping
           scale = (paramMax-paramMin) / 127;
-          value = vel * scale + paramMin;
-          slider7 = value | 0
+          value = ((vel * scale) + paramMin) | 0;
+          slider7 = value;
+          slider8 = (paramMin + (paramMax - value)) | 0;
         );
     );
 
