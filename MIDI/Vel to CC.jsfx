@@ -1,4 +1,4 @@
-desc: Vel to Slider
+desc: Vel to CC
 author: tilr
 version: 2.0.0
 changelog:
@@ -10,7 +10,9 @@ about:
   # Vel to Slider
 
   Maps velocity of incoming MIDI note-on messages to automated slider positions,
-  which can be used by REAPER to link to other effects' parameter automation.
+  which can be used by REAPER to link to other effects parameter automation.
+
+  Note it does not ouput CC like the name says, instead other mods should be linked to value slider.
 
   Key features:
   - Provides automated "Value" and "Inverted Value" sliders
