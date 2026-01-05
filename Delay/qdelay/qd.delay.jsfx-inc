@@ -195,6 +195,17 @@ function delay_write(signal)
     this.curpos == this.size ? this.curpos = 0;
 );
 
+function delay_overdub_at(signal, offset)
+(
+    p = this.curpos + offset;
+    p < 0 ? p += this.size;
+    p > this.size ? p -= this.size;
+    this.buf[p] += signal;
+    this.buf[this.size] = this.buf[0];
+    this.buf[this.size+1] = this.buf[1];
+    this.buf[-1] = this.buf[this.size-1];
+);
+
 function delay_read(delay)
 (
     delay >= 0 && delay < this.size ? (
