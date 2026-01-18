@@ -100,6 +100,12 @@ Envelope based waveshaper distortion
 * Paint modes and point modes
 * Pre and post waveform display
 
+## Albeton - Autopan
+
+JS Clone of Ableton auto-pan plug-in.
+
+![](doc/autopan.png)
+
 ## TinyRec
 
 Audio recording utility similar to Image-Line Edison, stores up to 4 minutes at 44100 sample rate.
@@ -191,11 +197,6 @@ Simple filter with 9 modes and smooth interpolation from ReEQ.
 
 ![](doc/qfilter.png)
 
-## Albeton - Autopan
-
-JS Clone of Ableton auto-pan plug-in.
-
-![](doc/autopan.png)
 
 ## Notes to CC
 
