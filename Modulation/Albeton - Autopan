@@ -5,13 +5,13 @@ version:1.0.0
 slider1:_amount=0.5<0.0,1,0.01>Amount
 slider2:_rate=1<0.01,5000,0.01:log>Rate (Hz)
 slider3:_rate_sync=0<0,24,1{Off,1/64,1/32,1/16,1/8,1/4,1/2,1/1,2/1,3/1,4/1,1/64T,1/32T,1/16T,1/8T,1/4T,1/2T,1/1T,1/64D,1/32D,1/16D,1/8D,1/4D,1/2D,1/1D}>Rate Sync
-slider4:_phase=180<0,360,1>Phase
-slider5:_offset=90<0,360,1>Offset
+slider4:_offset=90<0,360,1>Offset
+slider5:_phase=180<0,360,1>Phase
 slider6:_spin=0<-1,1,0.01>Spin
 slider7:_shape=0<1,50,0.1:log>Shape
 slider8:_wave=0<0,3,1{Sine,Tri,Saw,Rand}>Waveform
-slider9:_use_spin=0<0,1,1{False,True}>Use Spin
-slider10:_invert=0<0,1,1{False,True}>Invert
+slider9:_use_spin=0<0,1,1{False,True}>-Use Spin
+slider10:_invert=0<0,1,1{False,True}>-Invert
 
 @init
 israte = 1/srate;
@@ -57,7 +57,6 @@ local(val)
 );
 function normalize(val) ( val * 0.5 + 0.5 );
 
-@slider
 function get_sync_qn()
 global(_rate_sync)
 local(t)
@@ -93,13 +92,22 @@ local(t)
   t;
 );
 
-sync_qn = get_sync_qn();
-sync_qnl = sync_qn;
-sync_qnr = sync_qn;
-_use_spin ? sync_qnr *= 0.25 * pow(16, (_spin + 1) * 0.5);
+function on_slider()
+(
+  sync_qn = get_sync_qn();
+  sync_qnl = sync_qn;
+  sync_qnr = sync_qn;
+  _use_spin ? sync_qnr *= 0.25 * pow(16, (_spin + 1) * 0.5);
+  
+  offsetl = _offset / 360;
+  offsetr = _offset / 360 + (_use_spin ? 0 : _phase / 360);
+  slider_show(_phase, !_use_spin);
+  slider_show(_spin, _use_spin);
+);
 
-offsetl = _offset / 360;
-offsetr = _offset / 360 + (_use_spin ? 0 : _phase / 360);
+@slider
+
+on_slider();
 
 @block
 beats_per_spl = _rate_sync > 0 
@@ -141,6 +149,13 @@ beat_pos += beats_per_spl;
 
 @gfx 500 140
 
+color_bg = 0x111111;
+color_active = 0xffff00;
+winx = 0;
+winy = 30;
+winw = gfx_w;
+winh = gfx_h-30;
+
 function update_mouse_state()
 instance(cap, x, y, lx, ly, dx, dy, right_click, left_click, lleft, lright, left, right, click_time, double_click, control, lwheel, wheel)
 global(mouse_cap, mouse_x, mouse_y, mouse_wheel)
@@ -178,43 +193,75 @@ function point_in_rect (x1, y1, x, y, w, h) (
 
 function gfx_wave(phase, is_right)
 global(_shape, _invert, _wave)
-local(val)
+local(val, r)
 (
   val = _wave == 0 ? sine(phase) :
         _wave == 1 ? triangle(phase - floor(phase)) :
         _wave == 2 ? saw(phase - floor(phase));
-        //_wave == 3 && is_right ? gfxr.rand_wave() :
-        //_wave == 3 && !is_right ? gfxl.rand_wave();
+  
+  _wave == 3 ? (
+    r = floor(phase) + 5000;
+    is_right ? r += 10000;
+    val = sin(r * 12.9898) * 43758.5453; // pseudo rand
+    val = (val - floor(val)) * 2 - 1;
+  );
   
   _shape > 1 ? val = tanh(val*_shape);
   _invert ? val *= -1;
   val;
 );
 
+function draw_button (x, y, w, label, toggled) (
+  gfx_a = 1;
+  set_color(color_active);
+  gfx_rect(x, y - 2, w, 10 + 2, toggled);
+  gfx_x = x; gfx_y = y;
+  set_color(toggled ? color_bg : color_active);
+  gfx_drawstr(label, 1, x+w, y+10);
+);
+
 function draw_waveform(rat, off, is_right)
+global(_amount, gfx_w, gfx_h, gfx_x, gfx_y, winx, winy, winh, winw)
 local(inc, x, y, phase)
 (
   rat *= 2;
   rat < 1 ? rat = 1;
   x = 0;
   phase = off;
-  inc = rat / gfx_w;
+  inc = rat / winw;
   
   x = 0;
   gfx_x = x;
-  gfx_y = gfx_h/2 + (gfx_h/2 - 1) * gfx_wave(phase, is_right);
+  gfx_y = winy + winh/2 + (winh/2 - 1) * gfx_wave(phase, is_right) * _amount;
   
   loop(gfx_w,
-    y = gfx_h/2 + (gfx_h/2 - 1) * gfx_wave(phase, is_right);
+    y = winy + winh/2 + (winh/2 - 1) * gfx_wave(phase, is_right) * _amount;
     gfx_lineto(x, y);
     phase += inc;
     x += 1;
   );
 );
 
-gfx_clear = 0x111111;
-set_color(0xff0000);
-draw_waveform(_rate_sync > 0 ? tempo / (60 * sync_qnl) : _rate, offsetl, 0);
-set_color(0x0000ff);
-draw_waveform(_rate_sync > 0 ? tempo / (60 * sync_qnr) : _rate,offsetr,1);
+gfx_clear = color_bg;
+mouse.update_mouse_state();
+set_color(0xffff00);
 
+draw_waveform(_rate_sync > 0 ? tempo / (60 * sync_qnl) : _rate, offsetl, 0);
+set_color(0x00ffff);
+draw_waveform(_rate_sync > 0 
+  ? tempo / (60 * sync_qnr) 
+  : _use_spin ? _rate / (0.25 * pow(16, (_spin + 1) * 0.5))
+  : _rate
+,offsetr,1);
+
+draw_button(10,10,60,"Invert",_invert);
+draw_button(10 + 60 + 10,10, 60,"Spin",_use_spin);
+
+mouse.left_click && mouse_in_rect(10,10,60,12) ? (
+  _invert = !_invert;
+);
+
+mouse.left_click && mouse_in_rect(10+60+10,10,60,12) ? (
+  _use_spin = !_use_spin;
+  on_slider();
+);
