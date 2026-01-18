@@ -178,7 +178,7 @@ Waveshapping distortion with 12 modes.
 
 ![](doc/quickdist.png)
 
-#### Feature
+#### Features
 
 * 12 waveshapping distortion modes
 * Dynamics control
@@ -190,6 +190,12 @@ Waveshapping distortion with 12 modes.
 Simple filter with 9 modes and smooth interpolation from ReEQ.
 
 ![](doc/qfilter.png)
+
+## Albeton - Autopan
+
+JS Clone of Ableton auto-pan plug-in.
+
+![](doc/autopan.png)
 
 ## Notes to CC
 
