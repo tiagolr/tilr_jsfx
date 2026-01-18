@@ -1,6 +1,6 @@
-desc:Albeton - Autopan
-author:tilr
-version:1.0.0
+desc: Albeton - Autopan
+author: tilr
+version: 1.0.0
 
 slider1:_amount=0.5<0.0,1,0.01>Amount
 slider2:_rate=1<0.01,5000,0.01:log>Rate (Hz)
@@ -37,8 +37,8 @@ instance(randphase, prev_cycle, prev_val)
 local(val, cycle)
 (
   cycle = floor(randphase);
-  val = cycle != prev_cycle 
-    ? rand() * 2 - 1 
+  val = cycle != prev_cycle
+    ? rand() * 2 - 1
     : prev_val;
   prev_cycle = cycle;
   prev_val = val;
@@ -52,7 +52,7 @@ local(val)
         _wave == 2 ? saw(phase) :
         _wave == 3 && is_right ? r.rand_wave() :
         _wave == 3 && !is_right ? l.rand_wave();
-  
+
   _shape > 1 ? tanh(val*_shape) : val
 );
 function normalize(val) ( val * 0.5 + 0.5 );
@@ -98,7 +98,7 @@ function on_slider()
   sync_qnl = sync_qn;
   sync_qnr = sync_qn;
   _use_spin ? sync_qnr *= 0.25 * pow(16, (_spin + 1) * 0.5);
-  
+
   offsetl = _offset / 360;
   offsetr = _offset / 360 + (_use_spin ? 0 : _phase / 360);
   slider_show(_phase, !_use_spin);
@@ -110,7 +110,7 @@ function on_slider()
 on_slider();
 
 @block
-beats_per_spl = _rate_sync > 0 
+beats_per_spl = _rate_sync > 0
   ? tempo / (60 * srate)
   : israte * _rate;
 play_state & 1 && _rate_sync > 0 ? (
@@ -198,14 +198,14 @@ local(val, r)
   val = _wave == 0 ? sine(phase) :
         _wave == 1 ? triangle(phase - floor(phase)) :
         _wave == 2 ? saw(phase - floor(phase));
-  
+
   _wave == 3 ? (
     r = floor(phase) + 5000;
     is_right ? r += 10000;
     val = sin(r * 12.9898) * 43758.5453; // pseudo rand
     val = (val - floor(val)) * 2 - 1;
   );
-  
+
   _shape > 1 ? val = tanh(val*_shape);
   _invert ? val *= -1;
   val;
@@ -229,11 +229,11 @@ local(inc, x, y, phase)
   x = 0;
   phase = off;
   inc = rat / winw;
-  
+
   x = 0;
   gfx_x = x;
   gfx_y = winy + winh/2 + (winh/2 - 1) * gfx_wave(phase, is_right) * _amount;
-  
+
   loop(gfx_w,
     y = winy + winh/2 + (winh/2 - 1) * gfx_wave(phase, is_right) * _amount;
     gfx_lineto(x, y);
@@ -248,8 +248,8 @@ set_color(0xffff00);
 
 draw_waveform(_rate_sync > 0 ? tempo / (60 * sync_qnl) : _rate, offsetl, 0);
 set_color(0x00ffff);
-draw_waveform(_rate_sync > 0 
-  ? tempo / (60 * sync_qnr) 
+draw_waveform(_rate_sync > 0
+  ? tempo / (60 * sync_qnr)
   : _use_spin ? _rate / (0.25 * pow(16, (_spin + 1) * 0.5))
   : _rate
 ,offsetr,1);
