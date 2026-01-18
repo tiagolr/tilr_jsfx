@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="b1160b5d78ce3c25eebb5dcd98ff8c0220ff93c1" name="Tilr">
+<index version="1" commit="228ee2e902dd448478cc7723db49242e1cc39301" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -329,6 +329,20 @@ Add midi offset support]]></changelog>
         <source file="adsr1/adsr.array.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/4206a7233593487fe4db6d6a561d1c51e9afd148/Modulation/adsr1/adsr.array.jsfx-inc</source>
         <source file="adsr1/adsr.curvelib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/4206a7233593487fe4db6d6a561d1c51e9afd148/Modulation/adsr1/adsr.curvelib.jsfx-inc</source>
         <source file="adsr1/adsr.mouselib.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/4206a7233593487fe4db6d6a561d1c51e9afd148/Modulation/adsr1/adsr.mouselib.jsfx-inc</source>
+      </version>
+    </reapack>
+    <reapack name="Albeton - Autopan.jsfx" type="effect" desc="Albeton - Autopan">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 JS Clone of Albetons auto-pan stock plug-in\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0.0" author="tilr" time="2026-01-18T19:29:21Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/228ee2e902dd448478cc7723db49242e1cc39301/Modulation/Albeton%20-%20Autopan.jsfx</source>
       </version>
     </reapack>
     <reapack name="distr.jsfx" type="effect" desc="DIST-R">
