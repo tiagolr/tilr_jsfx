@@ -1,0 +1,97 @@
+desc:GFX MIDI Filter
+author: tilr
+version: 1.0.0
+about: Visual midi keys filter
+
+@init
+keys = 0;
+pressed_keys = 1000;
+
+@serialize
+file_mem(0,0,128); // load keys
+
+@block
+NOTE_ON = $x90;
+NOTE_OFF = $x80;
+
+while
+(
+  midirecv(offset,msg1,note,vel) ?
+  (
+    status = msg1 & $xF0;
+    channel = msg1 & $x0F;
+
+    status == NOTE_ON || status == NOTE_OFF ?
+    (
+      pressed_keys[note] = (status == NOTE_ON && vel > 0);
+      keys[note] || status == NOTE_OFF || vel == 0 ?
+      (
+        midisend(offset, msg1, note, vel);
+      );
+    ) : (
+      midisend(offset, msg1, note, vel);
+    );
+    1; // Force loop to continue until all messages have been processed
+  );
+);
+
+
+@gfx 935 35
+gfx_clear=0x333333;
+kwidth = gfx_w / 128;
+lmousedown = mousedown;
+mousedown = mouse_cap & 1 > 0;
+mouseclick = !lmousedown && mousedown;
+
+function is_black_key(k)
+(
+  k % 12 == 1 || k % 12 == 3 || k % 12 == 6 || k % 12 == 8 || k % 12 == 10
+);
+
+// draw white keys
+i = 0;
+loop(128,
+  !is_black_key(i) ? (
+    gfx_r = 1;gfx_g = 1;gfx_b = 1;
+    gfx_rect(i*kwidth,0,kwidth,gfx_h,1);
+    i % 12 == 0 || i % 12 == 5 ? (
+      gfx_r = 0.05;gfx_g = 0.05;gfx_b = 0.05;
+      gfx_line(floor(i*kwidth),0,floor(i*kwidth),gfx_h);
+    );
+  );
+  i += 1;
+);
+
+mouseclick && mouse_x > 0 ? (
+  key = floor(mouse_x / kwidth);
+  adding_keys = !keys[key];
+);
+
+mousedown && mouse_x > 0 ? (
+  key = floor(mouse_x / kwidth);
+  keys[key] = adding_keys;
+);
+
+// draw filtered keys
+i = 0;
+gfx_r = 0;gfx_g = 0.5;gfx_b = 1; gfx_a = 0.8;
+loop(128,
+  keys[i] ? (
+    gfx_rect(i*kwidth,0,kwidth,gfx_h,1);
+  );
+  i += 1;
+);
+gfx_a = 1;
+
+// draw pressed keys
+i = 0;
+gfx_r = 1;gfx_g = 0;gfx_b = 0; gfx_a = 0.5;
+loop(128,
+  pressed_keys[i] ? (
+  aaa+=1;
+    gfx_rect(i*kwidth,0,kwidth,gfx_h,1);
+  );
+  i += 1;
+);
+gfx_a = 1;
+
