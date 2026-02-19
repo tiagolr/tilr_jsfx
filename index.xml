@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="228ee2e902dd448478cc7723db49242e1cc39301" name="Tilr">
+<index version="1" commit="766fa15d1159d26bd9bf6c7a1721e9fe0246696e" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -177,6 +177,20 @@ Yutani Bass
     </reapack>
   </category>
   <category name="MIDI">
+    <reapack name="GFX MIDI Filter.jsfx" type="effect" desc="GFX MIDI Filter">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 Visual midi keys filter\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0.0" author="tilr" time="2026-02-19T17:09:51Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/766fa15d1159d26bd9bf6c7a1721e9fe0246696e/MIDI/GFX%20MIDI%20Filter.jsfx</source>
+      </version>
+    </reapack>
     <reapack name="MIDI Keyvel Filter.jsfx" type="effect" desc="MIDI Keyvel Filter">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
