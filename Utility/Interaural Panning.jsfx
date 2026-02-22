@@ -1,5 +1,6 @@
 desc:Interaural Panning
-version: 1.0.0
+version: 1.1.0
+changelog: smooth pan param
 author: tilr
 license: CC0
 about:
@@ -125,6 +126,7 @@ bsize = delay_ms * srate * 0.001;
 far_gain = pow(10, (-3 * abs(pan))/20);
 
 @sample
+// frequency split
 spl0.frequency_splitter(spl0);
 spl1.frequency_splitter(spl1);
 l0 = spl0.L;
@@ -132,22 +134,41 @@ l1 = spl1.L;
 h0 = spl0.H;
 h1 = spl1.H;
 
+// smooth param
+pan_s += (pan - pan_s) * 0.001;
+bsize_s += (bsize - bsize_s) * 0.002;
+
 // apply haas to the highend (Interaural Time Difference)
 // also apply gain reduction (Interaural Level Difference)
 // also apply high frequency roll-off
-buf[bpos] = pan > 0 ? h0 : h1;
-readpos = bpos - bsize;
-while(readpos < 0) ( readpos += size; );
 
-pan > 0 ? (
-  h0 = buf[readpos] * far_gain;
-  h0 = shelf.SVFhigh_shelf(h0,5000,0.5,-abs(pan*3));
+// write to buffer
+pan_s > 0 ? (
+    buf[bpos] = h0;   // delaying LEFT
 ) : (
-  h1 = buf[readpos] * far_gain;
-  h1 = shelf.SVFhigh_shelf(h1,5000,0.5,-abs(pan*3));
+    buf[bpos] = h1;   // delaying RIGHT
 );
+
+// read delayed signal
+rp = bpos - bsize_s;
+while(rp < 0) ( rp += size; );
+i1 = floor(rp);
+i2 = i1 + 1;
+i2 >= size ? i2 = 0;
+frac = rp - i1;
+delayed = buf[i1]*(1-frac) + buf[i2]*frac;
 bpos += 1;
 bpos >= size ? bpos = 0;
+
+pan == 0 ? (
+  1; // do nothing
+) : pan > 0 ? (
+  h0 = delayed * far_gain;
+  h0 = shelf.SVFhigh_shelf(h0,5000,0.5,-abs(pan_s*3));
+) : (
+  h1 = delayed * far_gain;
+  h1 = shelf.SVFhigh_shelf(h1,5000,0.5,-abs(pan_s*3));
+);
 
 // frequency merge
 spl0 = l0 + h0;
