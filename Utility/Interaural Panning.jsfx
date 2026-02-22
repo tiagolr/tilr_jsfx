@@ -1,0 +1,158 @@
+desc:Interaural Panning
+version: 1.0.0
+author: tilr
+license: CC0
+about:
+  A pan effect using Haas for realistic panning modeled after how the ears
+  perceive sound comming from different directions. 
+  The panned side is delayed by a very small amount, attenuated both in level and high frequency content.
+  It sounds much better than regular panning, the downside is that is produces phase issues when summed to mono.
+  Frequency splitter code taken from lewloiwc frequency splitter.
+
+slider1:crossover=200<20,2000,1:log>Bass Crossover (Hz)
+slider2:pan=0<-1,1,0.01>Pan
+
+@init
+ext_tail_size=-1;
+size = srate/10;
+bpos = 0;
+buf = 0;
+
+function SVFlow(v0,cutoff,Q)
+    local(
+        k,
+        v1,v2
+    )
+    instance(
+        g,a1,a2,
+        ic1eq,ic2eq
+    )
+(
+    (this.d1 = this.d0) !== (this.d0 = cutoff + Q) ? (//this.aaaa_debug_ += 1;
+        g = tan($pi*cutoff/srate);
+        k = 1/Q;
+        a1 = 1/(1 + g*(g + k));
+        a2 = g*a1;
+    );
+    
+    v1 = a1*ic1eq + a2*(v0 - ic2eq);
+    v2 = ic2eq + g*v1;
+    ic1eq = 2*v1 - ic1eq;
+    ic2eq = 2*v2 - ic2eq;
+    
+    v2;
+);
+
+function SVFhigh(v0,cutoff,Q)
+    local(
+        v1,v2
+    )
+    instance(
+        g,k,a1,a2,
+        ic1eq,ic2eq
+    )
+(
+    (this.d1 = this.d0) !== (this.d0 = cutoff + Q) ? (//this.aaaa_debug_ += 1;
+        g = tan($pi*cutoff/srate);
+        k = 1/Q;
+        a1 = 1/(1 + g*(g + k));
+        a2 = g*a1;
+    );
+    
+    v1 = a1*ic1eq + a2*(v0 - ic2eq);
+    v2 = ic2eq + g*v1;
+    ic1eq = 2*v1 - ic1eq;
+    ic2eq = 2*v2 - ic2eq;
+    
+    v0 - k*v1 - v2;
+);
+
+function SVFhigh_shelf(v0,cutoff,Q,bellgaindB)
+    local(
+        A,g,k,
+        v1,v2,v3
+    )
+    instance(
+        a1,a2,a3,m0,m1,m2,
+        ic1eq,ic2eq
+    )
+(
+    (this.d1 = this.d0) !== (this.d0 = cutoff + Q + bellgaindB) ? (
+        A = pow(10, bellgaindB/40);
+        g = tan($pi*cutoff/srate)*sqrt(A);
+        k = 1/Q;
+        a1 = 1/(1 + g*(g + k));
+        a2 = g*a1;
+        a3 = g*a2;
+        m0 = A*A;
+        m1 = k*(1 - A)*A;
+        m2 = (1 - A*A);
+    );
+    
+    v3 = v0 - ic2eq;
+    v1 = a1*ic1eq + a2*v3;
+    v2 = ic2eq + a2*ic1eq + a3*v3;
+    ic1eq = 2*v1 - ic1eq;
+    ic2eq = 2*v2 - ic2eq;
+    
+    m0*v0 + m1*v1 + m2*v2;
+);
+
+function LR_LPF(x,freq)
+(
+  x = this.1.SVFlow(x,freq,q24);
+  x = this.2.SVFlow(x,freq,q24);
+);
+
+function LR_HPF(x,freq)
+(
+  x = this.1.SVFhigh(x,freq,q24);
+  x = this.2.SVFhigh(x,freq,q24);
+);
+
+function frequency_splitter(x)
+(
+    this.L = this.Low.LR_LPF(x, crossover);
+    this.H = this.High.LR_HPF(x, crossover);
+);
+
+q24 = sqrt(0.5);
+
+@slider
+delay_ms = 0.65 * pow(abs(pan), 0.7);
+bsize = delay_ms * srate * 0.001;
+
+far_gain = pow(10, (-3 * abs(pan))/20);
+
+@sample
+spl0.frequency_splitter(spl0);
+spl1.frequency_splitter(spl1);
+l0 = spl0.L;
+l1 = spl1.L;
+h0 = spl0.H;
+h1 = spl1.H;
+
+// apply haas to the highend (Interaural Time Difference)
+// also apply gain reduction (Interaural Level Difference)
+// also apply high frequency roll-off
+buf[bpos] = pan > 0 ? h0 : h1;
+readpos = bpos - bsize;
+while(readpos < 0) ( readpos += size; );
+
+pan > 0 ? (
+  h0 = buf[readpos] * far_gain;
+  h0 = shelf.SVFhigh_shelf(h0,5000,0.5,-abs(pan*3));
+) : (
+  h1 = buf[readpos] * far_gain;
+  h1 = shelf.SVFhigh_shelf(h1,5000,0.5,-abs(pan*3));
+);
+bpos += 1;
+bpos >= size ? bpos = 0;
+
+// frequency merge
+spl0 = l0 + h0;
+spl1 = l1 + h1;
+
+
+
+
