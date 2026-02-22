@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="766fa15d1159d26bd9bf6c7a1721e9fe0246696e" name="Tilr">
+<index version="1" commit="bbe59538da9769cda589557d852b4edeee9e77df" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -2428,6 +2428,20 @@ Added presets]]></changelog>
     </reapack>
   </category>
   <category name="Utility">
+    <reapack name="Interaural Panning.jsfx" type="effect" desc="Interaural Panning">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 A pan effect using Haas for realistic panning modeled after how the ears perceive sound comming from different directions. The panned side is delayed by a very small amount, attenuated both in level and high frequency content. It sounds much better than regular panning, the downside is that is produces phase issues when summed to mono. Frequency splitter code taken from lewloiwc frequency splitter.\par}
+}
+]]></description>
+      </metadata>
+      <version name="1.0.0" author="tilr" time="2026-02-22T14:53:22Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/bbe59538da9769cda589557d852b4edeee9e77df/Utility/Interaural%20Panning.jsfx</source>
+      </version>
+    </reapack>
     <reapack name="tinyrec.jsfx" type="effect" desc="TinyRec">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 \fmodern Courier;}}
