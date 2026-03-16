@@ -1,6 +1,7 @@
 desc: QuickFilter
 author: tilr
 version: 1.1
+changelog: Add 24db slope for lp and hp filters
 provides:
 	qfilter/qf.svf_filter.jsfx-inc
 about:
