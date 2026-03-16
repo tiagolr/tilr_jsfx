@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" commit="f24522100de06fdcd9165db2aa7874c4cd49d831" name="Tilr">
+<index version="1" commit="940d663a2129369979aafced871f10a0404da6bc" name="Tilr">
   <category name="Delay">
     <reapack name="qdelay.jsfx" type="effect" desc="QDelay">
       <metadata>
@@ -140,6 +140,10 @@
       <version name="1.0" author="tilr" time="2024-01-06T15:53:39Z">
         <source>https://github.com/tiagolr/tilr_jsfx/raw/46d993c8731b9d543c3867a848d9b128aead19f1/Filter/QuickFilter.jsfx</source>
         <source file="qfilter/qf.svf_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/46d993c8731b9d543c3867a848d9b128aead19f1/Filter/qfilter/qf.svf_filter.jsfx-inc</source>
+      </version>
+      <version name="1.1" author="tilr" time="2026-03-16T20:54:04Z">
+        <source>https://github.com/tiagolr/tilr_jsfx/raw/3713438b8441baf7a0cb2e167c85e92605e7f4c1/Filter/QuickFilter.jsfx</source>
+        <source file="qfilter/qf.svf_filter.jsfx-inc">https://github.com/tiagolr/tilr_jsfx/raw/3713438b8441baf7a0cb2e167c85e92605e7f4c1/Filter/qfilter/qf.svf_filter.jsfx-inc</source>
       </version>
     </reapack>
     <reapack name="skfilter.jsfx" type="effect" desc="SKFilter">
