@@ -1,6 +1,7 @@
 desc:QDelay
 author: tilr
-version: 1.0.4
+version: 1.0.5
+changelog: Fix settings reverting on play.
 provides:
   qdelay2/qd2.delay.jsfx-inc
   qdelay2/qd2.rbj_filter.jsfx-inc
@@ -41,6 +42,8 @@ import qd2.saike_pitchlib.jsfx-inc
 import qd2.gfxlib.jsfx-inc
 
 @init
+
+ext_noinit = 1;
 
 // 10 second stereo delay line
 d0.delay(2000000, srate * 10);
